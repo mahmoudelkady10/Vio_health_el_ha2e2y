@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+  <g id="Group_3525" data-name="Group 3525" transform="translate(-832.5 -447.5)">
+    <g id="Date_range_light" transform="translate(833 447)">
+      <rect id="Rectangle_25" data-name="Rectangle 25" width="17" height="14" rx="2" transform="translate(0 4)" fill="none" stroke="#707070" stroke-width="1"/>
+      <path id="Rectangle_26" data-name="Rectangle 26" d="M2,0H15a2,2,0,0,1,2,2V3a0,0,0,0,1,0,0H0A0,0,0,0,1,0,3V2A2,2,0,0,1,2,0Z" transform="translate(0 4)" fill="#707070"/>
+      <path id="Line_1" data-name="Line 1" d="M0,0H3.1" transform="translate(4.624 1) rotate(90)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="1"/>
+      <path id="Line_2" data-name="Line 2" d="M0,0H3.1" transform="translate(12.684 1) rotate(90)" fill="none" stroke="#707070" stroke-linecap="round" stroke-width="1"/>
+      <rect id="Rectangle_27" data-name="Rectangle 27" width="3" height="1" rx="0.5" transform="translate(4 10)" fill="#707070"/>
+      <rect id="Rectangle_27-2" data-name="Rectangle 27" width="3" height="1" rx="0.5" transform="translate(10 10)" fill="#707070"/>
+      <rect id="Rectangle_27-3" data-name="Rectangle 27" width="3" height="1" rx="0.5" transform="translate(4 14)" fill="#707070"/>
+      <rect id="Rectangle_27-4" data-name="Rectangle 27" width="3" height="1" rx="0.5" transform="translate(10 14)" fill="#707070"/>
+    </g>
+  </g>
+</svg>

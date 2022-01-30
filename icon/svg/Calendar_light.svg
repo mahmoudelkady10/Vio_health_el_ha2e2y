@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 12 12">
+  <g id="Calendar_light" transform="translate(0.258 0.5)">
+    <rect id="Rectangle_25" data-name="Rectangle 25" width="11" height="8" rx="2" transform="translate(0.242 3)" fill="none" stroke="#f15a4f" stroke-width="1"/>
+    <path id="Vector_3" data-name="Vector 3" d="M0,0H10.3" transform="translate(0.529 4.889)" fill="none" stroke="#f15a4f" stroke-linecap="round" stroke-width="1"/>
+    <path id="Vector_4" data-name="Vector 4" d="M0,0H5.278" transform="translate(2.974 7.944)" fill="none" stroke="#f15a4f" stroke-linecap="round" stroke-width="1"/>
+    <path id="Line_1" data-name="Line 1" d="M0,0H2.444" transform="translate(2.974 0) rotate(90)" fill="none" stroke="#f15a4f" stroke-linecap="round" stroke-width="1"/>
+    <path id="Line_2" data-name="Line 2" d="M0,0H2.444" transform="translate(8.863 0) rotate(90)" fill="none" stroke="#f15a4f" stroke-linecap="round" stroke-width="1"/>
+  </g>
+</svg>

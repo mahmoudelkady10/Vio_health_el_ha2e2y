@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <data>
+
+        <import type="com.linktop.utils.Translate" />
+
+        <import type="android.view.View" />
+
+        <variable
+            name="content"
+            type="com.example.medic_app.fmt.MeasureFragment" />
+
+        <variable
+            name="showUpload"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="isUnitF"
+            type="androidx.databinding.ObservableBoolean" />
+
+        <variable
+            name="model"
+            type="com.example.medic_app.bean.Bt" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="end"
+                android:text="@{String.valueOf((model.getTemp() == 0 || !isUnitF)? model.temp : Translate.TempC2F(model.getTemp()))}"
+                android:textSize="36sp" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_weight="1"
+                android:text="@{isUnitF ? @string/temp_unit_f: @string/temp_unit_c}"
+                android:textSize="36sp" />
+
+        </LinearLayout>
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="℃            ℉"
+                android:textColor="@android:color/black"
+                android:textSize="16sp" />
+
+            <androidx.appcompat.widget.SwitchCompat
+                android:id="@+id/switch_unit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center" />
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/btn_measure"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{content::clickMeasure}"
+            android:text="@string/start_measuring"
+            android:textAllCaps="false"
+            android:textSize="12sp" />
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="@{content::clickUploadData}"
+            android:text="点击上传一次测量数据"
+            android:textSize="16sp"
+            android:visibility="@{showUpload?View.VISIBLE:View.GONE}" />
+    </LinearLayout>
+
+</layout>
