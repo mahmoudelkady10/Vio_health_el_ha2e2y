@@ -2,7 +2,7 @@
 
 VioHealth App
 
-## Getting Started
+## V 1.0.0
 
 V 1.0.0
     - Booking appoitments
