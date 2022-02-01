@@ -12,6 +12,7 @@ import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/model/wave_data.dart';
 import 'package:medic_app/network/health_monitor_api.dart';
 import 'package:medic_app/screens/home_screen.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:medic_app/widgets/waive_drawer_2.dart';
 import 'package:provider/provider.dart';
@@ -19,6 +20,8 @@ import 'package:intl/intl.dart';
 import 'package:medic_app/widgets/wave_drawer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+
 
 class HealthMonitor extends StatefulWidget {
   const HealthMonitor({Key? key}) : super(key: key);
@@ -55,12 +58,47 @@ class _HealthMonitorState extends State<HealthMonitor> {
   static dynamic dateBp = '';
   static dynamic dateEcg = '';
   static dynamic dateBg = '';
+  bool uploaded = false;
+  void _clear() async{
+    await deleteNativePrefs();
+    setState(() {
+      bodyTemp = null;
+      bgMeasure = null;
+      systolicPressure = null;
+      diastolicPressure = null;
+      heartRateBp = null;
+      rrMax = null;
+      rrMin = null;
+      heartRateEcg = null;
+      hrv = null;
+      mood = null;
+      respiratoryRate = null;
+      durationEcg = null;
+      ecgWave = null;
+      spo2 = null;
+      heartRateSpo2 = null;
+      dateSpo2 = null;
+      dateBt = null;
+      dateBp = null;
+      dateEcg = null;
+      dateBg = null;
+      uploaded = false;
+    });
+  }
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     assignReadings();
+  }
+
+  Future<void> deleteNativePrefs() async{
+    try {
+      var temp = await platform.invokeMethod('deleteData');
+    } on PlatformException catch (e) {
+      print(e.message);
+    }
   }
 
   Future<void> openHealthMonitor(BuildContext context) async {
@@ -165,6 +203,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
       dateBt = _dateBt;
       dateBp = _dateBp;
       dateEcg = _dateEcg;
+      uploaded = false;
     });
   }
 
@@ -172,7 +211,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
   /// then waiting for the given [wait] amount of time and then creating an image via a [RepaintBoundary].
   ///
   /// The final image will be of size [imageSize] and the the widget will be layout, ... with the given [logicalSize].
-  Future<Uint8List> createImageFromWidget(Widget widget, {Duration? wait, Size? logicalSize, Size? imageSize}) async {
+  Future<Uint8List> createImageFromWidget(Widget widget,
+      {Duration? wait, Size? logicalSize, Size? imageSize}) async {
     final RenderRepaintBoundary repaintBoundary = RenderRepaintBoundary();
 
     logicalSize ??= ui.window.physicalSize / ui.window.devicePixelRatio;
@@ -182,7 +222,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
 
     final RenderView renderView = RenderView(
       window: WidgetsBinding.instance!.window,
-      child: RenderPositionedBox(alignment: Alignment.center, child: repaintBoundary),
+      child: RenderPositionedBox(
+          alignment: Alignment.center, child: repaintBoundary),
       configuration: ViewConfiguration(
         size: logicalSize,
         devicePixelRatio: 1.0,
@@ -195,7 +236,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
     pipelineOwner.rootNode = renderView;
     renderView.prepareInitialFrame();
 
-    final RenderObjectToWidgetElement<RenderBox> rootElement = RenderObjectToWidgetAdapter<RenderBox>(
+    final RenderObjectToWidgetElement<RenderBox> rootElement =
+        RenderObjectToWidgetAdapter<RenderBox>(
       container: repaintBoundary,
       child: widget,
     ).attachToRenderTree(buildOwner);
@@ -213,8 +255,10 @@ class _HealthMonitorState extends State<HealthMonitor> {
     pipelineOwner.flushCompositingBits();
     pipelineOwner.flushPaint();
 
-    final ui.Image image = await repaintBoundary.toImage(pixelRatio: imageSize.width / logicalSize.width);
-    final ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final ui.Image image = await repaintBoundary.toImage(
+        pixelRatio: imageSize.width / logicalSize.width);
+    final ByteData? byteData =
+        await image.toByteData(format: ui.ImageByteFormat.png);
 
     return byteData!.buffer.asUint8List();
   }
@@ -327,7 +371,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           var n = temp.length;
                                           if (n < 3) {
                                             if (temp[0] == 'null' ||
-                                                temp[1] == 'null') {
+                                                temp[1] == 'null' || temp[1] == 'null%') {
                                               return const Text(
                                                 'N/A',
                                                 textAlign: TextAlign.left,
@@ -382,108 +426,132 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                 height: 70,
                                 width: 150,
                                 child: RoundedButton(
-                                  buttonText: 'Upload/sync to server',
-                                  buttonColor: Theme.of(context).primaryColor,
+                                  buttonText: 'Save',
+                                  buttonColor: uploaded == false?Theme.of(context).primaryColor: Colors.grey,
                                   buttonFunction: () async {
-                                    List<int> lint = ecgWave
-                                        .toString()
-                                        .split(',')
-                                        .map(int.parse)
-                                        .toList();
-                                    WaveformData waveData =
-                                    WaveformData.fromJson(jsonEncode({
-                                      "version": 2,
-                                      "channels": 1,
-                                      "sample_rate": 250,
-                                      "samples_per_pixel": 64,
-                                      "bits": 16,
-                                      "length": lint.length,
-                                      "data": lint
-                                    }));
-                                    var img = await createImageFromWidget(WaveSegments(data: waveData, zoomLevel: 1.0, globalKey: globalKey));
-                                    var img64 = base64Encode(img);
-                                    var dateTimeBg = dateBg.toString() != 'null'
-                                        ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                            .parse(dateBg)
-                                        : null;
-                                    var dateTimeBp = dateBp.toString() != 'null'
-                                        ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                            .parse(dateBp)
-                                        : null;
-                                    var dateTimeBt = dateBt.toString() != 'null'
-                                        ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                            .parse(dateBt)
-                                        : null;
-                                    var dateTimeEcg =
-                                        dateEcg.toString() != 'null'
-                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                                .parse(dateEcg)
-                                            : null;
-                                    var dateTimeSpo2 =
-                                        dateSpo2.toString() != 'null'
-                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                                .parse(dateSpo2)
-                                            : null;
-                                    print(dateTimeSpo2);
-                                    var data = {
-                                      'token': Provider.of<UserModel>(context,
-                                              listen: false)
-                                          .token
-                                          .toString(),
-                                      'blood_glucose': {
-                                        'bg_measure': bgMeasure,
-                                        'date_bg': dateTimeBg.toString()
-                                      },
-                                      'blood_pressure': {
-                                        'systolic_pressure': systolicPressure,
-                                        'diastolic_pressure': diastolicPressure,
-                                        'heart_rate_bp': heartRateBp,
-                                        'date_bp':
-                                            dateTimeBp.toString().split('.')[0]
-                                      },
-                                      'body_temperature': {
-                                        'body_temp': bodyTemp,
-                                        'date_bt':
-                                            dateTimeBt.toString().split('.')[0]
-                                      },
-                                      'ecg': {
-                                        'rrmax': rrMax,
-                                        'rrmin': rrMin,
-                                        'heart_rate_ecg': heartRateEcg,
-                                        'hrv': hrv,
-                                        'mood': mood,
-                                        'respiratory_rate': respiratoryRate,
-                                        'duration_ecg': durationEcg,
-                                        'date_ecg':
-                                            dateTimeEcg.toString().split('.')[0],
-                                        'wave': img64
-                                      },
-                                      'spo2': {
-                                        'spo2': spo2,
-                                        'heart_rate_spo2': heartRateSpo2,
-                                        'date_spo2': dateTimeSpo2
+                                    if (uploaded == false){
+                                      var img64 = null;
+                                      if (ecgWave != null) {
+                                        List<int> lint = ecgWave
                                             .toString()
-                                            .split('.')[0]
+                                            .split(',')
+                                            .map(int.parse)
+                                            .toList();
+                                        WaveformData waveData =
+                                        WaveformData.fromJson(jsonEncode({
+                                          "version": 2,
+                                          "channels": 1,
+                                          "sample_rate": 250,
+                                          "samples_per_pixel": 64,
+                                          "bits": 16,
+                                          "length": lint.length,
+                                          "data": lint
+                                        }));
+                                        var img = await createImageFromWidget(
+                                            WaveSegments(
+                                                data: waveData,
+                                                zoomLevel: 1.0,
+                                                globalKey: globalKey));
+                                        img64 = base64Encode(img);
                                       }
-                                    };
-                                    var response =
-                                        await HmApi.postReadings(data);
-                                    int status = json.decode(response.body)['result']['status'];
-                                    if (status == 200){
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.green,
-                                          content: Text("Data Uploaded"),
-                                        ),
-                                      );
-                                    } else {
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        const SnackBar(
-                                          backgroundColor: Colors.red,
-                                          content: Text("Data Upload Failed!"),
-                                        ),
-                                      );
+                                      var dateTimeBg = dateBg.toString() != 'null'
+                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(dateBg)
+                                          : null;
+                                      var dateTimeBp = dateBp.toString() != 'null'
+                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(dateBp)
+                                          : null;
+                                      var dateTimeBt = dateBt.toString() != 'null'
+                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(dateBt)
+                                          : null;
+                                      var dateTimeEcg =
+                                      dateEcg.toString() != 'null'
+                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(dateEcg)
+                                          : null;
+                                      var dateTimeSpo2 =
+                                      dateSpo2.toString() != 'null'
+                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                          .parse(dateSpo2)
+                                          : null;
+                                      print(dateTimeSpo2);
+                                      var data = {
+                                        'token': Provider.of<UserModel>(context,
+                                            listen: false)
+                                            .token
+                                            .toString(),
+                                        'blood_glucose': {
+                                          'bg_measure': bgMeasure,
+                                          'date_bg': dateTimeBg.toString()
+                                        },
+                                        'blood_pressure': {
+                                          'systolic_pressure': systolicPressure,
+                                          'diastolic_pressure': diastolicPressure,
+                                          'heart_rate_bp': heartRateBp,
+                                          'date_bp':
+                                          dateTimeBp.toString().split('.')[0]
+                                        },
+                                        'body_temperature': {
+                                          'body_temp': bodyTemp,
+                                          'date_bt':
+                                          dateTimeBt.toString().split('.')[0]
+                                        },
+                                        'ecg': {
+                                          'rrmax': rrMax,
+                                          'rrmin': rrMin,
+                                          'heart_rate_ecg': heartRateEcg,
+                                          'hrv': hrv,
+                                          'mood': mood,
+                                          'respiratory_rate': respiratoryRate,
+                                          'duration_ecg': durationEcg,
+                                          'date_ecg': dateTimeEcg
+                                              .toString()
+                                              .split('.')[0],
+                                          'wave': img64
+                                        },
+                                        'spo2': {
+                                          'spo2': spo2,
+                                          'heart_rate_spo2': heartRateSpo2,
+                                          'date_spo2': dateTimeSpo2
+                                              .toString()
+                                              .split('.')[0]
+                                        }
+                                      };
+                                      setState(() {
+                                        uploaded = true;
+                                      });
+                                      // context.loaderOverlay.show(widget: const LoadingScreen());
+                                      var response =
+                                      await HmApi.postReadings(data);
+                                      // context.loaderOverlay.hide();
+                                      int status =
+                                      json.decode(response.body)['result']
+                                      ['status'];
+                                      if (status == 200) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.green,
+                                            content: Text("Data Uploaded"),
+                                          ),
+                                        );
+                                        _clear();
+                                      } else {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text("Data Upload Failed!"),
+                                          ),
+                                        );
+                                        setState(() {
+                                          uploaded = false;
+                                        });
+                                      }
                                     }
+
                                   },
                                 ),
                               ),
@@ -556,28 +624,29 @@ class _HealthMonitorState extends State<HealthMonitor> {
                             child: RoundedButton(
                               buttonText: 'View ECG',
                               buttonColor: Theme.of(context).primaryColor,
-                              buttonFunction: () async{
-                                List<int> lint = ecgWave
-                                    .toString()
-                                    .split(',')
-                                    .map(int.parse)
-                                    .toList();
-
-                                WaveformData data =
-                                    WaveformData.fromJson(jsonEncode({
-                                  "version": 2,
-                                  "channels": 1,
-                                  "sample_rate": 250,
-                                  "samples_per_pixel": 64,
-                                  "bits": 16,
-                                  "length": lint.length,
-                                  "data": lint
-                                }));
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            PaintedWaveform(sampleData: data)));
+                              buttonFunction: () async {
+                                if (ecgWave != null) {
+                                  List<int> lint = ecgWave
+                                      .toString()
+                                      .split(',')
+                                      .map(int.parse)
+                                      .toList();
+                                  WaveformData data =
+                                      WaveformData.fromJson(jsonEncode({
+                                    "version": 2,
+                                    "channels": 1,
+                                    "sample_rate": 250,
+                                    "samples_per_pixel": 64,
+                                    "bits": 16,
+                                    "length": lint.length,
+                                    "data": lint
+                                  }));
+                                  Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => PaintedWaveform(
+                                              sampleData: data)));
+                                }
                               },
                             ),
                           ),
@@ -592,6 +661,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                           height: 100,
                           width: 200,
                           child: Column(
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               const Text(
                                   'Readings will appear on this screen when taken'),
@@ -688,8 +758,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text('SBP(mmHg):'),
-                                        Text(
-                                            snapshot.data[index].systolicPressure)
+                                        Text(snapshot
+                                            .data[index].systolicPressure)
                                       ],
                                     ),
                                   ),
@@ -756,7 +826,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                               'body_temperature') {
                             return Card(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -805,10 +876,13 @@ class _HealthMonitorState extends State<HealthMonitor> {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          if (snapshot.data[index].category.toString() == 'ecg' && snapshot.data[index].rrMax != null) {
+                          if (snapshot.data[index].category.toString() ==
+                                  'ecg' &&
+                              snapshot.data[index].rrMax != null) {
                             return Card(
                               child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
                                 children: [
                                   Padding(
                                     padding: const EdgeInsets.all(8.0),
@@ -861,7 +935,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           MainAxisAlignment.spaceBetween,
                                       children: [
                                         const Text('Respiratory rate:'),
-                                        Text(snapshot.data[index].respiratoryRate)
+                                        Text(snapshot
+                                            .data[index].respiratoryRate)
                                       ],
                                     ),
                                   ),

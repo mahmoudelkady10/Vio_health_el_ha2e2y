@@ -6,6 +6,7 @@ import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
 import 'package:medic_app/screens/healthmonitor_history_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
+import 'package:medic_app/screens/packages_screen.dart';
 import 'package:medic_app/screens/wallet_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
       '\nReach Us',
       '\nVIO Health',
       '\nHealth Monitor',
+      '\nPackages'
     ];
     List icons = [
       ImageIcon(
@@ -93,6 +95,11 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       ImageIcon(
         const AssetImage('assets/health_monitor.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      ImageIcon(
+        const AssetImage('assets/packages.png'),
         size: 75,
         color: Theme.of(context).primaryColor,
       ),
@@ -275,6 +282,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   optioncard(
                       deviceSize, icons[7], options[7], AlManara.id, context),
                   optioncard(deviceSize, icons[8], options[8], HealthMonitor.id,
+                      context),
+                  optioncard(deviceSize, icons[9], options[9], PackagesScreen.id,
                       context),
                 ],
               ),

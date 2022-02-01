@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:medic_app/model/packages_model.dart';
 import 'package:medic_app/model/specialties_model.dart';
 import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/doctors_screen.dart';
@@ -13,6 +14,7 @@ import 'package:medic_app/screens/about_us_screen.dart';
 import 'package:medic_app/screens/gallery_screen.dart';
 import 'package:medic_app/screens/home_screen.dart';
 import 'package:medic_app/screens/log_in_screen.dart';
+import 'package:medic_app/screens/packages_screen.dart';
 import 'package:medic_app/screens/registration_screen.dart';
 import 'package:medic_app/screens/speciality_screen.dart';
 import 'package:medic_app/screens/appointment_screen.dart';
@@ -44,7 +46,8 @@ class MyApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider.value(value: UserModel()),
         ChangeNotifierProvider.value(value: SpecialtiesList()),
-        ChangeNotifierProvider.value(value: TimesList())
+        ChangeNotifierProvider.value(value: TimesList()),
+        ChangeNotifierProvider.value(value: PackagesContentList())
       ],
       child: MaterialApp(
           title: 'My Clinic',
@@ -75,6 +78,7 @@ class MyApp extends StatelessWidget {
             VideoAppointment.id: (context) => const VideoAppointment(),
             HealthMonitor.id: (context) => const HealthMonitor(),
             HealthMonitorHistory.id: (context) => const HealthMonitorHistory(),
+            PackagesScreen.id: (context) => const PackagesScreen(),
           }),
     );
   }

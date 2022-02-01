@@ -145,6 +145,7 @@ class UserModel extends ChangeNotifier {
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
       partnerId_: json['partner_id'],
+      uid_: json['uid'],
       name_: json['name'],
       image_: json['image'],
       email_: json['email'],

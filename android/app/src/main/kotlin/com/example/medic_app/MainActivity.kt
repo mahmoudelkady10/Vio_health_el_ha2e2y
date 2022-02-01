@@ -2,6 +2,7 @@ package com.example.medic_app
 
 import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
 import android.os.Bundle
 import android.os.PersistableBundle
 import io.flutter.embedding.engine.FlutterEngine
@@ -37,6 +38,8 @@ class MainActivity: FlutterActivity() {
                         result.success(value)
                     }
                 }
+            } else if(call.method.equals("deleteData")) {
+                deleteData()
             }
 
         }
@@ -53,6 +56,15 @@ class MainActivity: FlutterActivity() {
                 Context.MODE_PRIVATE
         ).getString(key, null)
 
+    }
+
+    private fun deleteData(): String {
+        val preferences = getSharedPreferences("Data", MODE_PRIVATE)
+        val editor = preferences.edit()
+        editor.clear()
+        editor.apply()
+
+        return "Values cleared"
     }
 
 
