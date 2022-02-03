@@ -9,7 +9,7 @@ import android.util.AttributeSet;
 import android.util.DisplayMetrics;
 import android.view.View;
 
-import technotown.technology.vioclinic.R;
+import technotown.technology.technoclinic.R;
 
 
 /**

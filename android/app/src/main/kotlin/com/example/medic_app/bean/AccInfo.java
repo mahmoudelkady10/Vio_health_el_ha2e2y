@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
-import technotown.technology.vioclinic.BR;
+import technotown.technology.technoclinic.BR;
 
 /**
  * Created by ccl on 2016/8/23.

@@ -13,8 +13,8 @@ import com.linktop.intf.OnAccountResultListener;
 import java.util.Locale;
 
 import com.example.medic_app.bean.AccInfo;
-import technotown.technology.vioclinic.R;
-import technotown.technology.vioclinic.databinding.ActivitySetAccountBinding;
+import technotown.technology.technoclinic.R;
+import technotown.technology.technoclinic.databinding.ActivitySetAccountBinding;
 import lib.linktop.sev.CssServerApi;
 
 /**
