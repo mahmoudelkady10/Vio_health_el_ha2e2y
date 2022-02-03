@@ -86,3 +86,38 @@ class PackagesContentList extends ChangeNotifier {
 
   List<PackagesContentModel> get packagesContent => _packagesContentList;
 }
+
+class NewPackagesModel {
+  int? id;
+  String? name;
+  String? mainCategory;
+  double? price;
+
+  NewPackagesModel({
+    this.id,
+    this.name,
+    this.mainCategory,
+    this.price,
+  });
+
+  factory NewPackagesModel.fromJson(Map<String, dynamic> json) {
+    return NewPackagesModel(
+        id: json['id'],
+        name: json['name'],
+        mainCategory: json['main_category'],
+        price: json['service_price'],
+    );
+  }
+}
+
+class NewPackagesList extends ChangeNotifier {
+  List<NewPackagesModel> _packagesList = [];
+
+
+  set packages(List<NewPackagesModel> newList) {
+    _packagesList = newList;
+    notifyListeners();
+  }
+
+  List<NewPackagesModel> get packages => _packagesList;
+}

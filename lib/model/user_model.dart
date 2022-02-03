@@ -146,6 +146,7 @@ class UserModel extends ChangeNotifier {
     return UserModel(
       partnerId_: json['partner_id'],
       uid_: json['uid'],
+      medicalId_: json['medical_id'],
       name_: json['name'],
       image_: json['image'],
       email_: json['email'],

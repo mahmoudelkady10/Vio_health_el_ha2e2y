@@ -300,7 +300,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
       'SPO2'
     ];
     return DefaultTabController(
-      length: 6,
+      length: 7,
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Health Monitor'),
@@ -308,6 +308,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
           bottom: const TabBar(
             isScrollable: true,
             tabs: [
+              Text('Device instructions'),
               Text('Most recent reading'),
               Text('Blood Glucose History'),
               Text('Blood Pressure History'),
@@ -327,6 +328,11 @@ class _HealthMonitorState extends State<HealthMonitor> {
         ),
         body: TabBarView(
           children: [
+            ListView(
+              children: [
+
+              ],
+            ),
             RefreshIndicator(
               key: _refreshIndicatorKey,
               onRefresh: _refresh,

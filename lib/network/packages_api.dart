@@ -60,4 +60,34 @@ class PackagesApi extends BaseApiManagement {
       throw Exception('Errrr Failed to get packages');
     }
   }
+
+  static Future<List<NewPackagesModel>> availablePackages(BuildContext context) async {
+    print(Provider.of<UserModel>(context, listen: false).medicalId);
+    var response = await http.post(
+      Uri.parse('${BaseApiManagement.baseUrl}/vio/servicelist'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "params": {
+          // "token": Provider.of<UserModel>(context, listen: false).token,
+          "uid": Provider.of<UserModel>(context, listen: false).uid,
+          "medical_id": Provider.of<UserModel>(context, listen: false).medicalId,
+        }
+      }),
+    );
+    print(json.decode(response.body)['result']['payment_methods']);
+    int responseStatus = json.decode(response.body)['result']['status'];
+    List<NewPackagesModel> packagesList = [];
+    if (responseStatus == 200) {
+      for (var index in json.decode(response.body)['result']['service_list']) {
+        if (index['service_type'] != 'package'){
+          continue;
+        }
+        packagesList.add(NewPackagesModel.fromJson(index));
+      }
+      print(packagesList.length);
+      return packagesList;
+    } else {
+      throw Exception('Errrr Failed to get packages');
+    }
+  }
 }
