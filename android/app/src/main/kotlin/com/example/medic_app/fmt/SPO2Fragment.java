@@ -19,8 +19,8 @@ import com.linktop.whealthService.task.OxTask;
 
 import com.example.medic_app.bean.SpO2;
 import com.example.medic_app.health.App;
-import technotown.technology.vioclinic.R;
-import technotown.technology.vioclinic.databinding.FragmentSpo2Binding;
+import technotown.technology.technoclinic.R;
+import technotown.technology.technoclinic.databinding.FragmentSpo2Binding;
 import com.example.medic_app.widget.WaveSurfaceView;
 import com.example.medic_app.widget.wave.PPGDrawWave;
 

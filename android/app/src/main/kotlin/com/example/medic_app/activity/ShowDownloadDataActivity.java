@@ -16,7 +16,7 @@ import com.example.medic_app.bean.Bp;
 import com.example.medic_app.bean.Bt;
 import com.example.medic_app.bean.ECG;
 import com.example.medic_app.bean.SpO2;
-import technotown.technology.vioclinic.R;
+import technotown.technology.technoclinic.R;
 import lib.linktop.common.CssSubscriber;
 import lib.linktop.common.ResultPair;
 import lib.linktop.obj.DataFile;
