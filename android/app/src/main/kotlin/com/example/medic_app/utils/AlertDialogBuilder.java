@@ -4,7 +4,7 @@ import android.content.Context;
 
 import androidx.appcompat.app.AlertDialog;
 
-import technotown.technology.vioclinic.R;
+import technotown.technology.technoclinic.R;
 
 /**
  * Created by ccl on 2016/6/13.

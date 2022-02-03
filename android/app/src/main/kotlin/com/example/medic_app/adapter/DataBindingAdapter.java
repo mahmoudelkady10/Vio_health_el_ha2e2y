@@ -7,7 +7,7 @@ import androidx.databinding.ObservableInt;
 import android.view.ViewGroup;
 
 import com.example.medic_app.adapter.vh.BindingViewHolder;
-import technotown.technology.vioclinic.BR;
+import technotown.technology.technoclinic.BR;
 
 /**
  * Created by ccl on 2016/9/30.

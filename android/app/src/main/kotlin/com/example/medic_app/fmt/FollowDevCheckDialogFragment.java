@@ -7,8 +7,8 @@ import android.view.View;
 
 import com.linktop.MonitorDataTransmissionManager;
 
-import technotown.technology.vioclinic.BR;
-import technotown.technology.vioclinic.R;
+import technotown.technology.technoclinic.BR;
+import technotown.technology.technoclinic.R;
 import com.example.medic_app.utils.GetVerificationCodeUtil;
 import lib.linktop.common.CssSubscriber;
 import lib.linktop.sev.CssServerApi;
