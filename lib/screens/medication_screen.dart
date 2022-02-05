@@ -106,7 +106,7 @@ class MedicationDetails extends StatelessWidget {
                       child: ExpandablePanel(
                           header: Padding(
                             padding: const EdgeInsets.only(top: 9.0),
-                            child: Text(snapshot.data[index].medicineId, textAlign: TextAlign.center,),
+                            child: Text(snapshot.data[index].medicineId, textAlign: TextAlign.center, style: const TextStyle(color: Color(0xFFB22234))),
                           ),
                           collapsed: SizedBox.shrink(),
                           expanded: Column(
@@ -117,8 +117,8 @@ class MedicationDetails extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Name:'),
-                                    Text(snapshot.data[index].medicineId),
+                                    const Text('Name:', style: TextStyle(color: Color(0xFFB22234))),
+                                    Text(snapshot.data[index].medicineId , style: TextStyle(color: Theme.of(context).primaryColor)),
                                   ],
                                 ),
                               ),
@@ -127,8 +127,8 @@ class MedicationDetails extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Type:'),
-                                    Text(snapshot.data[index].medicineFormId),
+                                    const Text('Type:', style: TextStyle(color: Color(0xFFB22234))),
+                                    Text(snapshot.data[index].medicineFormId , style: TextStyle(color: Theme.of(context).primaryColor)),
                                   ],
                                 ),
                               ),
@@ -137,8 +137,8 @@ class MedicationDetails extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Amount/dose:'),
-                                    Text(snapshot.data[index].dosageQuantity),
+                                    const Text('Amount/dose:' , style: TextStyle(color: Color(0xFFB22234))),
+                                    Text(snapshot.data[index].dosageQuantity , style: TextStyle(color: Theme.of(context).primaryColor)),
                                   ],
                                 ),
                               ),
@@ -147,8 +147,8 @@ class MedicationDetails extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Doses/day:'),
-                                    Text(snapshot.data[index].frequency),
+                                    const Text('Doses/day:' , style: TextStyle(color: Color(0xFFB22234))),
+                                    Text(snapshot.data[index].frequency , style: TextStyle(color: Theme.of(context).primaryColor)),
                                   ],
                                 ),
                               ),
@@ -157,8 +157,8 @@ class MedicationDetails extends StatelessWidget {
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
-                                    Text('Duration: '),
-                                    Text('${snapshot.data[index].days} Day(s)'),
+                                    const Text('Duration: ' , style: TextStyle(color: Color(0xFFB22234))),
+                                    Text('${snapshot.data[index].days} Day(s)' , style: TextStyle(color: Theme.of(context).primaryColor)),
                                   ],
                                 ),
                               ),

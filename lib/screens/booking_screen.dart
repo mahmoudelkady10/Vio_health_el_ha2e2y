@@ -89,9 +89,9 @@ class BookingS extends StatelessWidget {
                                       Expanded(
                                         child: ListTile(
                                           title:
-                                              Text(snapshot.data[index].name),
+                                              Text(snapshot.data[index].name, style: TextStyle(color: Theme.of(context).primaryColor)),
                                           subtitle: Text(
-                                              snapshot.data[index].description),
+                                              snapshot.data[index].description, style: const TextStyle(color:  Color(0xFFB22234))),
                                         ),
                                       ),
                                       Padding(
@@ -103,7 +103,7 @@ class BookingS extends StatelessWidget {
                                           child: RoundedButton(
                                             buttonText: 'choose',
                                             buttonColor:
-                                                Theme.of(context).primaryColor,
+                                            const Color(0xFFB22234),
                                             buttonFunction: () {
                                               Navigator.push(
                                                   context,
@@ -130,7 +130,7 @@ class BookingS extends StatelessWidget {
                 ],
               );
             } else {
-              return const Center(child: Text('No Specialties found'));
+              return const Center(child: Text('No Specialties found' , style: TextStyle(color: Color(0xFFB22234))));
             }
           },
         ),
@@ -238,7 +238,7 @@ class BookingType extends StatelessWidget {
                 );
               } else {
                 return const Center(
-                  child: Text('No services found'),
+                  child: Text('No services found', style: TextStyle(color: Color(0xFFB22234))),
                 );
               }
             }),
@@ -305,7 +305,7 @@ class BookingD extends StatelessWidget {
                                               decoration: BoxDecoration(
                                                   borderRadius: BorderRadius.circular(20),
                                                   border: Border.all(
-                                                      color: Theme.of(context).primaryColor,
+                                                      color: const Color(0xFFB22234),
                                                       width: 3
                                                   ),
                                                   image: DecorationImage(
@@ -318,9 +318,9 @@ class BookingD extends StatelessWidget {
                                         Expanded(
                                           child: ListTile(
                                             title: Text(
-                                                '${snapshot.data[index].title} ${snapshot.data[index].name}'),
+                                                '${snapshot.data[index].title} ${snapshot.data[index].name}', style: TextStyle(color: Theme.of(context).primaryColor)),
                                             subtitle: Text(
-                                                snapshot.data[index].level),
+                                                snapshot.data[index].level , style: const TextStyle(color: Color(0xFFB22234))),
                                           ),
                                         )
                                       ],
@@ -350,7 +350,7 @@ class BookingD extends StatelessWidget {
                 ],
               );
             } else {
-              return const Center(child: Text('No Specialties found'));
+              return const Center(child: Text('No Specialties found', style: TextStyle(color: Color(0xFFB22234))));
             }
           },
         ),
@@ -540,10 +540,10 @@ class _BookingTState extends State<BookingT> {
                               ),
                             ],
                           ),
-                          const Divider(
+                          Divider(
                             height: 0.3,
                             thickness: 1,
-                            color: Colors.black,
+                            color: Theme.of(context).primaryColor,
                             indent: 15,
                             endIndent: 15,
                           ),
@@ -552,10 +552,10 @@ class _BookingTState extends State<BookingT> {
                     }),
               );
             } else {
-              return const Text('No free time slots on date chosen');
+              return const Text('No free time slots on date chosen', style: TextStyle(color: Color(0xFFB22234)));
             }
           } else {
-            return const Text('No free time slots on date chosen');
+            return const Text('No free time slots on date chosen', style: TextStyle(color: Color(0xFFB22234)));
           }
         });
   }

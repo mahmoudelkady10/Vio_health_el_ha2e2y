@@ -74,9 +74,9 @@ class Services extends StatelessWidget {
                                       ),
                                       Expanded(
                                         child: ListTile(
-                                          title: Text(snapshot.data[index].name),
+                                          title: Text(snapshot.data[index].name, style: TextStyle(color:Theme.of(context).primaryColor)),
                                           subtitle: Text(
-                                              snapshot.data[index].description),
+                                              snapshot.data[index].description,style: const TextStyle(color: Color(0xFFB22234))),
                                         ),
                                       ),
                                     ],

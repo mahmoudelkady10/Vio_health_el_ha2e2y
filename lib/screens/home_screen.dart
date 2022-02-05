@@ -48,60 +48,60 @@ class _MyHomePageState extends State<MyHomePage> {
       '\nMedication',
       '\nGallery',
       '\nReach Us',
-      '\nVIO Health',
+      '\nTechno Information',
       '\nHealth Monitor',
       '\nPackages'
     ];
     List icons = [
-      ImageIcon(
-        const AssetImage('assets/doctor.png'),
+      const ImageIcon(
+        AssetImage('assets/doctor.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/services.png'),
+      const ImageIcon(
+        AssetImage('assets/services.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/appointment.png'),
+      const ImageIcon(
+        AssetImage('assets/appointment.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/test.png'),
+      const ImageIcon(
+        AssetImage('assets/test.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color:Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/medication.png'),
+      const ImageIcon(
+        AssetImage('assets/medication.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/gallery.png'),
+      const ImageIcon(
+        AssetImage('assets/gallery.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/reach-us.png'),
+      const ImageIcon(
+        AssetImage('assets/reach-us.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/about-us.png'),
+      const ImageIcon(
+        AssetImage('assets/about-us.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/health_monitor.png'),
+      const ImageIcon(
+        AssetImage('assets/health_monitor.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
-      ImageIcon(
-        const AssetImage('assets/packages.png'),
+      const ImageIcon(
+        AssetImage('assets/packages.png'),
         size: 75,
-        color: Theme.of(context).primaryColor,
+        color: Color(0xFFB22234),
       ),
     ];
     // This method is rerun every time setState is called, for instance as done
@@ -162,17 +162,17 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 30,
             ),
             ListTile(
-              leading: Icon(
+              leading: const Icon(
                 Icons.account_balance_wallet_outlined,
-                color: Theme.of(context).primaryColor,
+                color: Color(0xFFB22234),
                 size: 40,
               ),
-              title: Text(
+              title: const Text(
                 'Wallet',
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 17,
-                    color: Colors.grey.shade700),
+                    color: Color(0xFFB22234)),
               ),
               onTap: () {
                 Navigator.pushNamed(context, WalletScreen.id);
@@ -244,7 +244,7 @@ class _MyHomePageState extends State<MyHomePage> {
             children: [
               SizedBox(
                 width: deviceSize.width,
-                height: 60,
+                height: 80,
                 child: Card(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,

@@ -53,7 +53,7 @@ class MyApp extends StatelessWidget {
           title: 'My Clinic',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            primaryColor: Colors.blue.shade800,
+            primaryColor: const Color(0xFF002768),
           ),
           initialRoute: WelcomeScreen.id,
           routes: {
@@ -67,7 +67,7 @@ class MyApp extends StatelessWidget {
             Services.id: (context) => const Services(),
             Testimonials.id: (context) => const Testimonials(),
             AlManara.id: (context) => const AlManara(),
-            MyHomePage.id: (context) => const MyHomePage(title: 'VIO Health'),
+            MyHomePage.id: (context) => const MyHomePage(title: 'Techno Clinic'),
             WelcomeScreen2.id: (context) => const WelcomeScreen2(),
             WelcomeScreen.id: (context) => const WelcomeScreen(),
             LoginScreen.id: (context) => const LoginScreen(),
@@ -126,7 +126,7 @@ class WelcomeScreen extends StatelessWidget {
           children: [
             SizedBox(height: deviceSize.height * 0.35),
             Image.asset(
-              'assets/viologo.png',
+              'assets/techno clinic.png',
               width: 300,
               height: 200,
             ),
@@ -140,8 +140,8 @@ class WelcomeScreen extends StatelessWidget {
             ),
             Image.asset(
               'assets/TTlogo.png',
-              width: 100,
-              height: 100,
+              width: 80,
+              height: 80,
             )
           ],
         ),
@@ -167,8 +167,8 @@ class WelcomeScreen2 extends StatelessWidget {
             SizedBox(height: deviceSize.height * 0.20),
             Row(
               crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
+              children: const [
+                Padding(
                   padding: EdgeInsets.only(left: 25.0),
                 ),
                 Text('WELCOME TO ',
@@ -176,7 +176,7 @@ class WelcomeScreen2 extends StatelessWidget {
                     style: TextStyle(
                         fontSize: 20,
                         fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor)),
+                        color: Color(0xFFB22234))),
               ],
             ),
             Row(
@@ -185,7 +185,7 @@ class WelcomeScreen2 extends StatelessWidget {
                 const Padding(
                   padding: EdgeInsets.only(left: 25.0),
                 ),
-                Text('VIO Health.',
+                Text('Techno Clinic.',
                     textAlign: TextAlign.end,
                     style: TextStyle(
                         fontSize: 45,
@@ -193,14 +193,15 @@ class WelcomeScreen2 extends StatelessWidget {
                         color: Theme.of(context).primaryColor)),
               ],
             ),
-            SizedBox(height: deviceSize.height * 0.10),
+            SizedBox(height: deviceSize.height * 0.07
+            , width: deviceSize.width * 0.5,),
             Image.asset(
-              'assets/viologo.png',
+              'assets/techno clinic.png',
               width: 200,
               height: 200,
             ),
             const SizedBox(
-              height: 15,
+              height: 50,
             ),
             Row(
               mainAxisSize: MainAxisSize.min,

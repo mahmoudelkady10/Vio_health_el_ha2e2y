@@ -53,10 +53,10 @@ class Availability extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(specialties[i].name.toString(),
-                                style: TextStyle(
+                                style: const TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Theme.of(context).primaryColor,
+                                  color: Color(0xFFB22234),
                                 )),
                           ),
                           SizedBox(
@@ -93,9 +93,7 @@ class Availability extends StatelessWidget {
                                                               BorderRadius.circular(
                                                                   20),
                                                           border: Border.all(
-                                                              color: Theme.of(
-                                                                      context)
-                                                                  .primaryColor,
+                                                              color: const Color(0xFFB22234),
                                                               width: 3),
                                                           image: DecorationImage(
                                                               image: NetworkImage(
@@ -130,16 +128,16 @@ class Availability extends StatelessWidget {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
-                                                                fontSize: 15),
+                                                                fontSize: 15, color: Color(0xFFB22234)),
                                                           ),
                                                           Text(
                                                             snapshot.data[index]
                                                                 .level,
-                                                            style: const TextStyle(
+                                                            style: TextStyle(
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400,
-                                                                fontSize: 13),
+                                                                fontSize: 13, color: Theme.of(context).primaryColor),
                                                           ),
                                                         ],
                                                       ),
@@ -241,7 +239,7 @@ class DoctorDescription extends StatelessWidget {
                         Radius.circular(10),
                       ),
                     ),
-                    backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: const Color(0xFFB22234),
                     onPressed: () {
                       Navigator.pushReplacement(
                           context,
