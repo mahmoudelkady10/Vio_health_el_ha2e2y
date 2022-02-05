@@ -67,7 +67,8 @@ class MyApp extends StatelessWidget {
             Services.id: (context) => const Services(),
             Testimonials.id: (context) => const Testimonials(),
             AlManara.id: (context) => const AlManara(),
-            MyHomePage.id: (context) => const MyHomePage(title: 'Techno Clinic'),
+            MyHomePage.id: (context) =>
+                const MyHomePage(title: 'Techno Clinic'),
             WelcomeScreen2.id: (context) => const WelcomeScreen2(),
             WelcomeScreen.id: (context) => const WelcomeScreen(),
             LoginScreen.id: (context) => const LoginScreen(),
@@ -98,16 +99,19 @@ class WelcomeScreen extends StatelessWidget {
       print(status);
       if (status) {
         String? token = prefs.getString('token');
-        dynamic response = await LoginApi.getUserInfo(context, token!);
-        if (response.toString() != '200') {
-          imageCache?.clear();
-          SharedPreferences prefs =
-          await SharedPreferences.getInstance();
-          await prefs.clear();
-          await Future.delayed(const Duration(seconds: 2));
+        if (token == null) {
           Navigator.pushReplacementNamed(context, WelcomeScreen2.id);
         } else {
-          Navigator.pushReplacementNamed(context, MyHomePage.id);
+          dynamic response = await LoginApi.getUserInfo(context, token);
+          if (response.toString() != '200') {
+            imageCache?.clear();
+            SharedPreferences prefs = await SharedPreferences.getInstance();
+            await prefs.clear();
+            await Future.delayed(const Duration(seconds: 2));
+            Navigator.pushReplacementNamed(context, WelcomeScreen2.id);
+          } else {
+            Navigator.pushReplacementNamed(context, MyHomePage.id);
+          }
         }
       } else {
         Navigator.pushReplacementNamed(context, WelcomeScreen2.id);
@@ -193,8 +197,10 @@ class WelcomeScreen2 extends StatelessWidget {
                         color: Theme.of(context).primaryColor)),
               ],
             ),
-            SizedBox(height: deviceSize.height * 0.07
-            , width: deviceSize.width * 0.5,),
+            SizedBox(
+              height: deviceSize.height * 0.07,
+              width: deviceSize.width * 0.5,
+            ),
             Image.asset(
               'assets/techno clinic.png',
               width: 200,

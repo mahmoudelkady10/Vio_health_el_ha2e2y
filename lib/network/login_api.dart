@@ -31,7 +31,7 @@ class LoginApi extends BaseApiManagement {
     }
   }
 
-  static Future<dynamic> getUserInfo(BuildContext context, String token) async{
+  static Future<dynamic> getUserInfo(BuildContext context, String token) async {
     var jsonBody = {
       'token': token,
     };
@@ -48,7 +48,7 @@ class LoginApi extends BaseApiManagement {
       return responseStatus;
     } else {
       UserModel user =
-      UserModel.fromJson(json.decode(response.body)['result']['data']);
+          UserModel.fromJson(json.decode(response.body)['result']['data']);
       Provider.of<UserModel>(context, listen: false).loginSetting(user);
       return responseStatus;
     }
