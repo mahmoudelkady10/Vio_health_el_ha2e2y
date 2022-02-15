@@ -182,7 +182,7 @@ class _GalleryState extends State<Gallery> {
                       )));
         },
         tooltip: 'Post image',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add_a_photo_outlined),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );

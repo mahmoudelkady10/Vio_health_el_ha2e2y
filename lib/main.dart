@@ -5,6 +5,7 @@ import 'package:medic_app/model/packages_model.dart';
 import 'package:medic_app/model/specialties_model.dart';
 import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/doctors_screen.dart';
+import 'package:medic_app/screens/follow_up_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
 import 'package:medic_app/screens/healthmonitor_history_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
@@ -24,7 +25,7 @@ import 'package:medic_app/screens/reach_us_screen.dart';
 import 'package:medic_app/screens/video_call_screen.dart';
 import 'package:medic_app/screens/wallet_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
-
+import 'package:medic_app/screens/add_medication_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -64,6 +65,7 @@ class MyApp extends StatelessWidget {
             ContactUs.id: (context) => const ContactUs(),
             PastAppointments.id: (context) => const PastAppointments(),
             Location.id: (context) => const Location(),
+            FollowUp.id: (context) => const FollowUp(),
             Services.id: (context) => const Services(),
             Testimonials.id: (context) => const Testimonials(),
             AlManara.id: (context) => const AlManara(),

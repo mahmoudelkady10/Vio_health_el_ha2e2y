@@ -22,6 +22,7 @@ import 'log_in_screen.dart';
 import 'medication_screen.dart';
 import 'gallery_screen.dart';
 import 'reach_us_screen.dart';
+import 'follow_up_screen.dart';
 import 'package:flutter/services.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -47,7 +48,7 @@ class _MyHomePageState extends State<MyHomePage> {
       '\nTestimonials',
       '\nMedication',
       '\nGallery',
-      '\nReach Us',
+      '\nFollowUp',
       '\nTechno Information',
       '\nHealth Monitor',
       '\nPackages'
@@ -84,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Color(0xFFB22234),
       ),
       const ImageIcon(
-        AssetImage('assets/reach-us.png'),
+        AssetImage('assets/follow-up.png'),
         size: 75,
         color: Color(0xFFB22234),
       ),
@@ -278,7 +279,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   optioncard(deviceSize, icons[5], options[5],
                       PastAppointments.id, context),
                   optioncard(
-                      deviceSize, icons[6], options[6], Location.id, context),
+                      deviceSize, icons[6], options[6], FollowUp.id, context),
                   optioncard(
                       deviceSize, icons[7], options[7], AlManara.id, context),
                   optioncard(deviceSize, icons[8], options[8], HealthMonitor.id,
