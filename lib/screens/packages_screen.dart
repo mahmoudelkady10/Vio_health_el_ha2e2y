@@ -197,19 +197,22 @@ class _PackageContentState extends State<PackageContent> {
                         return Row(
                           children: [
                             SizedBox(
-                              height: 80,
-                              width: 115,
-                              child: RoundedButton(
-                                  buttonColor: updatedDate == dates[index]
+                              height: 100,
+                              width: 100,
+                              child: GestureDetector(
+                                child: Card(
+                                  semanticContainer: false,
+                                  color: updatedDate == dates[index]
                                       ? Colors.blueGrey
                                       : Theme.of(context).primaryColor,
-                                  buttonText:
-                                      DateFormat.MMMM().format(dates[index]),
-                                  buttonFunction: () {
-                                    setState(() {
-                                      updatedDate = dates[index];
-                                    });
-                                  }),
+                                  child: Center(child: Text(DateFormat.MMMM().format(dates[index]), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white),)),
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    updatedDate = dates[index];
+                                  });
+                                },
+                              ),
                             ),
                             const SizedBox(
                               width: 4,
@@ -489,3 +492,14 @@ class BuyPackage extends StatelessWidget {
     );
   }
 }
+// RoundedButton(
+// buttonColor: updatedDate == dates[index]
+// ? Colors.blueGrey
+//     : Theme.of(context).primaryColor,
+// buttonText:
+// DateFormat.MMMM().format(dates[index]),
+// buttonFunction: () {
+// setState(() {
+// updatedDate = dates[index];
+// });
+// }),
