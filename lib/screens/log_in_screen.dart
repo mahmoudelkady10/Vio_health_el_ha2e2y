@@ -26,9 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    var deviceSize = MediaQuery
-        .of(context)
-        .size;
+    var deviceSize = MediaQuery.of(context).size;
     return Scaffold(
       backgroundColor: Colors.white,
       // appBar: AppBar(
@@ -41,16 +39,19 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: deviceSize.height * 0.1),
             Center(
                 child: Image.asset(
-                  'assets/viologo.png',
-                  width: 250,
-                  height: 200,
-                )),
-            SizedBox(height: deviceSize.height * 0.05, width: deviceSize.width * 0.01 ),
+              'assets/techno clinic.png',
+              width: 250,
+              height: 200,
+            )),
+            SizedBox(
+                height: deviceSize.height * 0.05,
+                width: deviceSize.width * 0.01),
             ValidatedTextField(
               fieldController: emailController,
               hintText: 'E-mail',
               labelText: 'Enter Email',
               fieldIcon: Icons.mail,
+              keyboardType: TextInputType.emailAddress,
             ),
             ValidatedTextField(
               fieldController: passwordController,
@@ -64,7 +65,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     });
                   },
                   icon: Icon(
-                      _hidePassword ? Icons.visibility_off : Icons.visibility,color: Colors.grey.shade400)),
+                      _hidePassword ? Icons.visibility_off : Icons.visibility,
+                      color: Colors.grey.shade400)),
               fieldObscure: _hidePassword,
             ),
             SizedBox(height: deviceSize.height * 0.02),
@@ -75,15 +77,12 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 35.0),
                   child: InkWell(
                     onTap: () async {
-                      String url = 'https://almanara-training.technotown.technology';
+                      String url = 'https://techno.clinic/web/reset_password?';
                       await launch(url);
                     },
                     child: Text(
                       'Forgot password ?',
-                      style: TextStyle(
-                          color: Theme
-                              .of(context)
-                              .primaryColor),
+                      style: TextStyle(color: Theme.of(context).primaryColor),
                     ),
                   ),
                 ),
@@ -94,60 +93,66 @@ class _LoginScreenState extends State<LoginScreen> {
               padding: EdgeInsets.symmetric(horizontal: deviceSize.width * 0.1),
               child: RoundedButton(
                 buttonText: 'Log In',
-                buttonColor: Theme
-                    .of(context)
-                    .primaryColor,
+                buttonColor: Theme.of(context).primaryColor,
                 buttonFunction: () async {
                   context.loaderOverlay.show(
-                      widget: const CircularProgressIndicator(strokeWidth: 2,));
+                      widget: const CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ));
                   dynamic status = await LoginApi.login(context,
                       emailController.text.trim(), passwordController.text);
                   context.loaderOverlay.hide();
                   if (status != 200) {
                     showDialog(
                       context: context,
-                      builder: (_) =>
-                          AlertDialog(
-                            title: const Center(
-                                child: Icon(
-                                  Icons.warning,
-                                  color: Colors.red,
-                                  size: 50,
-                                )),
-                            content: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: const [
-                                Text('Wrong Email or Password!'),
-                              ],
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.pop(context);
-                                },
-                                child: Text('ok',style: TextStyle(
-                                    color: Theme
-                                        .of(context)
-                                        .primaryColor, decoration: TextDecoration.underline)),
-                              )
-                            ],
-                          ),
+                      builder: (_) => AlertDialog(
+                        title: const Center(
+                            child: Icon(
+                          Icons.warning,
+                          color: Colors.red,
+                          size: 50,
+                        )),
+                        content: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: const [
+                            Text('Wrong Email or Password!'),
+                          ],
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: Text('ok',
+                                style: TextStyle(
+                                    color: Theme.of(context).primaryColor,
+                                    decoration: TextDecoration.underline)),
+                          )
+                        ],
+                      ),
                     );
                   } else {
-                    SharedPreferences prefs = await SharedPreferences
-                        .getInstance();
+                    SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
                     prefs.setBool("isLoggedIn", true);
-                    prefs.setString('token', Provider.of<UserModel>(context, listen: false).token);
+                    prefs.setString('token',
+                        Provider.of<UserModel>(context, listen: false).token);
                     Navigator.pushReplacementNamed(context, MyHomePage.id);
                   }
                 },
               ),
             ),
             ListTile(
-              title: Text('Create Account', textAlign: TextAlign.center , style: TextStyle(color: Theme.of(context).primaryColor, decoration: TextDecoration.underline, ),
+              title: Text(
+                'Create Account',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Theme.of(context).primaryColor,
+                  decoration: TextDecoration.underline,
+                ),
               ),
-              onTap: ()  {
+              onTap: () {
                 Navigator.pushNamed(context, Registration.id);
               },
             )

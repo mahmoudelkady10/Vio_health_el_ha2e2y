@@ -82,17 +82,17 @@ class AppointmentCard extends StatelessWidget {
                       ),
                     ),
                     Row(children: [
-                      const Text(
+                      Text(
                         'Service: ',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Theme.of(context).primaryColor,
                           fontSize: 17.0,
                         ),
                       ),
                       Text(
                         service!,
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
+                        style: const TextStyle(
+                          color: Color(0xFFB22234),
                           decoration: TextDecoration.underline,
                           fontSize: 15.0,
                         ),
@@ -100,34 +100,34 @@ class AppointmentCard extends StatelessWidget {
                     ]),
                     const SizedBox(height: 4,),
                     Row(children: [
-                      const Text(
+                      Text(
                         'Doctor: ',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Theme.of(context).primaryColor,
                           fontSize: 17.0,
                         ),
                       ),
                       Text(
                         doctor!,
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
+                        style: const TextStyle(
+                          color: Color(0xFFB22234),
                           fontSize: 15.0,
                         ),
                       )
                     ]),
                     const SizedBox(height: 4,),
                     Row(children: [
-                      const Text(
+                      Text(
                         'Date: ',
                         style: TextStyle(
-                          color: Colors.black,
+                          color: Theme.of(context).primaryColor,
                           fontSize: 17.0,
                         ),
                       ),
                       Text(
                         date!,
-                        style: TextStyle(
-                          color: Theme.of(context).primaryColor,
+                        style: const TextStyle(
+                          color: Color(0xFFB22234),
                           fontSize: 15.0,
                         ),
                       )
@@ -135,25 +135,25 @@ class AppointmentCard extends StatelessWidget {
                     const SizedBox(height: 4,),
                     if (day != null)
                       Row(children: [
-                        const Text(
+                        Text(
                           'Time:  ',
                           style: TextStyle(
-                            color: Colors.black,
+                            color: Theme.of(context).primaryColor,
                             fontSize: 17.0,
                           ),
                         ),
                         Text(
                           day!,
-                          style: TextStyle(
-                            color: Theme.of(context).primaryColor,
+                          style: const TextStyle(
+                            color: Color(0xFFB22234),
                             fontSize: 15.0,
                           ),
                         ),
                         if (time != null)
                           Text(
                             "  ${time!}",
-                            style: TextStyle(
-                              color: Theme.of(context).primaryColor,
+                            style: const TextStyle(
+                              color: Color(0xFFB22234),
                               fontSize: 15.0,
                             ),
                           )
@@ -169,11 +169,11 @@ class AppointmentCard extends StatelessWidget {
                               showDialog(
                                 context: context,
                                 builder: (_) => AlertDialog(
-                                  title: const Center(child: Text('Diagnosis')),
+                                  title: Center(child: Text('Diagnosis', style: TextStyle(color: Theme.of(context).primaryColor),)),
                                   content: Text(
                                       diagnosis ?? 'No Diagnosis Made',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
+                                      style: const TextStyle(
+                                        color: Color(0xFFB22234),
                                         fontSize: 15.0,
                                       )),
                                   actions: [
@@ -278,24 +278,26 @@ class AppointmentCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Visibility(
-                        visible: showVideoCall!,
-                        child: SizedBox(
-                          height: 70,
-                          width: 250,
-                          child: RoundedButton(
-                            buttonColor: url!= ''? Theme.of(context).primaryColor: Colors.grey,
-                            buttonText: 'Go to online Appointment',
-                            buttonFunction: () {
-                                if(url!='') {
-                                  Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                    return VideoAppointment(room: room.toString(), url: url.toString(),);
-                                  }));
-                                }
-                            },
-                          ),
+                    Center(
+                      child: Visibility(
+                          visible: showVideoCall!,
+                          child: SizedBox(
+                            height: 70,
+                            width: 250,
+                            child: RoundedButton(
+                              buttonColor: url!= ''? Theme.of(context).primaryColor: Colors.grey,
+                              buttonText: 'Go to online Appointment',
+                              buttonFunction: () {
+                                  if(url!='') {
+                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                      return VideoAppointment(room: room.toString(), url: url.toString(),);
+                                    }));
+                                  }
+                              },
+                            ),
 
-                        ))
+                          )),
+                    )
                   ],
                 ),
               ),

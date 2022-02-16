@@ -110,8 +110,9 @@ class _VideoAppointmentState extends State<VideoAppointment> {
               ),
               style: ButtonStyle(
                   backgroundColor: MaterialStateColor.resolveWith(
-                          (states) => Colors.tealAccent.shade700)),
+                          (states) => const Color(0xFFB22234)),
             ),
+          ),
           ),
           const SizedBox(
             height: 48.0,

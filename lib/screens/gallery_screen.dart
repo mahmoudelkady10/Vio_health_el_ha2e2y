@@ -26,7 +26,8 @@ class PastAppointments extends StatelessWidget {
           backgroundColor: Theme.of(context).primaryColor,
         ),
         body: FutureBuilder(
-          future: AppointmentsApi.getAppointments(context, userId, Provider.of<UserModel>(context).token),
+          future: AppointmentsApi.getAppointments(
+              context, userId, Provider.of<UserModel>(context).token),
           builder: (BuildContext context, AsyncSnapshot snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -53,10 +54,10 @@ class PastAppointments extends StatelessWidget {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => Gallery(
-                                        appId: snapshot.data[index].id,
-                                        doctorId: snapshot.data[index].doctorId,
-                                      )));
-
+                                            appId: snapshot.data[index].id,
+                                            doctorId:
+                                                snapshot.data[index].doctorId,
+                                          )));
                             },
                           ),
                           const Divider(
@@ -80,10 +81,12 @@ class PastAppointments extends StatelessWidget {
 }
 
 class Gallery extends StatefulWidget {
-  const Gallery({Key? key,  required this.appId, required this.doctorId}) : super(key: key);
+  const Gallery({Key? key, required this.appId, required this.doctorId})
+      : super(key: key);
   static const id = 'gallery_screen';
   final int appId;
   final int doctorId;
+
   @override
   State<Gallery> createState() => _GalleryState();
 }
@@ -95,7 +98,9 @@ class _GalleryState extends State<Gallery> {
       appBar: AppBar(
         title: const Padding(
           padding: EdgeInsets.all(80),
-          child: Text('Gallery',style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+          child: Text('Gallery',
+              style:
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -108,61 +113,59 @@ class _GalleryState extends State<Gallery> {
               );
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.data != null) {
-                return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      child: Card(
-                        elevation: 10.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              child: Center(
-                                child: Image.network(
-                                    snapshot.data[index].image.toString()),
-                              ),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16.0),
-                                topRight: Radius.circular(16.0),
-                              ),
-                            ),
-                            Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      snapshot.data[index].comment.toString(),
-                                      style:
-                                          Theme.of(context).textTheme.subtitle1,
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        Text(
-                                          snapshot.data[index].date,
-                                        ),
-                                        if (snapshot.data[index].doctor != null)
-                                          Text(
-                                            snapshot.data[index].doctor,
-                                          ),
-                                      ],
-                                    ),
-                                  ],
-                                )),
-                          ],
-                        ),
+              return ListView.builder(
+                itemCount: snapshot.data.length,
+                itemBuilder: (context, index) {
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
+                    child: Card(
+                      elevation: 10.0,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16.0),
                       ),
-                    );
-                  },
-                );
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          ClipRRect(
+                            child: Center(
+                              child: Image.network(
+                                  snapshot.data[index].image.toString()),
+                            ),
+                            borderRadius: const BorderRadius.only(
+                              topLeft: Radius.circular(16.0),
+                              topRight: Radius.circular(16.0),
+                            ),
+                          ),
+                          Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                children: [
+                                  Text(snapshot.data[index].comment.toString(),
+                                      style: const TextStyle(
+                                          color: Color(0xFFB22234))),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Text(snapshot.data[index].date,
+                                          style: const TextStyle(
+                                              color: Color(0xFFB22234))),
+                                      if (snapshot.data[index].doctor != null)
+                                        Text(snapshot.data[index].doctor,
+                                            style: const TextStyle(
+                                                color: Color(0xFFB22234))),
+                                    ],
+                                  ),
+                                ],
+                              )),
+                        ],
+                      ),
+                    ),
+                  );
+                },
+              );
             } else {
               return const Center(child: Text('no posts found'));
             }
@@ -174,12 +177,12 @@ class _GalleryState extends State<Gallery> {
               context,
               MaterialPageRoute(
                   builder: (context) => PickImage(
-                    appId: widget.appId,
-                    doctorId: widget.doctorId,
-                  )));
+                        appId: widget.appId,
+                        doctorId: widget.doctorId,
+                      )));
         },
         tooltip: 'Post image',
-        child: const Icon(Icons.add),
+        child: const Icon(Icons.add_a_photo_outlined),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );
@@ -193,9 +196,11 @@ class AppId {
 }
 
 class PickImage extends StatefulWidget {
-  const PickImage({Key? key, required this.appId, required this.doctorId}) : super(key: key);
+  const PickImage({Key? key, required this.appId, required this.doctorId})
+      : super(key: key);
   final int appId;
   final int doctorId;
+
   @override
   _PickImageState createState() => _PickImageState();
 }
@@ -278,7 +283,7 @@ class _PickImageState extends State<PickImage> {
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 FloatingActionButton(
-                  backgroundColor: Theme.of(context).primaryColor,
+                    backgroundColor: Theme.of(context).primaryColor,
                     child: const Icon(Icons.crop),
                     onPressed: () {
                       _cropImage();
@@ -298,31 +303,36 @@ class _PickImageState extends State<PickImage> {
               fieldController: myController,
               labelText: 'Caption',
             ),
-            RoundedButton(
-                buttonText: 'Upload',
-                buttonColor: Theme.of(context).primaryColor,
-                buttonFunction: () async {
-                  dynamic appointments =
-                      await AppointmentsApi.getAppointments(context, userId, Provider.of<UserModel>(context, listen: false).token);
-                  int status = await GalleryApi.postGallery(
-                      context, img64, date, myController.text, widget.appId, widget.doctorId);
-                  if (status == 200) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.green,
-                        content: Text("Photo uploaded to gallery"),
-                      ),
-                    );
-                    Navigator.pop(context);
-                  } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        backgroundColor: Colors.red,
-                        content: Text("Failed to Upload photo"),
-                      ),
-                    );
-                  }
-                })
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 70),
+              child: RoundedButton(
+                  buttonText: 'Upload',
+                  buttonColor: Theme.of(context).primaryColor,
+                  buttonFunction: () async {
+                    dynamic appointments = await AppointmentsApi.getAppointments(
+                        context,
+                        userId,
+                        Provider.of<UserModel>(context, listen: false).token);
+                    int status = await GalleryApi.postGallery(context, img64,
+                        date, myController.text, widget.appId, widget.doctorId);
+                    if (status == 200) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text("Photo uploaded to gallery"),
+                        ),
+                      );
+                      Navigator.pop(context);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text("Failed to Upload photo"),
+                        ),
+                      );
+                    }
+                  }),
+            )
           ]
         ],
       ),
