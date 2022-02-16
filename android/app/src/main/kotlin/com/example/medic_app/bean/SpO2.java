@@ -4,7 +4,7 @@ import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 import androidx.annotation.NonNull;
 
-import technotown.technology.vioclinic.BR;
+import technotown.technology.technoclinic.BR;
 import lib.linktop.obj.LoadSpO2Bean;
 
 /**

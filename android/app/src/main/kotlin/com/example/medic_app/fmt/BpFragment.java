@@ -23,8 +23,8 @@ import com.example.medic_app.health.App;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import technotown.technology.vioclinic.R;
-import technotown.technology.vioclinic.databinding.FragmentBpBinding;
+import technotown.technology.technoclinic.R;
+import technotown.technology.technoclinic.databinding.FragmentBpBinding;
 import lib.linktop.obj.DataFile;
 import lib.linktop.sev.HmLoadDataTool;
 import rx.Observable;

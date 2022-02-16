@@ -26,8 +26,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 
 import com.example.medic_app.bean.Bg;
-import technotown.technology.vioclinic.R;
-import technotown.technology.vioclinic.databinding.FragmentBgBinding;
+import technotown.technology.technoclinic.R;
+import technotown.technology.technoclinic.databinding.FragmentBgBinding;
 
 /**
  * Created by ccl on 2018/1/23.

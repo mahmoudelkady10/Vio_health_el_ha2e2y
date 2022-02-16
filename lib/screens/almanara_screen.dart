@@ -30,8 +30,8 @@ class _AlManara extends State<AlManara> {
 
     List options = ['About Us', 'Contact Us'];
     List icons = [
-      ImageIcon(const AssetImage('assets/about-us.png'), size: 75, color: Theme.of(context).primaryColor,),
-      ImageIcon(const AssetImage('assets/contact-us.png'), size: 75, color: Theme.of(context).primaryColor,),
+      const ImageIcon(AssetImage('assets/about-us.png'), size: 75, color: Color(0xFFB22234)),
+      const ImageIcon(AssetImage('assets/contact-us.png'), size: 75, color: Color(0xFFB22234)),
 
     ];
     return Scaffold(
@@ -41,7 +41,7 @@ class _AlManara extends State<AlManara> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: const Text(
-          'Vio Health',
+          'Techno Information',
           textAlign: TextAlign.center,
         ),
       ),

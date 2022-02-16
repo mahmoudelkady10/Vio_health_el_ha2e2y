@@ -492,3 +492,14 @@ class BuyPackage extends StatelessWidget {
     );
   }
 }
+// RoundedButton(
+// buttonColor: updatedDate == dates[index]
+// ? Colors.blueGrey
+//     : Theme.of(context).primaryColor,
+// buttonText:
+// DateFormat.MMMM().format(dates[index]),
+// buttonFunction: () {
+// setState(() {
+// updatedDate = dates[index];
+// });
+// }),

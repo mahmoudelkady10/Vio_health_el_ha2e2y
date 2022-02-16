@@ -50,11 +50,11 @@ class _WalletScreenState extends State<WalletScreen> {
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                             alignment: Alignment.topLeft,
-                            child: Text('Balance: ',
+                            child: const Text('Balance: ',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
-                                    color: Theme.of(context).primaryColor),
+                                    color: Color(0xFFB22234)),
                                 textAlign: TextAlign.left),
                           ),
                         ),
@@ -72,18 +72,18 @@ class _WalletScreenState extends State<WalletScreen> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 25,
-                                  color: Colors.black),
+                                  color: Color(0xFFB22234)),
                               textAlign: TextAlign.center),
                         ),
                         Padding(
                           padding: const EdgeInsets.all(8.0),
                           child: Container(
                             alignment: Alignment.topLeft,
-                            child: Text('On Hold: ',
+                            child: const Text('On Hold: ',
                                 style: TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 18,
-                                    color: Theme.of(context).primaryColor),
+                                    color: Color(0xFFB22234)),
                                 textAlign: TextAlign.left),
                           ),
                         ),
@@ -101,7 +101,7 @@ class _WalletScreenState extends State<WalletScreen> {
                               style: const TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 25,
-                                  color: Colors.black),
+                                  color: Color(0xFFB22234)),
                               textAlign: TextAlign.center),
                         ),
                       ],
@@ -154,10 +154,9 @@ class _WalletScreenState extends State<WalletScreen> {
                     style: TextStyle(color: Colors.white, fontSize: 18),
                   ),
                   style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(
-                          Theme.of(context).primaryColor),
+                      backgroundColor: MaterialStateProperty.all(const Color(0xFFB22234)),
                       side: MaterialStateProperty.all(
-                          const BorderSide(style: BorderStyle.solid)),
+                          BorderSide(style: BorderStyle.solid, color:Theme.of(context).primaryColor )),
                       alignment: Alignment.bottomCenter,
                       fixedSize: MaterialStateProperty.all(Size(
                           deviseSize.width * 0.78, deviseSize.height * 0.056))),

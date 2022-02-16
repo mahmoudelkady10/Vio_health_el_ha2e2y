@@ -43,9 +43,7 @@ class _LocationState extends State<Location> {
                 Radius.circular(5),
               ),
             ),
-            backgroundColor: Theme
-                .of(context)
-                .primaryColor,
+            backgroundColor: const Color(0xFFB22234),
             onPressed: () {
               _launchURL();
             },
@@ -74,7 +72,7 @@ class _LocationState extends State<Location> {
                 subtitle: const Text(
                 '171 Tahrir St - DownTown - 15113 - Cairo - Egypt',
                 style: TextStyle(
-                    color: Colors.black,
+                    color: Color(0xFFB22234),
                     fontWeight: FontWeight.bold,
                     fontSize: 15.0),textAlign: TextAlign.center),
           ),

@@ -82,7 +82,7 @@ class Appointment extends StatelessWidget {
                               day: snapshot.data[index].day,
                               time: snapshot.data[index].time,
                               showButton: false,
-                              showVideoCall: true,
+                              showVideoCall: snapshot.data[index].serviceClass == 'telemedicine'? true: false,
                               url: snapshot.data[index].meetingUrl,
                               room: snapshot.data[index].room,
                             );

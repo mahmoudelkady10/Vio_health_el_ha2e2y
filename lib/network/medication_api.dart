@@ -31,4 +31,31 @@ class MedicationApi extends BaseApiManagement {
       throw Exception('Error Failed to get medication');
     }
   }
+  static Future<int> postPrescription(
+      BuildContext context, dynamic appointment_id, dynamic name, dynamic type, dynamic amount, dynamic dose, dynamic duration, dynamic image) async {
+    http.Response response = await http.post(
+      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_create_prescription'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode(
+        {
+          'patient_id':
+          Provider.of<UserModel>(context, listen: false).uid.toString(),
+          'token': Provider.of<UserModel>(context, listen: false).token,
+          'appointment_id': appointment_id,
+          'name': name,
+          'type': type,
+          'amount': amount,
+          'dose': dose,
+          'duration': duration,
+          'image': image
+        },
+      ),
+    );
+    print(response.body);
+    int responseStatus = json.decode(response.body)['result']['status'];
+    if (responseStatus != 200) {
+      throw Exception('Error Failed post prescription');
+    }
+    return responseStatus;
+  }
 }

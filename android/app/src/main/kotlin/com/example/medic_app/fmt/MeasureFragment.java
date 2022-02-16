@@ -6,7 +6,7 @@ import android.widget.Button;
 import com.linktop.MonitorDataTransmissionManager;
 
 import com.example.medic_app.health.App;
-import technotown.technology.vioclinic.R;
+import technotown.technology.technoclinic.R;
 
 /**
  * Created by ccl on 2017/12/27.

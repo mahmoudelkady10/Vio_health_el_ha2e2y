@@ -7,7 +7,7 @@ import androidx.databinding.Bindable;
 
 import java.io.Serializable;
 
-import technotown.technology.vioclinic.BR;
+import technotown.technology.technoclinic.BR;
 import lib.linktop.obj.LoadECGBean;
 
 /**
