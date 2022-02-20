@@ -13,6 +13,7 @@ class RegisterApi extends BaseApiManagement {
       String? password,
       String? gender,
       DateTime dateOfBirth,
+      String? phoneNumber,
       String? weight,
       String? bloodGroup) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(dateOfBirth);
@@ -23,6 +24,7 @@ class RegisterApi extends BaseApiManagement {
       'user_password': password.toString(),
       'gender': gender.toString().toLowerCase(),
       'birth_date': formattedDate,
+      'phoneNumber': phoneNumber.toString(),
       'weight': weight.toString(),
       'blood_type': bloodGroup.toString()
     };

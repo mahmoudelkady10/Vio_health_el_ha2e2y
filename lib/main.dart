@@ -1,5 +1,4 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:medic_app/model/packages_model.dart';
 import 'package:medic_app/model/specialties_model.dart';
@@ -28,7 +27,6 @@ import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:medic_app/screens/add_medication_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'model/time_slots_model.dart';
 import 'model/user_model.dart';
 import 'network/login_api.dart';

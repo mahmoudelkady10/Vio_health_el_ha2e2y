@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -14,6 +13,7 @@ import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:medic_app/widgets/unit_request_card.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
+import 'package:image_cropper/image_cropper.dart';
 
 class Medication extends StatefulWidget {
   const Medication({Key? key}) : super(key: key);
@@ -181,7 +181,7 @@ class _MedicationState extends State<Medication> {
                         buttonColor: Theme.of(context).primaryColor,
                         buttonText: 'cancel',
                         buttonFunction: () async {
-                          Navigator.pushNamed(context, Medication.id);
+                          Navigator.pop(context, Medication.id);
                         },
                       ),
                     ),
@@ -219,7 +219,7 @@ class _MedicationState extends State<Medication> {
                                             listen: false)
                                         .token);
                             print(appointmentlast.last.id);
-                            Navigator.pushReplacement(context,
+                            Navigator.push(context,
                                 MaterialPageRoute(builder: (context) {
                               return MedicationDetails(
                                   appId: appointmentlast.last.id!.toInt());
@@ -241,8 +241,140 @@ class _MedicationState extends State<Medication> {
             ),
           );
         },
-        child: const Icon(Icons.call_to_action_outlined),
+        child: const Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,
+      ),
+    );
+  }
+}
+
+class MedicationImage extends StatefulWidget {
+  const MedicationImage({Key? key, required this.appId}) : super(key: key);
+  final int appId;
+
+  @override
+  State<MedicationImage> createState() => _MedicationImageState();
+}
+
+class _MedicationImageState extends State<MedicationImage> {
+  dynamic image;
+  final picker = ImagePicker();
+  int ctImage = 0;
+  static dynamic img64;
+
+  void _pickImageCamera() async {
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 50);
+    final pickedImageFile = File(pickedImage!.path);
+    setState(() {
+      image = pickedImageFile;
+      img64 = base64Encode(pickedImageFile.readAsBytesSync());
+    });
+  }
+
+  void _pickImageGallery() async {
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 50,);
+    final pickedImageFile = File(pickedImage!.path);
+    setState(() {
+      image = pickedImageFile;
+      img64 = base64Encode(pickedImageFile.readAsBytesSync());
+    });
+  }
+
+  void _cropImage() async {
+    File? cropped = await ImageCropper.cropImage(
+      sourcePath: image.path.toString(),
+    );
+    setState(() {
+      image = cropped ?? image;
+      image = File(cropped!.path);
+      img64 = base64Encode(image.readAsBytesSync());
+    });
+  }
+
+  void _clear() {
+    setState(() {
+      image = null;
+      img64 = '';
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      bottomNavigationBar: BottomAppBar(
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.photo_camera),
+              onPressed: () => _pickImageCamera(),
+            ),
+            IconButton(
+              icon: const Icon(Icons.photo_library),
+              onPressed: () => _pickImageGallery(),
+            )
+          ],
+        ),
+      ),
+      body: ListView(
+        children: [
+          if (image != null) ...[
+            Padding(
+              padding: const EdgeInsets.only(top:10),
+              child: SizedBox(height: 500, width: 500, child: Image.file(image)),
+            ),
+            const SizedBox(
+              height: 15,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                FloatingActionButton(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: const Icon(Icons.crop),
+                    onPressed: () {
+                      _cropImage();
+                    }),
+                FloatingActionButton(
+                    backgroundColor: Theme.of(context).primaryColor,
+                    child: const Icon(Icons.close),
+                    onPressed: () {
+                      _clear();
+                    }),
+              ],
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 70),
+              child: RoundedButton(
+                  buttonText: 'Upload',
+                  buttonColor: Theme.of(context).primaryColor,
+                  buttonFunction: () async {
+                    var status = await MedicationApi.postPrescription(
+                        context, widget.appId, '', '', '', '', '', img64);
+                    if (status == 200) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.green,
+                          content: Text("image uploaded successfully"),
+                        ),
+                      );
+                      Navigator.pushNamed(context, Medication.id);
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          backgroundColor: Colors.red,
+                          content: Text("Failed to Upload your image"),
+                        ),
+                      );
+                    }
+                  }),
+            )
+          ]
+        ],
       ),
     );
   }
@@ -257,44 +389,6 @@ class MedicationDetails extends StatefulWidget {
 }
 
 class _MedicationDetailsState extends State<MedicationDetails> {
-  late File image = File('');
-  final picker = ImagePicker();
-  int ctImage = 0;
-  static dynamic img64;
-
-  void _pickImageCamera() async {
-    final pickedImage = await picker.pickImage(
-        source: ImageSource.camera,
-        imageQuality: 50,
-        maxWidth: 150,
-        maxHeight: 150);
-    final pickedImageFile = File(pickedImage!.path);
-    setState(() {
-      image = pickedImageFile;
-      img64 = base64Encode(pickedImageFile.readAsBytesSync());
-    });
-    var status = await MedicationApi.postPrescription(
-        context, widget.appId, null, null, null, null, null, img64);
-    if (status == 200) {
-      if (status == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.green,
-            content: Text("image uploaded successfully"),
-          ),
-        );
-        Navigator.pushReplacementNamed(context, Medication.id);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            backgroundColor: Colors.red,
-            content: Text("Failed to Upload your image"),
-          ),
-        );
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -307,15 +401,19 @@ class _MedicationDetailsState extends State<MedicationDetails> {
         backgroundColor: Theme.of(context).primaryColor,
         actions: [
           Padding(
-            padding: const EdgeInsets.only(right: 10),
-            child: IconButton(
-              icon: const Icon(Icons.add_a_photo_outlined),
-              onPressed: () {
-                _pickImageCamera();
-              },
-            ),
-          ),
-          // add more IconButton
+              padding: const EdgeInsets.only(right: 10),
+              child: IconButton(
+                  icon: const Icon(Icons.add_a_photo_outlined),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) {
+                          return MedicationImage(appId: widget.appId);
+                        },
+                      ),
+                    );
+                  })) // add more IconButton
         ],
       ),
       body: FutureBuilder(
@@ -495,12 +593,11 @@ class _MedicationDetailsState extends State<MedicationDetails> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushReplacement(context,
-              MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
             return AddMedication(appId: widget.appId);
           }));
         },
-        child: const Icon(Icons.article_outlined),
+        child: const Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );

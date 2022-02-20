@@ -102,6 +102,24 @@ class _GalleryState extends State<Gallery> {
               style:
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 10),
+            child: IconButton(
+              icon: const Icon(Icons.add_a_photo_outlined),
+              onPressed: () {
+                Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => PickImage(
+                              appId: widget.appId,
+                              doctorId: widget.doctorId,
+                            )));
+              },
+            ),
+          ),
+          // add more IconButton
+        ],
         backgroundColor: Theme.of(context).primaryColor,
       ),
       body: FutureBuilder(
@@ -170,21 +188,6 @@ class _GalleryState extends State<Gallery> {
               return const Center(child: Text('no posts found'));
             }
           }),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          // _showPicker(context);
-          Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => PickImage(
-                        appId: widget.appId,
-                        doctorId: widget.doctorId,
-                      )));
-        },
-        tooltip: 'Post image',
-        child: const Icon(Icons.add_a_photo_outlined),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
     );
   }
 }
@@ -275,9 +278,12 @@ class _PickImageState extends State<PickImage> {
       body: ListView(
         children: [
           if (_imagefile != null) ...[
-            SizedBox(height: 500, width: 500, child: Image.file(_imagefile)),
+            Padding(
+              padding: const EdgeInsets.only(top: 10),
+              child: SizedBox(height: 500, width: 500, child: Image.file(_imagefile)),
+            ),
             const SizedBox(
-              height: 5,
+              height: 15,
             ),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -309,10 +315,12 @@ class _PickImageState extends State<PickImage> {
                   buttonText: 'Upload',
                   buttonColor: Theme.of(context).primaryColor,
                   buttonFunction: () async {
-                    dynamic appointments = await AppointmentsApi.getAppointments(
-                        context,
-                        userId,
-                        Provider.of<UserModel>(context, listen: false).token);
+                    dynamic appointments =
+                        await AppointmentsApi.getAppointments(
+                            context,
+                            userId,
+                            Provider.of<UserModel>(context, listen: false)
+                                .token);
                     int status = await GalleryApi.postGallery(context, img64,
                         date, myController.text, widget.appId, widget.doctorId);
                     if (status == 200) {
@@ -345,43 +353,4 @@ class DoctorId {
 
   const DoctorId(this.doctorId);
 }
-// Card(
-// elevation: 10.0,
-// shape: RoundedRectangleBorder(
-// borderRadius: BorderRadius.circular(16.0),
-// ),
-// child: Column(
-// children: [
-// if(_counter >= 2)
-// ClipRRect(
-// child: Image.file(image),
-// borderRadius: const BorderRadius.only(
-// topLeft: Radius.circular(16.0),
-// topRight: Radius.circular(16.0),
-// ),
-// ),
-// Padding(
-// padding: const EdgeInsets.all(16.0),
-// child: Column(
-// mainAxisAlignment: MainAxisAlignment.start,
-// crossAxisAlignment: CrossAxisAlignment.start,
-// children: [
-// if(_counter >= 2)
-// Text('click above the line to type', style: TextStyle (color: Colors.grey.shade500),),
-// TextField(
-// controller: myController,
-// style: Theme.of(context).textTheme.subtitle1,
-// ),
-// Row(
-// children: [
-// Text(
-// ' $finalDate',
-// ),
-// ],
-// ),
-// ],
-// )
-// ),
-// ],
-// )
-// ),
+

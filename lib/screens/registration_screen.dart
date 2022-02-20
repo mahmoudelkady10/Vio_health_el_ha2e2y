@@ -21,6 +21,7 @@ class Registration extends StatefulWidget {
   static TextEditingController userNameController = TextEditingController();
   static TextEditingController bloodGroupController = TextEditingController();
   static TextEditingController weightController = TextEditingController();
+  static TextEditingController phoneNumberController = TextEditingController();
   static String? _gender = 'male';
   static DateTime? dateOfBirth;
 
@@ -134,6 +135,12 @@ class _RegistrationState extends State<Registration> {
                 }
                 return null;
               },
+            ),
+            ValidatedTextField(
+              fieldController: Registration.phoneNumberController,
+              hintText: 'Phone Number',
+              labelText: 'Phone Number',
+              fieldIcon: Icons.assignment_ind_outlined,
             ),
             ValidatedTextField(
               fieldController: Registration.weightController,
@@ -266,6 +273,7 @@ class _RegistrationState extends State<Registration> {
                         Registration.passwordController.text,
                         Registration._gender,
                         Registration.dateOfBirth!,
+                        Registration.phoneNumberController.text,
                         Registration.weightController.text,
                         Registration.bloodGroupController.text);
                     int statusCode =

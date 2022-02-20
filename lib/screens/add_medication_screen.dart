@@ -38,7 +38,7 @@ class _AddMedicationState extends State<AddMedication> {
           padding: EdgeInsets.all(30),
           child: Text('Add Your Prescription',
               style:
-              TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -61,7 +61,7 @@ class _AddMedicationState extends State<AddMedication> {
                     ),
                     Text('Add drugs one by one',
                         style:
-                        TextStyle(color: Theme.of(context).primaryColor)),
+                            TextStyle(color: Theme.of(context).primaryColor)),
                   ],
                 ),
               ),
@@ -120,36 +120,73 @@ class _AddMedicationState extends State<AddMedication> {
                 buttonText: 'Submit',
                 buttonColor: Theme.of(context).primaryColor,
                 buttonFunction: () async {
-                  var status = await MedicationApi.postPrescription(
-                      context,
-                      widget.appId,
-                      name.text,
-                      type.text,
-                      amount.text,
-                      dose.text,
-                      duration.text,
-                      null);
-                  if (status == 200) {
+                  if (name.text != '' &&
+                      type.text != '' &&
+                      amount.text != '' &&
+                      dose.text != '' &&
+                      duration.text != '') {
+                    var status = await MedicationApi.postPrescription(
+                        context,
+                        widget.appId,
+                        name.text,
+                        type.text,
+                        amount.text,
+                        dose.text,
+                        duration.text,
+                        null);
                     if (status == 200) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text("Prescription uploaded successfully"),
-                        ),
-                      );
-                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-                        return MedicationDetails(appId: widget.appId);
-                      }));
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text("Failed to Upload your prescription"),
-                        ),
-                      );
+                      if (status == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text("Prescription uploaded successfully"),
+                          ),
+                        );
+                        Navigator.pushReplacement(context,
+                            MaterialPageRoute(builder: (context) {
+                          return MedicationDetails(appId: widget.appId);
+                        }));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text("Failed to Upload your prescription"),
+                          ),
+                        );
+                      }
                     }
+                    _clear();
+                  } else {
+                    showDialog(
+                        context: context,
+                        builder: (_) => AlertDialog(
+                                elevation: 10,
+                                title: const Center(
+                                    child: Icon(
+                                  Icons.announcement_outlined,
+                                  color: Color(0xFFB22234),
+                                  size: 50,
+                                )),
+                                content: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: const [
+                                      Text('Please fill out all information'),
+                                    ]),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('ok',
+                                        style: TextStyle(
+                                            color: Colors.black,
+                                            decoration:
+                                                TextDecoration.underline)),
+                                  )
+                                ]));
                   }
-                  _clear();
                 })
           ],
         ),

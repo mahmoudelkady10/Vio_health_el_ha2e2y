@@ -195,7 +195,7 @@ class _PastReadingsState extends State<PastReadings> {
             ),
           );
         },
-        child: const Icon(Icons.article_outlined),
+        child: const Icon(Icons.add),
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );
@@ -218,7 +218,7 @@ class _PostReadingsState extends State<PostReadings> {
     return Scaffold(
       appBar: AppBar(
         title: const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 85),
+          padding: EdgeInsets.symmetric(horizontal: 70),
           child: Text(
             "New Readings",
             style: TextStyle(fontWeight: FontWeight.bold),
