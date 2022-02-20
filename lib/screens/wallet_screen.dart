@@ -4,11 +4,12 @@ import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/network/login_api.dart';
 import 'package:medic_app/network/wallet_api.dart';
 import 'package:medic_app/screens/home_screen.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/validated_text_field.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
+import 'package:loader_overlay/loader_overlay.dart';
 import '../main.dart';
 
 class WalletScreen extends StatefulWidget {
@@ -116,36 +117,40 @@ class _WalletScreenState extends State<WalletScreen> {
                     showDialog(
                         context: context,
                         builder: (context) {
-                          return AlertDialog(
-                            title: const Icon(
-                              Icons.monetization_on,
-                              size: 40,
+                          return LoaderOverlay(
+                            child: AlertDialog(
+                              title: Icon(
+                                Icons.upload_outlined,
+                                size: 40,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              content: ValidatedTextField(
+                                  labelText: "Amount",
+                                  hintText: "Enter top up amount(EGP)",
+                                  fieldController: topupController,
+                                  keyboardType: TextInputType.number),
+                              actions: [
+                                TextButton(
+                                    onPressed: () {
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Cancel')),
+                                TextButton(
+                                    onPressed: () async{
+                                      context.loaderOverlay.show(widget: const LoadingScreen());
+                                      var url = await WalletApi.topUp(context, user.uid,
+                                          topupController.text, user.token);
+                                      context.loaderOverlay.hide();
+                                      Navigator.push(context,
+                                          MaterialPageRoute(builder: (context) {
+                                        return PaymentScreen(
+                                          url_: url.toString(),
+                                        );
+                                      }));
+                                    },
+                                    child: const Text('Top up')),
+                              ],
                             ),
-                            content: ValidatedTextField(
-                                fieldIcon: Icons.attach_money,
-                                labelText: "Amount",
-                                hintText: "Enter top up amount",
-                                fieldController: topupController,
-                                keyboardType: TextInputType.number),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Cancel')),
-                              TextButton(
-                                  onPressed: () async{
-                                    var url = await WalletApi.topUp(context, user.uid,
-                                        topupController.text, user.token);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return PaymentScreen(
-                                        url_: url.toString(),
-                                      );
-                                    }));
-                                  },
-                                  child: const Text('Top up')),
-                            ],
                           );
                         });
                   },

@@ -1,6 +1,7 @@
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:medic_app/widgets/animated_tile.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:provider/provider.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
@@ -13,7 +14,7 @@ import 'package:medic_app/network/doctors_api.dart';
 import 'package:medic_app/network/services_api.dart';
 import 'package:medic_app/network/specialties_api.dart';
 import 'package:medic_app/network/time_slots_api.dart';
-
+import 'package:loader_overlay/loader_overlay.dart';
 import 'home_screen.dart';
 
 class BookingS extends StatelessWidget {
@@ -89,9 +90,9 @@ class BookingS extends StatelessWidget {
                                       Expanded(
                                         child: ListTile(
                                           title:
-                                              Text(snapshot.data[index].name, style: TextStyle(color: Theme.of(context).primaryColor)),
+                                              Text(snapshot.data[index].name),
                                           subtitle: Text(
-                                              snapshot.data[index].description, style: const TextStyle(color:  Color(0xFFB22234))),
+                                              snapshot.data[index].description),
                                         ),
                                       ),
                                       Padding(
@@ -103,7 +104,7 @@ class BookingS extends StatelessWidget {
                                           child: RoundedButton(
                                             buttonText: 'choose',
                                             buttonColor:
-                                            const Color(0xFFB22234),
+                                                Theme.of(context).primaryColor,
                                             buttonFunction: () {
                                               Navigator.push(
                                                   context,
@@ -130,7 +131,7 @@ class BookingS extends StatelessWidget {
                 ],
               );
             } else {
-              return const Center(child: Text('No Specialties found' , style: TextStyle(color: Color(0xFFB22234))));
+              return const Center(child: Text('No Specialties found'));
             }
           },
         ),
@@ -175,17 +176,20 @@ class BookingType extends StatelessWidget {
                 return Stack(
                   children: [
                     Padding(
-                      padding: const EdgeInsets.only(top:130.0),
-                      child: Container(alignment: Alignment.topCenter,child: AnimatedTitle()),
+                      padding: const EdgeInsets.only(top: 130.0),
+                      child: Container(
+                          alignment: Alignment.topCenter,
+                          child: AnimatedTitle()),
                     ),
                     Padding(
-                      padding:
-                          const EdgeInsets.symmetric(vertical: 280, horizontal: 20),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 280, horizontal: 20),
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
-                            if (snapshot.data[index].specialtyId == specialtyId ||
+                            if (snapshot.data[index].specialtyId ==
+                                    specialtyId ||
                                 snapshot.data[index].specialtyId == false) {
                               return GestureDetector(
                                 child: SizedBox(
@@ -193,12 +197,16 @@ class BookingType extends StatelessWidget {
                                   width: deviceSize.width * 0.5,
                                   child: Card(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
                                         icon,
-                                        Text(snapshot.data[index].name.toString(),
+                                        Text(
+                                            snapshot.data[index].name
+                                                .toString(),
                                             textAlign: TextAlign.center,
                                             style: const TextStyle(
                                                 fontWeight: FontWeight.bold,
@@ -206,7 +214,7 @@ class BookingType extends StatelessWidget {
                                                 fontSize: 16,
                                                 color: Colors.black54)),
                                         Text(
-                                            '${snapshot.data[index].price.toString()} AED')
+                                            '${snapshot.data[index].price.toString()} EGP')
                                       ],
                                     ),
                                     elevation: 8,
@@ -218,15 +226,42 @@ class BookingType extends StatelessWidget {
                                   ),
                                 ),
                                 onTap: () {
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => BookingD(
-                                                type: snapshot.data[index].id,
-                                                doctorId:
-                                                    snapshot.data[index].doctorId,
-                                                specialtyId: specialtyId,
-                                              )));
+                                  if (snapshot.data[index].serviceClass ==
+                                      'telemedicine') {
+                                    if (Provider.of<UserModel>(context,
+                                                listen: false)
+                                            .balance <
+                                        snapshot.data[index].price) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        const SnackBar(
+                                          backgroundColor: Colors.red,
+                                          content: Text("Top Up Wallet!"),
+                                        ),
+                                      );
+                                    } else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => BookingD(
+                                                    type:
+                                                        snapshot.data[index].id,
+                                                    doctorId: snapshot
+                                                        .data[index].doctorId,
+                                                    specialtyId: specialtyId,
+                                                  )));
+                                    }
+                                  } else {
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => BookingD(
+                                                  type: snapshot.data[index].id,
+                                                  doctorId: snapshot
+                                                      .data[index].doctorId,
+                                                  specialtyId: specialtyId,
+                                                )));
+                                  }
                                 },
                               );
                             } else {
@@ -238,7 +273,7 @@ class BookingType extends StatelessWidget {
                 );
               } else {
                 return const Center(
-                  child: Text('No services found', style: TextStyle(color: Color(0xFFB22234))),
+                  child: Text('No services found'),
                 );
               }
             }),
@@ -252,11 +287,13 @@ class BookingD extends StatelessWidget {
       {Key? key,
       required this.specialtyId,
       required this.type,
-      required this.doctorId})
+      required this.doctorId,
+      this.date})
       : super(key: key);
   final int specialtyId;
   final int type;
   final dynamic doctorId;
+  final DateTime? date;
 
   @override
   Widget build(BuildContext context) {
@@ -303,14 +340,16 @@ class BookingD extends StatelessWidget {
                                             alignment: Alignment.centerLeft,
                                             child: Container(
                                               decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(20),
+                                                  borderRadius:
+                                                      BorderRadius.circular(20),
                                                   border: Border.all(
-                                                      color: const Color(0xFFB22234),
-                                                      width: 3
-                                                  ),
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      width: 3),
                                                   image: DecorationImage(
                                                       image: NetworkImage(
-                                                          snapshot.data[index].imageUrl),
+                                                          snapshot.data[index]
+                                                              .imageUrl),
                                                       fit: BoxFit.fill)),
                                             ),
                                           ),
@@ -318,9 +357,9 @@ class BookingD extends StatelessWidget {
                                         Expanded(
                                           child: ListTile(
                                             title: Text(
-                                                '${snapshot.data[index].title} ${snapshot.data[index].name}', style: TextStyle(color: Theme.of(context).primaryColor)),
+                                                '${snapshot.data[index].title} ${snapshot.data[index].name}'),
                                             subtitle: Text(
-                                                snapshot.data[index].level , style: const TextStyle(color: Color(0xFFB22234))),
+                                                snapshot.data[index].level),
                                           ),
                                         )
                                       ],
@@ -336,6 +375,7 @@ class BookingD extends StatelessWidget {
                                                     snapshot.data[index].id,
                                                 specialtyId: specialtyId,
                                                 type: type,
+                                                date: date,
                                               )));
                                 },
                               );
@@ -350,7 +390,7 @@ class BookingD extends StatelessWidget {
                 ],
               );
             } else {
-              return const Center(child: Text('No Specialties found', style: TextStyle(color: Color(0xFFB22234))));
+              return const Center(child: Text('No Specialties found'));
             }
           },
         ),
@@ -376,11 +416,13 @@ class BookingT extends StatefulWidget {
       {Key? key,
       required this.doctorId,
       required this.specialtyId,
-      required this.type})
+      required this.type,
+      this.date})
       : super(key: key);
   final int doctorId;
   final int specialtyId;
   final int type;
+  final DateTime? date;
 
   @override
   State<BookingT> createState() => _BookingTState();
@@ -404,6 +446,7 @@ class _BookingTState extends State<BookingT> {
   @override
   void initState() {
     super.initState();
+    updatedDate = widget.date ?? DateTime.now();
     futureData = getData(updatedDate);
   }
 
@@ -417,7 +460,8 @@ class _BookingTState extends State<BookingT> {
               snapshot.data != null) {
             if (snapshot.data.isNotEmpty) {
               return Padding(
-                padding: const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                padding:
+                    const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
                 child: ListView.builder(
                     shrinkWrap: true,
                     itemCount: snapshot.data.length,
@@ -431,13 +475,15 @@ class _BookingTState extends State<BookingT> {
                             mainAxisSize: MainAxisSize.max,
                             children: [
                               SizedBox(
-                                height:50,
+                                height: 50,
                                 child: Padding(
                                   padding: const EdgeInsets.only(left: 16.0),
                                   child: Row(
                                     children: [
                                       const Icon(Icons.timer),
-                                      const SizedBox(width: 5,),
+                                      const SizedBox(
+                                        width: 5,
+                                      ),
                                       Text(
                                         snapshot.data[index].time,
                                         textAlign: TextAlign.left,
@@ -447,7 +493,11 @@ class _BookingTState extends State<BookingT> {
                                 ),
                               ),
                               Padding(
-                                padding: const EdgeInsets.only(left: 8.0, right: 18.0, top: 0.0, bottom: 0.0),
+                                padding: const EdgeInsets.only(
+                                    left: 8.0,
+                                    right: 18.0,
+                                    top: 0.0,
+                                    bottom: 0.0),
                                 child: SizedBox(
                                   width: 80,
                                   height: 60,
@@ -457,81 +507,94 @@ class _BookingTState extends State<BookingT> {
                                     buttonFunction: () {
                                       showDialog(
                                         context: context,
-                                        builder: (_) => AlertDialog(
-                                          title: const Center(
-                                              child: Icon(
-                                            Icons.assignment_outlined,
-                                            color: Colors.deepOrangeAccent,
-                                            size: 50,
-                                          )),
-                                          content: Text(
-                                              'Confirm Appointment at ${snapshot.data[index].time}'),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () async {
-                                                int status =
-                                                    await CreateAppointmentApi
-                                                        .createAppointment(
-                                                            context,
-                                                            updatedDate!,
-                                                            widget.doctorId,
-                                                            partnerId!,
-                                                            widget.type,
-                                                            snapshot.data[index]
-                                                                .id);
-                                                if (status == 200) {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                      backgroundColor:
-                                                          Colors.green,
-                                                      content: Text(
-                                                          "Appointment Booked"),
-                                                    ),
+                                        builder: (_) => LoaderOverlay(
+                                          child: AlertDialog(
+                                            title: const Center(
+                                                child: Icon(
+                                              Icons.assignment_outlined,
+                                              color: Colors.deepOrangeAccent,
+                                              size: 50,
+                                            )),
+                                            content: Text(
+                                                'Confirm Appointment at ${snapshot.data[index].time}'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () async {
+                                                  context.loaderOverlay.show(
+                                                      widget:
+                                                          const LoadingScreen());
+                                                  int status =
+                                                      await CreateAppointmentApi
+                                                          .createAppointment(
+                                                    context,
+                                                    updatedDate!,
+                                                    widget.doctorId,
+                                                    partnerId!,
+                                                    widget.type,
+                                                    snapshot.data[index].id,
                                                   );
-                                                } else {
-                                                  ScaffoldMessenger.of(context)
-                                                      .showSnackBar(
-                                                    const SnackBar(
-                                                      backgroundColor:
-                                                          Colors.red,
-                                                      content: Text(
-                                                          "Booking Failed"),
+                                                  context.loaderOverlay.hide();
+                                                  if (status == 200) {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        backgroundColor:
+                                                            Colors.green,
+                                                        content: Text(
+                                                            "Appointment Booked"),
+                                                      ),
+                                                    );
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                            context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        backgroundColor:
+                                                            Colors.red,
+                                                        content: Text(
+                                                            "Booking Failed"),
+                                                      ),
+                                                    );
+                                                  }
+                                                  Navigator.pushNamed(
+                                                      context, MyHomePage.id);
+                                                },
+                                                child: const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10.0),
+                                                  child: SizedBox(
+                                                    width: 100,
+                                                    height: 70,
+                                                    child: RoundedButton(
+                                                      buttonText: 'Confirm',
                                                     ),
-                                                  );
-                                                }
-                                                Navigator.pushNamed(
-                                                    context, MyHomePage.id);
-                                              },
-                                              child: const Padding(
-                                                padding: EdgeInsets.only(right: 10.0),
-                                                child: SizedBox(
-                                                  width: 100,
-                                                  height: 70,
-                                                  child: RoundedButton(
-                                                    buttonText: 'Confirm',
                                                   ),
                                                 ),
                                               ),
-                                            ),
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.pop(context);
-                                              },
-                                              child: Padding(
-                                                padding: const EdgeInsets.only(left: 7.0),
-                                                child: SizedBox(
-                                                  width: 100,
-                                                  height: 70,
-                                                  child: RoundedButton(
-                                                    buttonText: 'Cancel',
-                                                    textColor: Theme.of(context).primaryColor,
-                                                    buttonColor: Colors.white,
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 7.0),
+                                                  child: SizedBox(
+                                                    width: 100,
+                                                    height: 70,
+                                                    child: RoundedButton(
+                                                      buttonText: 'Cancel',
+                                                      textColor:
+                                                          Theme.of(context)
+                                                              .primaryColor,
+                                                      buttonColor: Colors.white,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            )
-                                          ],
+                                              )
+                                            ],
+                                          ),
                                         ),
                                       );
                                     },
@@ -540,10 +603,10 @@ class _BookingTState extends State<BookingT> {
                               ),
                             ],
                           ),
-                          Divider(
+                          const Divider(
                             height: 0.3,
                             thickness: 1,
-                            color: Theme.of(context).primaryColor,
+                            color: Colors.black,
                             indent: 15,
                             endIndent: 15,
                           ),
@@ -552,10 +615,10 @@ class _BookingTState extends State<BookingT> {
                     }),
               );
             } else {
-              return const Text('No free time slots on date chosen', style: TextStyle(color: Color(0xFFB22234)));
+              return const Text('No free time slots on date chosen');
             }
           } else {
-            return const Text('No free time slots on date chosen', style: TextStyle(color: Color(0xFFB22234)));
+            return const Text('No free time slots on date chosen');
           }
         });
   }
@@ -576,8 +639,10 @@ class _BookingTState extends State<BookingT> {
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: DatePicker(
-                  DateTime.now(),
-                  initialSelectedDate: DateTime.now(),
+                  widget.date == null ? DateTime.now() : widget.date!,
+                  initialSelectedDate:
+                      widget.date == null ? DateTime.now() : widget.date!,
+                  daysCount: widget.date == null ? 500 : 1,
                   selectionColor: Theme.of(context).primaryColor,
                   selectedTextColor: Colors.white,
                   onDateChange: (date) {
@@ -590,7 +655,8 @@ class _BookingTState extends State<BookingT> {
               ),
             ],
           ),
-          if (updatedDate != null) Expanded(child: showTimes(context, updatedDate, partnerId)),
+          if (updatedDate != null)
+            Expanded(child: showTimes(context, updatedDate, partnerId)),
           if (updatedDate == null) const SizedBox.shrink(),
         ],
       ),

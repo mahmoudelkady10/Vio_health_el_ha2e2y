@@ -53,10 +53,10 @@ class Availability extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.all(10.0),
                             child: Text(specialties[i].name.toString(),
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
-                                  color: Color(0xFFB22234),
+                                  color: Theme.of(context).primaryColor,
                                 )),
                           ),
                           SizedBox(
@@ -93,7 +93,9 @@ class Availability extends StatelessWidget {
                                                               BorderRadius.circular(
                                                                   20),
                                                           border: Border.all(
-                                                              color: const Color(0xFFB22234),
+                                                              color: Theme.of(
+                                                                      context)
+                                                                  .primaryColor,
                                                               width: 3),
                                                           image: DecorationImage(
                                                               image: NetworkImage(
@@ -128,16 +130,16 @@ class Availability extends StatelessWidget {
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .bold,
-                                                                fontSize: 15, color: Color(0xFFB22234)),
+                                                                fontSize: 15),
                                                           ),
                                                           Text(
                                                             snapshot.data[index]
                                                                 .level,
-                                                            style: TextStyle(
+                                                            style: const TextStyle(
                                                                 fontWeight:
                                                                     FontWeight
                                                                         .w400,
-                                                                fontSize: 13, color: Theme.of(context).primaryColor),
+                                                                fontSize: 13),
                                                           ),
                                                         ],
                                                       ),
@@ -239,7 +241,7 @@ class DoctorDescription extends StatelessWidget {
                         Radius.circular(10),
                       ),
                     ),
-                    backgroundColor: const Color(0xFFB22234),
+                    backgroundColor: Theme.of(context).primaryColor,
                     onPressed: () {
                       Navigator.pushReplacement(
                           context,
@@ -335,7 +337,7 @@ class BookingType extends StatelessWidget {
                                                 fontSize: 16,
                                                 color: Colors.black54)),
                                         Text(
-                                            '${snapshot.data[index].price.toString()} AED')
+                                            '${snapshot.data[index].price.toString()} EGP')
                                       ],
                                     ),
                                     elevation: 8,
@@ -346,14 +348,41 @@ class BookingType extends StatelessWidget {
                                             width: 1.0, color: Colors.white70)),
                                   ),
                                   onTap: () {
-                                    Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => BookingT(
-                                                  specialtyId: specialtyId,
-                                                  doctorId: doctorId,
-                                                  type: snapshot.data[index].id,
-                                                )));
+                                    if (snapshot.data[index].serviceClass ==
+                                        'telemedicine') {
+                                      if (Provider.of<UserModel>(context,
+                                                  listen: false)
+                                              .balance <
+                                          snapshot.data[index].price) {
+                                        ScaffoldMessenger.of(context)
+                                            .showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text("Top Up Wallet!"),
+                                          ),
+                                        );
+                                      } else {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) => BookingT(
+                                                      type: snapshot
+                                                          .data[index].id,
+                                                      doctorId: doctorId,
+                                                      specialtyId: specialtyId,
+                                                    )));
+                                      }
+                                    } else {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => BookingT(
+                                                    type:
+                                                        snapshot.data[index].id,
+                                                    doctorId: doctorId,
+                                                    specialtyId: specialtyId,
+                                                  )));
+                                    }
                                   },
                                 ),
                               );
@@ -506,14 +535,13 @@ class _BookingTState extends State<BookingT> {
                                                     int status =
                                                         await CreateAppointmentApi
                                                             .createAppointment(
-                                                                context,
-                                                                updatedDate!,
-                                                                widget.doctorId,
-                                                                partnerId!,
-                                                                widget.type,
-                                                                snapshot
-                                                                    .data[index]
-                                                                    .id);
+                                                      context,
+                                                      updatedDate!,
+                                                      widget.doctorId,
+                                                      partnerId!,
+                                                      widget.type,
+                                                      snapshot.data[index].id,
+                                                    );
                                                     if (status == 200) {
                                                       ScaffoldMessenger.of(
                                                               context)
@@ -543,7 +571,8 @@ class _BookingTState extends State<BookingT> {
                                                             MyHomePage.id);
                                                   },
                                                   child: const Padding(
-                                                    padding: EdgeInsets.only(right: 10.0),
+                                                    padding: EdgeInsets.only(
+                                                        right: 10.0),
                                                     child: SizedBox(
                                                       width: 100,
                                                       height: 70,
@@ -558,14 +587,19 @@ class _BookingTState extends State<BookingT> {
                                                     Navigator.pop(context);
                                                   },
                                                   child: Padding(
-                                                    padding: const EdgeInsets.only(left: 7.0),
+                                                    padding:
+                                                        const EdgeInsets.only(
+                                                            left: 7.0),
                                                     child: SizedBox(
                                                       width: 100,
                                                       height: 70,
                                                       child: RoundedButton(
                                                         buttonText: 'Cancel',
-                                                        textColor: Theme.of(context).primaryColor,
-                                                        buttonColor: Colors.white,
+                                                        textColor:
+                                                            Theme.of(context)
+                                                                .primaryColor,
+                                                        buttonColor:
+                                                            Colors.white,
                                                       ),
                                                     ),
                                                   ),

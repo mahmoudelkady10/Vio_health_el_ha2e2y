@@ -39,7 +39,7 @@ class FollowUpApi extends BaseApiManagement {
       body: jsonEncode({
         "partner_id": Provider.of<UserModel>(context).uid,
         "token": Provider.of<UserModel>(context, listen: false).token,
-        "categoryId": categoryId
+        "id": categoryId
       }),
     );
     print(response.body);
@@ -61,7 +61,7 @@ class FollowUpApi extends BaseApiManagement {
       BuildContext context, dynamic category, dynamic sub_category, dynamic readings, DateTime sDate) async {
     String formattedDate = DateFormat('yyyy-MM-dd hh:mm:ss').format(sDate);
     http.Response response = await http.post(
-      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_get_sub_categories'),
+      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_post_manual_readings'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(
         {
@@ -78,7 +78,7 @@ class FollowUpApi extends BaseApiManagement {
       ),
     );
     print(response.body);
-    int responseStatus = json.decode(response.body)['result']['message'];
+    int responseStatus = json.decode(response.body)['result']['status'];
     if (responseStatus != 200) {
       throw Exception('Error to post readings');
     }
@@ -87,11 +87,12 @@ class FollowUpApi extends BaseApiManagement {
 
   static Future<List<FollowUpReadingsModel>> getReadings(BuildContext context, dynamic categoryId) async {
     var response = await http.post(
-      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_get_readings'),
+      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_get_manual_readings'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "partner_id": Provider.of<UserModel>(context).uid,
         "token": Provider.of<UserModel>(context, listen: false).token,
+        "id": Provider.of<UserModel>(context).partnerId,
         "category_id": categoryId
       }),
     );

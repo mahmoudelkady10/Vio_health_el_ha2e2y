@@ -38,7 +38,7 @@ class _AddMedicationState extends State<AddMedication> {
           padding: EdgeInsets.all(30),
           child: Text('Add Your Prescription',
               style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
+              TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
@@ -61,7 +61,7 @@ class _AddMedicationState extends State<AddMedication> {
                     ),
                     Text('Add drugs one by one',
                         style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
+                        TextStyle(color: Theme.of(context).primaryColor)),
                   ],
                 ),
               ),
@@ -137,7 +137,7 @@ class _AddMedicationState extends State<AddMedication> {
                           content: Text("Prescription uploaded successfully"),
                         ),
                       );
-                      Navigator.push(context, MaterialPageRoute(builder: (context) {
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
                         return MedicationDetails(appId: widget.appId);
                       }));
                     } else {

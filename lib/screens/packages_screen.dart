@@ -1,14 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
+import 'package:loader_overlay/loader_overlay.dart';
+import 'package:medic_app/model/doctors_model.dart';
+import 'package:medic_app/model/services_model.dart';
+import 'package:medic_app/model/specialties_model.dart';
 import 'package:medic_app/model/user_model.dart';
+import 'package:medic_app/network/doctors_api.dart';
 import 'package:medic_app/network/packages_api.dart';
 import 'package:medic_app/network/service_request_api.dart';
+import 'package:medic_app/network/services_api.dart';
+import 'package:medic_app/network/specialties_api.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/model/packages_model.dart';
 import 'package:intl/intl.dart';
 
+import 'booking_screen.dart';
 import 'home_screen.dart';
 
 class PackagesScreen extends StatefulWidget {
@@ -53,10 +62,10 @@ class _PackagesScreenState extends State<PackagesScreen> {
                           children: [
                             Padding(
                               padding:
-                                  const EdgeInsets.only(right: 8.0, left: 8.0),
+                              const EdgeInsets.only(right: 8.0, left: 8.0),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
@@ -68,15 +77,15 @@ class _PackagesScreenState extends State<PackagesScreen> {
                                   Text('Package',
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme.of(context).primaryColor)),
                                   Text("Price",
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme.of(context).primaryColor)),
                                   Text('Status',
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme.of(context).primaryColor)),
                                 ],
                               ),
                             ),
@@ -99,10 +108,10 @@ class _PackagesScreenState extends State<PackagesScreen> {
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return PackageContent(
-                          packageId: snapshot.data[index].id,
-                        );
-                      }));
+                            return PackageContent(
+                              packageId: snapshot.data[index].id,
+                            );
+                          }));
                     },
                   );
                 });
@@ -115,8 +124,8 @@ class _PackagesScreenState extends State<PackagesScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(
-              context, MaterialPageRoute(builder: (context) => const BuyPackage()));
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const BuyPackage()));
         },
         tooltip: 'Buy New Package',
         child: const Icon(Icons.add),
@@ -180,76 +189,116 @@ class _PackageContentState extends State<PackageContent> {
                 const Text('Choose Date to view content'),
                 SizedBox(
                   height: 80,
-                  child: Expanded(
-                    child: ListView.builder(
-                        shrinkWrap: true,
-                        scrollDirection: Axis.horizontal,
-                        itemCount: dates.length,
-                        itemBuilder: (context, index) {
-                          return Row(
-                            children: [
-                              SizedBox(
-                                height: 80,
-                                width: 115,
-                                child: RoundedButton(
-                                    buttonColor: updatedDate == dates[index]
-                                        ? Colors.blueGrey
-                                        : Theme.of(context).primaryColor,
-                                    buttonText:
-                                        DateFormat.MMMM().format(dates[index]),
-                                    buttonFunction: () {
-                                      setState(() {
-                                        updatedDate = dates[index];
-                                      });
-                                    }),
+                  child: ListView.builder(
+                      shrinkWrap: true,
+                      scrollDirection: Axis.horizontal,
+                      itemCount: dates.length,
+                      itemBuilder: (context, index) {
+                        return Row(
+                          children: [
+                            SizedBox(
+                              height: 100,
+                              width: 100,
+                              child: GestureDetector(
+                                child: Card(
+                                  semanticContainer: false,
+                                  color: updatedDate == dates[index]
+                                      ? Colors.blueGrey
+                                      : Theme.of(context).primaryColor,
+                                  child: Center(child: Text(DateFormat.MMMM().format(dates[index]), textAlign: TextAlign.center, style: const TextStyle(color: Colors.white),)),
+                                ),
+                                onTap: () {
+                                  setState(() {
+                                    updatedDate = dates[index];
+                                  });
+                                },
                               ),
-                              const SizedBox(
-                                width: 4,
-                              )
-                            ],
-                          );
-                        }),
-                  ),
+                            ),
+                            const SizedBox(
+                              width: 4,
+                            )
+                          ],
+                        );
+                      }),
                 ),
                 Text(
                     'Available services in ${DateFormat.MMMM().format(updatedDate)}'),
-                Expanded(
-                  child: ListView.builder(
-                      shrinkWrap: true,
-                      itemCount: snapshot.data.length,
-                      itemBuilder: (context, index) {
-                        if (snapshot.data[index].startDate
-                                .toString()
-                                .split('-')[1] ==
-                            DateFormat('yyyy-MM-dd')
-                                .format(updatedDate)
-                                .toString()
-                                .split('-')[1]) {
-                          return SizedBox(
-                            width: deviceSize.width,
-                            height: 100,
-                            child: Card(
-                              elevation: 2,
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10)),
-                              child: Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(snapshot.data[index].specialty
-                                      .toString()),
-                                  Text(snapshot.data[index].startDate
-                                      .toString()),
-                                  Text(snapshot.data[index].service.toString()),
-                                ],
-                              ),
+                ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      if (snapshot.data[index].startDate
+                          .toString()
+                          .split('-')[1] ==
+                          DateFormat('yyyy-MM-dd')
+                              .format(updatedDate)
+                              .toString()
+                              .split('-')[1]) {
+                        return SizedBox(
+                          width: deviceSize.width,
+                          height: 100,
+                          child: Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Row(
+                              mainAxisAlignment:
+                              MainAxisAlignment.spaceEvenly,
+                              children: [
+                                Text(snapshot.data[index].specialty
+                                    .toString()),
+                                Text(snapshot.data[index].startDate
+                                    .toString()),
+                                Text(snapshot.data[index].service.toString()),
+                                SizedBox(
+                                  height: 70,
+                                  width: 90,
+                                  child: RoundedButton(
+                                    buttonColor:
+                                    Theme.of(context).primaryColor,
+                                    buttonText: 'Book',
+                                    buttonFunction: () async {
+                                      var specialties =
+                                      await SpecialtiesApi.getSpecialties(
+                                          context);
+                                      var packageSpecialty = specialties
+                                          .where((SpecialtiesModel x) =>
+                                      x.name ==
+                                          snapshot.data[index].specialty)
+                                          .toList();
+                                      //TODO filter with service class instead
+                                      var services =
+                                      await ServicesApi.getServices(
+                                          context);
+                                      var packageService = services
+                                          .where((ServicesModel x) =>
+                                      x.name ==
+                                          snapshot.data[index].service)
+                                          .toList();
+                                      print(packageService);
+                                      Navigator.push(context,
+                                          MaterialPageRoute(
+                                              builder: (context) {
+                                                return BookingD(
+                                                  type: packageService.first.id!,
+                                                  specialtyId:
+                                                  packageSpecialty.first.id!,
+                                                  doctorId:
+                                                  packageService[0].doctorId,
+                                                  date: DateFormat('yyyy-MM-dd').parse(snapshot.data[index].startDate),
+                                                );
+                                              }));
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
-                          );
-                        } else {
-                          return const SizedBox.shrink();
-                        }
-                      }),
-                ),
+                          ),
+                        );
+                      } else {
+                        return const SizedBox.shrink();
+                      }
+                    }),
               ],
             );
           } else {
@@ -283,94 +332,157 @@ class BuyPackage extends StatelessWidget {
               );
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.data != null) {
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return GestureDetector(
-                      child: SizedBox(
-                        width: deviceSize.width,
-                        height: 80,
-                        child: Card(
-                          elevation: 2,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10)),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Padding(
-                                padding:
-                                const EdgeInsets.only(right: 8.0, left: 8.0),
-                                child: Row(
+              return LoaderOverlay(
+                child: ListView.builder(
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return GestureDetector(
+                        child: SizedBox(
+                          width: deviceSize.width,
+                          height: 80,
+                          child: Card(
+                            elevation: 2,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 8.0, left: 8.0),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(
+                                        'Package Code',
+                                        style: TextStyle(
+                                            color:
+                                            Theme.of(context).primaryColor),
+                                      ),
+                                      // const Text('     '),
+                                      Text('Category',
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor)),
+                                      Text("Price",
+                                          style: TextStyle(
+                                              color: Theme.of(context)
+                                                  .primaryColor)),
+                                    ],
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Row(
                                   mainAxisAlignment:
                                   MainAxisAlignment.spaceEvenly,
                                   children: [
-                                    Text(
-                                      'Package Code',
-                                      style: TextStyle(
-                                          color: Theme.of(context).primaryColor),
-                                    ),
-                                    // const Text('     '),
-                                    Text('Category',
-                                        style: TextStyle(
-                                            color:
-                                            Theme.of(context).primaryColor)),
-                                    Text("Price",
-                                        style: TextStyle(
-                                            color:
-                                            Theme.of(context).primaryColor)),
+                                    Text(snapshot.data[index].name.toString()),
+                                    Text(snapshot.data[index].mainCategory
+                                        .toString()),
+                                    Text(snapshot.data[index].price.toString()),
                                   ],
                                 ),
-                              ),
-                              const SizedBox(
-                                height: 10,
-                              ),
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                                children: [
-                                  Text(snapshot.data[index].name.toString()),
-                                  Text(snapshot.data[index].mainCategory.toString()),
-                                  Text(snapshot.data[index].price.toString()),
-                                ],
-                              ),
-                            ],
+                              ],
+                            ),
                           ),
                         ),
-                      ),
-                      onTap: () async{
-                        var balance = Provider.of<UserModel>(context, listen: false).balance;
-                        if(balance < snapshot.data[index].price){
-                          ScaffoldMessenger.of(context)
-                              .showSnackBar(
-                            const SnackBar(
-                              backgroundColor: Colors.red,
-                              content: Text("Top Up wallet"),
-                            ),
-                          );
-                        } else {
-                          var temp = [snapshot.data[index].id];
-                          var status = await ServiceRequestApi.serviceRequest(context, DateTime.now(), false, temp, 6, snapshot.data[index].mainCategory);
-                          if (status != 200){
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(
+                        onTap: () async {
+
+                          var balance =
+                              Provider.of<UserModel>(context, listen: false)
+                                  .balance;
+                          if (balance < snapshot.data[index].price) {
+                            ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
                                 backgroundColor: Colors.red,
-                                content: Text("Request Failed"),
+                                content: Text("Top Up wallet"),
                               ),
                             );
                           } else {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text("Request Successful"),
+                            await showDialog(
+                              context: context,
+                              builder: (_) => AlertDialog(
+                                title: const Center(
+                                    child: Icon(
+                                      Icons.monetization_on,
+                                      color: Colors.green,
+                                      size: 40,
+                                    )),
+                                content: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.center,
+                                  crossAxisAlignment:
+                                  CrossAxisAlignment.center,
+                                  children: const [
+                                    Text(
+                                      'Buy Package using wallet?',
+                                      style: TextStyle(fontSize: 15),
+                                    ),
+                                  ],
+                                ),
+                                actions: [
+                                  TextButton(
+                                    onPressed: () async{
+                                      var temp = [snapshot.data[index].id];
+                                      Navigator.pop(context);
+                                      context.loaderOverlay.show(
+                                          widget: const LoadingScreen());
+                                      var status = await ServiceRequestApi.serviceRequest(
+                                          context,
+                                          DateTime.now(),
+                                          false,
+                                          temp,
+                                          6,
+                                          snapshot.data[index].mainCategory);
+                                      context.loaderOverlay.hide();
+                                      if (status != 200) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.red,
+                                            content: Text("Request Failed"),
+                                          ),
+                                        );
+                                      } else {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            backgroundColor: Colors.green,
+                                            content: Text("Request Successful"),
+                                          ),
+                                        );
+                                        Navigator.pushReplacementNamed(
+                                            context, MyHomePage.id);
+                                      }
+                                    },
+                                    child: Text('Buy Package',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .primaryColor,
+                                            decoration: TextDecoration
+                                                .underline)),
+                                  ),
+                                  TextButton(
+                                    onPressed: () async {
+                                      Navigator.pop(context);
+                                    },
+                                    child: Text('Cancel',
+                                        style: TextStyle(
+                                            color: Theme.of(context)
+                                                .primaryColor,
+                                            decoration: TextDecoration
+                                                .underline)),
+                                  )
+                                ],
                               ),
                             );
-                            Navigator.pushReplacementNamed(context, MyHomePage.id);
+
                           }
-                        }
-                      },
-                    );
-                  });
+                        },
+                      );
+                    }),
+              );
             } else {
               return const Center(
                 child: Text('no packages found'),

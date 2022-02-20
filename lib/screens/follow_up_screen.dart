@@ -1,9 +1,13 @@
+import 'dart:convert';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/network/follow_up_api.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class FollowUp extends StatefulWidget {
   const FollowUp({Key? key}) : super(key: key);
@@ -73,7 +77,7 @@ class _FollowUpState extends State<FollowUp> {
                                 ),
                                 Text(snapshot.data[index].name,
                                     style: const TextStyle(
-                                        color: Color(0xFFB22234))),
+                                        color: Colors.black)),
                               ],
                             ),
                           ),
@@ -82,9 +86,9 @@ class _FollowUpState extends State<FollowUp> {
                       onTap: () {
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                          return PastReadings(
-                              categoryId: snapshot.data[index].categoryId);
-                        }));
+                              return PastReadings(
+                                  categoryId: snapshot.data[index].categoryId);
+                            }));
                       },
                     ),
                   );
@@ -134,14 +138,18 @@ class _PastReadingsState extends State<PastReadings> {
               return ListView.builder(
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 10,
-                      child: Row(
-                        children: [
-                          Text(snapshot.data[index].sub_category),
-                          Text(snapshot.data[index].readings),
-                          Text(snapshot.data[index].date)
-                        ],
+                    return SizedBox(
+                      height: 80,
+                      child: Card(
+                        elevation: 10,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            Text('${snapshot.data[index].sub_category}: '),
+                            Text(snapshot.data[index].readings),
+                            Text(snapshot.data[index].date)
+                          ],
+                        ),
                       ),
                     );
                   });
@@ -156,29 +164,31 @@ class _PastReadingsState extends State<PastReadings> {
           showDialog(
             context: context,
             builder: (_) => AlertDialog(
-              title: const Center(
+              title: Center(
                   child: Icon(
                     Icons.announcement_outlined,
-                    color: Color(0xFFB22234),
+                    color: Theme.of(context).primaryColor,
                     size: 50,
                   )),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  Text('Add your new records' , style: TextStyle(color: Theme.of(context).primaryColor)),
+                children: const [
+                  Text('Add your new records',
+                      style: TextStyle(color: Colors.black)),
                 ],
               ),
               actions: [
                 TextButton(
                   onPressed: () {
-                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                      return PostReadings(categoryId: widget.categoryId);
-                    }));
+                    Navigator.pushReplacement(context,
+                        MaterialPageRoute(builder: (context) {
+                          return PostReadings(categoryId: widget.categoryId);
+                        }));
                   },
-                  child: const Text('ok',
+                  child: Text('ok',
                       style: TextStyle(
-                          color: Color(0xFFB22234),
+                          color: Theme.of(context).primaryColor,
                           decoration: TextDecoration.underline)),
                 )
               ],
@@ -201,7 +211,8 @@ class PostReadings extends StatefulWidget {
 }
 
 class _PostReadingsState extends State<PostReadings> {
-  final myController = TextEditingController();
+  Map<int, TextEditingController> controllers = {};
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -215,44 +226,96 @@ class _PostReadingsState extends State<PostReadings> {
         ),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: FutureBuilder(
-          future: FollowUpApi.getSubCategories(context, widget.categoryId),
-          builder: (BuildContext context, AsyncSnapshot snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            } else if (snapshot.connectionState == ConnectionState.done &&
-                snapshot.data != null) {
-              return ListView.builder(
-                  itemCount: snapshot.data.length,
-                  itemBuilder: (context, index) {
-                    return Card(
-                      elevation: 10,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(snapshot.data[index].name, style: TextStyle(color: Theme.of(context).primaryColor)),
-                          Center(
-                            child: TextField(
-                              controller: myController,
-                              style: Theme.of(context).textTheme.subtitle1,
-                              decoration: const InputDecoration(
-                                hintText: '         Write your readings',
+      body: LoaderOverlay(
+        child: FutureBuilder(
+            future: FollowUpApi.getSubCategories(context, widget.categoryId),
+            builder: (BuildContext context, AsyncSnapshot snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.connectionState == ConnectionState.done &&
+                  snapshot.data != null) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Expanded(
+                      child: ListView.builder(
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            controllers[snapshot.data[index].subCategoryId] =
+                                TextEditingController();
+                            return Card(
+                              elevation: 10,
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Text(snapshot.data[index].name,
+                                      style: TextStyle(
+                                          color: Theme.of(context).primaryColor)),
+                                  Center(
+                                    child: TextField(
+                                      controller: controllers[
+                                      snapshot.data[index].subCategoryId],
+                                      style:
+                                      Theme.of(context).textTheme.subtitle1,
+                                      decoration: InputDecoration(
+                                        hintText:
+                                        snapshot.data[index].name.toString(),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                          ),
-                        ],
+                            );
+                          }),
+                    ),
+                    SizedBox(
+                      width: 100,
+                      height: 60,
+                      child: RoundedButton(
+                        buttonText: 'Submit',
+                        buttonColor: Theme.of(context).primaryColor,
+                        buttonFunction: () async {
+                          bool successful = false;
+                          context.loaderOverlay.show(widget: const LoadingScreen());
+                          for (var key in controllers.keys) {
+                            var status = await FollowUpApi.postReadings(
+                                context,
+                                widget.categoryId,
+                                key,
+                                controllers[key]!.text,
+                                DateTime.now());
+                            if (status == 200) {
+                              successful = true;
+                            } else {
+                              successful = false;
+                            }
+                          }
+                          context.loaderOverlay.hide();
+                          if (successful == true) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                backgroundColor: Colors.green,
+                                content: Text("readings submitted"),
+                              ),
+                            );
+                            Navigator.pushReplacementNamed(context, FollowUp.id);
+                          }
+                        },
                       ),
-                    );
-                  });
-            } else {
-              return const Center(
-                child: Text('try again'),
-              );
-            }
-          }),
+                    ),
+                  ],
+                );
+              } else {
+                return const Center(
+                  child: Text('try again'),
+                );
+              }
+            }),
+      ),
     );
   }
 }

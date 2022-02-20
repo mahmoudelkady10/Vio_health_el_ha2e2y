@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:medic_app/network/login_api.dart';
 import 'package:medic_app/network/specialties_api.dart';
 import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
@@ -36,6 +37,13 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
+  Future<void> _refresh() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    dynamic response = await LoginApi.getUserInfo(context, token!);
+  }
   @override
   Widget build(BuildContext context) {
     UserModel user = Provider.of<UserModel>(context);
@@ -85,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
         color: Color(0xFFB22234),
       ),
       const ImageIcon(
-        AssetImage('assets/follow-up.png'),
+        AssetImage('assets/follow_up.png'),
         size: 75,
         color: Color(0xFFB22234),
       ),
@@ -237,83 +245,87 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ),
 
-      body: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Column(
-            children: [
-              SizedBox(
-                width: deviceSize.width,
-                height: 80,
-                child: Card(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      Text('Balance: ${Provider.of<UserModel>(context).balance}', style: const TextStyle(color: Colors.green),),
-                      Text('On Hold: ${Provider.of<UserModel>(context).onHold}', style: const TextStyle(color: Colors.red)),
-                    ],
-                  ),
-                ),
-              )
-            ],
-          ),
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 15.0),
-              child: GridView.count(
-                crossAxisCount: 2,
-                crossAxisSpacing: 15,
-                mainAxisSpacing: 13,
-                children: [
-                  optioncard(deviceSize, icons[0], options[0], Availability.id,
-                      context),
-                  optioncard(
-                      deviceSize, icons[1], options[1], Services.id, context),
-                  optioncard(deviceSize, icons[2], options[2], Appointment.id,
-                      context),
-                  optioncard(deviceSize, icons[3], options[3], Testimonials.id,
-                      context),
-                  optioncard(
-                      deviceSize, icons[4], options[4], Medication.id, context),
-                  optioncard(deviceSize, icons[5], options[5],
-                      PastAppointments.id, context),
-                  optioncard(
-                      deviceSize, icons[6], options[6], FollowUp.id, context),
-                  optioncard(
-                      deviceSize, icons[7], options[7], AlManara.id, context),
-                  optioncard(deviceSize, icons[8], options[8], HealthMonitor.id,
-                      context),
-                  optioncard(deviceSize, icons[9], options[9], PackagesScreen.id,
-                      context),
-                ],
-              ),
-            ),
-          ),
-          BottomAppBar(
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+      body: RefreshIndicator(
+        key: _refreshIndicatorKey,
+        onRefresh: _refresh,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Column(
               children: [
                 SizedBox(
-                  width: 200,
-                  height: 50,
-                  child: FloatingActionButton(
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(10),
-                      ),
+                  width: deviceSize.width,
+                  height: 80,
+                  child: Card(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Text('Balance: ${Provider.of<UserModel>(context).balance}', style: const TextStyle(color: Colors.green),),
+                        Text('On Hold: ${Provider.of<UserModel>(context).onHold}', style: const TextStyle(color: Colors.red)),
+                      ],
                     ),
-                    backgroundColor: Theme.of(context).primaryColor,
-                    onPressed: () {
-                      Navigator.pushNamed(context, BookingS.id);
-                    },
-                    child: const Text('Book an Appointment'),
                   ),
-                ),
+                )
               ],
             ),
-          )
-        ],
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 15,
+                  mainAxisSpacing: 13,
+                  children: [
+                    optioncard(deviceSize, icons[0], options[0], Availability.id,
+                        context),
+                    optioncard(
+                        deviceSize, icons[1], options[1], Services.id, context),
+                    optioncard(deviceSize, icons[2], options[2], Appointment.id,
+                        context),
+                    optioncard(deviceSize, icons[3], options[3], Testimonials.id,
+                        context),
+                    optioncard(
+                        deviceSize, icons[4], options[4], Medication.id, context),
+                    optioncard(deviceSize, icons[5], options[5],
+                        PastAppointments.id, context),
+                    optioncard(
+                        deviceSize, icons[6], options[6], FollowUp.id, context),
+                    optioncard(
+                        deviceSize, icons[7], options[7], AlManara.id, context),
+                    optioncard(deviceSize, icons[8], options[8], HealthMonitor.id,
+                        context),
+                    optioncard(deviceSize, icons[9], options[9], PackagesScreen.id,
+                        context),
+                  ],
+                ),
+              ),
+            ),
+            BottomAppBar(
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SizedBox(
+                    width: 200,
+                    height: 50,
+                    child: FloatingActionButton(
+                      shape: const RoundedRectangleBorder(
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(10),
+                        ),
+                      ),
+                      backgroundColor: Theme.of(context).primaryColor,
+                      onPressed: () {
+                        Navigator.pushNamed(context, BookingS.id);
+                      },
+                      child: const Text('Book an Appointment'),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          ],
+        ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
   }

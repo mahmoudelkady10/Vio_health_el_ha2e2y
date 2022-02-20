@@ -15,7 +15,6 @@ import 'package:medic_app/widgets/unit_request_card.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
 
-
 class Medication extends StatefulWidget {
   const Medication({Key? key}) : super(key: key);
   static const id = 'medication_screen';
@@ -42,21 +41,24 @@ class _MedicationState extends State<Medication> {
             padding: const EdgeInsets.only(right: 10),
             child: IconButton(
               icon: const Icon(Icons.announcement),
-              onPressed: (){
+              onPressed: () {
                 showDialog(
                   context: context,
                   builder: (_) => AlertDialog(
                     title: const Center(
                         child: Icon(
-                          Icons.announcement_outlined,
-                          color: Color(0xFFB22234),
-                          size: 50,
-                        )),
+                      Icons.announcement_outlined,
+                      color: Colors.black,
+                      size: 50,
+                    )),
                     content: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text('click on the below button to add\nyour own prescription or choose\nany appointment to see your\nprescriptions or add a new one' , style: TextStyle(color: Theme.of(context).primaryColor)),
+                        Text(
+                            'click on the below button to add\nyour own prescription or choose\nany appointment to see your\nprescriptions or add a new one',
+                            style: TextStyle(
+                                color: Theme.of(context).primaryColor)),
                       ],
                     ),
                     actions: [
@@ -66,7 +68,7 @@ class _MedicationState extends State<Medication> {
                         },
                         child: const Text('ok',
                             style: TextStyle(
-                                color: Color(0xFFB22234),
+                                color: Colors.black,
                                 decoration: TextDecoration.underline)),
                       )
                     ],
@@ -92,27 +94,31 @@ class _MedicationState extends State<Medication> {
             return ListView.builder(
                 itemCount: snapshot.data.length,
                 itemBuilder: (context, index) {
-                  if (snapshot.data[index].state == 'done') {
+                  if (snapshot.data[index].state == 'done' ||
+                      snapshot.data[index].doctor.toString() ==
+                          'External Doctor') {
                     return Column(
                       children: [
-                        if(snapshot.data[index].state == 'done')
-                        GestureDetector(
-                          child: AppointmentCard(
-                            service: snapshot.data[index].type,
-                            doctor: snapshot.data[index].doctor,
-                            date: snapshot.data[index].date,
-                            showButton: false,
-                            showVideoCall: false,
+                        if (snapshot.data[index].state == 'done' ||
+                            snapshot.data[index].doctor.toString() ==
+                                'External Doctor')
+                          GestureDetector(
+                            child: AppointmentCard(
+                              service: snapshot.data[index].type,
+                              doctor: snapshot.data[index].doctor,
+                              date: snapshot.data[index].date,
+                              showButton: false,
+                              showVideoCall: false,
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => MedicationDetails(
+                                            appId: snapshot.data[index].id,
+                                          )));
+                            },
                           ),
-                          onTap: () {
-                            Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) => MedicationDetails(
-                                          appId: snapshot.data[index].id,
-                                        )));
-                          },
-                        ),
                         const Divider(
                           height: 10,
                           thickness: 5,
@@ -138,10 +144,10 @@ class _MedicationState extends State<Medication> {
               elevation: 10,
               title: const Center(
                   child: Icon(
-                    Icons.announcement_outlined,
-                    color: Color(0xFFB22234),
-                    size: 50,
-                  )),
+                Icons.announcement_outlined,
+                color: Colors.black,
+                size: 50,
+              )),
               content: SizedBox(
                 width: 200,
                 height: 120,
@@ -149,7 +155,9 @@ class _MedicationState extends State<Medication> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text('click confirm to write your\nown prescription\n', style: TextStyle(color: Theme.of(context).primaryColor)),
+                    Text('click confirm to write your\nown prescription\n',
+                        style:
+                            TextStyle(color: Theme.of(context).primaryColor)),
                     Center(
                       child: TextField(
                         controller: myController,
@@ -170,28 +178,32 @@ class _MedicationState extends State<Medication> {
                       width: 100,
                       height: 70,
                       child: RoundedButton(
-                        buttonColor: const Color(0xFFB22234),
+                        buttonColor: Theme.of(context).primaryColor,
                         buttonText: 'cancel',
-                        buttonFunction:  () async {
-                          Navigator.pushNamed(context,Medication.id);
-                          },
+                        buttonFunction: () async {
+                          Navigator.pushNamed(context, Medication.id);
+                        },
                       ),
                     ),
                     SizedBox(
                       width: 100,
                       height: 70,
                       child: RoundedButton(
-                        buttonColor: const Color(0xFFB22234),
+                        buttonColor: Theme.of(context).primaryColor,
                         buttonText: 'confirm',
-                        buttonFunction:  () async {
-                          var time = await TimesApi.getTimeSlots(context, DateTime.now(), 17);
-                          var status =  await CreateAppointmentApi.createAppointment(
-                              context,
-                              DateTime.now(),
-                              17,
-                              Provider.of<UserModel>(context, listen: false).partnerId,
-                              1,
-                              time.first.id!.toInt());
+                        buttonFunction: () async {
+                          var time = await TimesApi.getTimeSlots(
+                              context, DateTime.now(), 19);
+                          var status =
+                              await CreateAppointmentApi.createAppointment(
+                            context,
+                            DateTime.now(),
+                            19,
+                            Provider.of<UserModel>(context, listen: false)
+                                .partnerId,
+                            3,
+                            time.first.id!.toInt(),
+                          );
                           if (status == 200) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               const SnackBar(
@@ -199,11 +211,18 @@ class _MedicationState extends State<Medication> {
                                 content: Text("successfully"),
                               ),
                             );
-                            var appointmentlast = await AppointmentsApi.getAppointments(
-                                context, userId, Provider.of<UserModel>(context, listen: false).token);
+                            var appointmentlast =
+                                await AppointmentsApi.getAppointments(
+                                    context,
+                                    userId,
+                                    Provider.of<UserModel>(context,
+                                            listen: false)
+                                        .token);
                             print(appointmentlast.last.id);
-                            Navigator.push(context, MaterialPageRoute(builder: (context) {
-                              return MedicationDetails(appId: appointmentlast.last.id!.toInt());
+                            Navigator.pushReplacement(context,
+                                MaterialPageRoute(builder: (context) {
+                              return MedicationDetails(
+                                  appId: appointmentlast.last.id!.toInt());
                             }));
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -244,7 +263,11 @@ class _MedicationDetailsState extends State<MedicationDetails> {
   static dynamic img64;
 
   void _pickImageCamera() async {
-    final pickedImage = await picker.pickImage(source: ImageSource.camera , imageQuality: 50 , maxWidth: 150, maxHeight: 150);
+    final pickedImage = await picker.pickImage(
+        source: ImageSource.camera,
+        imageQuality: 50,
+        maxWidth: 150,
+        maxHeight: 150);
     final pickedImageFile = File(pickedImage!.path);
     setState(() {
       image = pickedImageFile;
@@ -260,7 +283,7 @@ class _MedicationDetailsState extends State<MedicationDetails> {
             content: Text("image uploaded successfully"),
           ),
         );
-        Navigator.pushNamed(context,Medication.id);
+        Navigator.pushReplacementNamed(context, Medication.id);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
@@ -271,7 +294,6 @@ class _MedicationDetailsState extends State<MedicationDetails> {
       }
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -317,8 +339,7 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                               padding: const EdgeInsets.only(top: 9.0),
                               child: Text(snapshot.data[index].medicineId,
                                   textAlign: TextAlign.center,
-                                  style: const TextStyle(
-                                      color: Color(0xFFB22234))),
+                                  style: const TextStyle(color: Colors.black)),
                             ),
                             collapsed: const SizedBox.shrink(),
                             expanded: Column(
@@ -332,8 +353,8 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text('Name:',
-                                          style: TextStyle(
-                                              color: Color(0xFFB22234))),
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                       Text(snapshot.data[index].medicineId,
                                           style: TextStyle(
                                               color: Theme.of(context)
@@ -349,8 +370,8 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text('Type:',
-                                          style: TextStyle(
-                                              color: Color(0xFFB22234))),
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                       Text(snapshot.data[index].medicineFormId,
                                           style: TextStyle(
                                               color: Theme.of(context)
@@ -366,8 +387,8 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text('Amount/dose:',
-                                          style: TextStyle(
-                                              color: Color(0xFFB22234))),
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                       Text(snapshot.data[index].dosageQuantity,
                                           style: TextStyle(
                                               color: Theme.of(context)
@@ -383,8 +404,8 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text('Doses/day:',
-                                          style: TextStyle(
-                                              color: Color(0xFFB22234))),
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                       Text(snapshot.data[index].frequency,
                                           style: TextStyle(
                                               color: Theme.of(context)
@@ -400,8 +421,8 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                                         MainAxisAlignment.spaceBetween,
                                     children: [
                                       const Text('Duration: ',
-                                          style: TextStyle(
-                                              color: Color(0xFFB22234))),
+                                          style:
+                                              TextStyle(color: Colors.black)),
                                       Text(
                                           '${snapshot.data[index].days} Day(s)',
                                           style: TextStyle(
@@ -447,7 +468,7 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                 });
           } else {
             return Center(
-              child:SizedBox(
+              child: SizedBox(
                 width: 350,
                 height: 80,
                 child: Card(
@@ -456,13 +477,14 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                       const Text('Instructions',
                           style: TextStyle(
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFFB22234))),
+                              color: Colors.black)),
                       const SizedBox(
                         height: 5,
                       ),
-                      Text('click on the below button to add prescription\nor use the upper camera icon to add image',
+                      Text(
+                          'click on the below button to add prescription\nor use the upper camera icon to add image',
                           style:
-                          TextStyle(color: Theme.of(context).primaryColor)),
+                              TextStyle(color: Theme.of(context).primaryColor)),
                     ],
                   ),
                 ),
@@ -473,7 +495,8 @@ class _MedicationDetailsState extends State<MedicationDetails> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context, MaterialPageRoute(builder: (context) {
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) {
             return AddMedication(appId: widget.appId);
           }));
         },

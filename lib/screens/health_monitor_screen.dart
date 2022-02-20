@@ -419,244 +419,246 @@ class _HealthMonitorState extends State<HealthMonitor> {
                       ),
                     ),
                   ),
-                  Visibility(
-                    visible: checkReadings(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 28.0),
-                      child: Column(
-                        children: [
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              SizedBox(
-                                height: 70,
-                                width: 150,
-                                child: RoundedButton(
-                                  buttonText: 'Save',
-                                  buttonColor: uploaded == false?Theme.of(context).primaryColor: Colors.grey,
-                                  buttonFunction: () async {
-                                    if (uploaded == false){
-                                      var img64 = null;
-                                      if (ecgWave != null) {
-                                        List<int> lint = ecgWave
-                                            .toString()
-                                            .split(',')
-                                            .map(int.parse)
-                                            .toList();
-                                        WaveformData waveData =
-                                        WaveformData.fromJson(jsonEncode({
-                                          "version": 2,
-                                          "channels": 1,
-                                          "sample_rate": 250,
-                                          "samples_per_pixel": 64,
-                                          "bits": 16,
-                                          "length": lint.length,
-                                          "data": lint
-                                        }));
-                                        var img = await createImageFromWidget(
-                                            WaveSegments(
-                                                data: waveData,
-                                                zoomLevel: 1.0,
-                                                globalKey: globalKey));
-                                        img64 = base64Encode(img);
-                                      }
-                                      var dateTimeBg = dateBg.toString() != 'null'
-                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .parse(dateBg)
-                                          : null;
-                                      var dateTimeBp = dateBp.toString() != 'null'
-                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .parse(dateBp)
-                                          : null;
-                                      var dateTimeBt = dateBt.toString() != 'null'
-                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .parse(dateBt)
-                                          : null;
-                                      var dateTimeEcg =
-                                      dateEcg.toString() != 'null'
-                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .parse(dateEcg)
-                                          : null;
-                                      var dateTimeSpo2 =
-                                      dateSpo2.toString() != 'null'
-                                          ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .parse(dateSpo2)
-                                          : null;
-                                      print(dateTimeSpo2);
-                                      var data = {
-                                        'token': Provider.of<UserModel>(context,
-                                            listen: false)
-                                            .token
-                                            .toString(),
-                                        'blood_glucose': {
-                                          'bg_measure': bgMeasure,
-                                          'date_bg': dateTimeBg.toString()
-                                        },
-                                        'blood_pressure': {
-                                          'systolic_pressure': systolicPressure,
-                                          'diastolic_pressure': diastolicPressure,
-                                          'heart_rate_bp': heartRateBp,
-                                          'date_bp':
-                                          dateTimeBp.toString().split('.')[0]
-                                        },
-                                        'body_temperature': {
-                                          'body_temp': bodyTemp,
-                                          'date_bt':
-                                          dateTimeBt.toString().split('.')[0]
-                                        },
-                                        'ecg': {
-                                          'rrmax': rrMax,
-                                          'rrmin': rrMin,
-                                          'heart_rate_ecg': heartRateEcg,
-                                          'hrv': hrv,
-                                          'mood': mood,
-                                          'respiratory_rate': respiratoryRate,
-                                          'duration_ecg': durationEcg,
-                                          'date_ecg': dateTimeEcg
+                  LoaderOverlay(
+                    child: Visibility(
+                      visible: checkReadings(),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 28.0),
+                        child: Column(
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                SizedBox(
+                                  height: 70,
+                                  width: 150,
+                                  child: RoundedButton(
+                                    buttonText: 'Save',
+                                    buttonColor: uploaded == false?Theme.of(context).primaryColor: Colors.grey,
+                                    buttonFunction: () async {
+                                      if (uploaded == false){
+                                        var img64 = null;
+                                        if (ecgWave != null) {
+                                          List<int> lint = ecgWave
                                               .toString()
-                                              .split('.')[0],
-                                          'wave': img64
-                                        },
-                                        'spo2': {
-                                          'spo2': spo2,
-                                          'heart_rate_spo2': heartRateSpo2,
-                                          'date_spo2': dateTimeSpo2
-                                              .toString()
-                                              .split('.')[0]
+                                              .split(',')
+                                              .map(int.parse)
+                                              .toList();
+                                          WaveformData waveData =
+                                          WaveformData.fromJson(jsonEncode({
+                                            "version": 2,
+                                            "channels": 1,
+                                            "sample_rate": 250,
+                                            "samples_per_pixel": 64,
+                                            "bits": 16,
+                                            "length": lint.length,
+                                            "data": lint
+                                          }));
+                                          var img = await createImageFromWidget(
+                                              WaveSegments(
+                                                  data: waveData,
+                                                  zoomLevel: 1.0,
+                                                  globalKey: globalKey));
+                                          img64 = base64Encode(img);
                                         }
-                                      };
-                                      setState(() {
-                                        uploaded = true;
-                                      });
-                                      // context.loaderOverlay.show(widget: const LoadingScreen());
-                                      var response =
-                                      await HmApi.postReadings(data);
-                                      // context.loaderOverlay.hide();
-                                      int status =
-                                      json.decode(response.body)['result']
-                                      ['status'];
-                                      if (status == 200) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.green,
-                                            content: Text("Data Uploaded"),
-                                          ),
-                                        );
-                                        _clear();
-                                      } else {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content: Text("Data Upload Failed!"),
-                                          ),
-                                        );
+                                        var dateTimeBg = dateBg.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                            .parse(dateBg)
+                                            : null;
+                                        var dateTimeBp = dateBp.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                            .parse(dateBp)
+                                            : null;
+                                        var dateTimeBt = dateBt.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                            .parse(dateBt)
+                                            : null;
+                                        var dateTimeEcg =
+                                        dateEcg.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                            .parse(dateEcg)
+                                            : null;
+                                        var dateTimeSpo2 =
+                                        dateSpo2.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                            .parse(dateSpo2)
+                                            : null;
+                                        print(dateTimeSpo2);
+                                        var data = {
+                                          'token': Provider.of<UserModel>(context,
+                                              listen: false)
+                                              .token
+                                              .toString(),
+                                          'blood_glucose': {
+                                            'bg_measure': bgMeasure,
+                                            'date_bg': dateTimeBg.toString()
+                                          },
+                                          'blood_pressure': {
+                                            'systolic_pressure': systolicPressure,
+                                            'diastolic_pressure': diastolicPressure,
+                                            'heart_rate_bp': heartRateBp,
+                                            'date_bp':
+                                            dateTimeBp.toString().split('.')[0]
+                                          },
+                                          'body_temperature': {
+                                            'body_temp': bodyTemp,
+                                            'date_bt':
+                                            dateTimeBt.toString().split('.')[0]
+                                          },
+                                          'ecg': {
+                                            'rrmax': rrMax,
+                                            'rrmin': rrMin,
+                                            'heart_rate_ecg': heartRateEcg,
+                                            'hrv': hrv,
+                                            'mood': mood,
+                                            'respiratory_rate': respiratoryRate,
+                                            'duration_ecg': durationEcg,
+                                            'date_ecg': dateTimeEcg
+                                                .toString()
+                                                .split('.')[0],
+                                            'wave': img64
+                                          },
+                                          'spo2': {
+                                            'spo2': spo2,
+                                            'heart_rate_spo2': heartRateSpo2,
+                                            'date_spo2': dateTimeSpo2
+                                                .toString()
+                                                .split('.')[0]
+                                          }
+                                        };
                                         setState(() {
-                                          uploaded = false;
+                                          uploaded = true;
                                         });
-                                      }
-                                    }
-
-                                  },
-                                ),
-                              ),
-                              SizedBox(
-                                height: 70,
-                                width: 150,
-                                child: RoundedButton(
-                                  buttonText: 'New readings',
-                                  buttonColor: Theme.of(context).primaryColor,
-                                  buttonFunction: () async {
-                                    await showDialog(
-                                      context: context,
-                                      builder: (_) => AlertDialog(
-                                        title: const Center(
-                                            child: Icon(
-                                          Icons.warning,
-                                          color: Colors.red,
-                                          size: 40,
-                                        )),
-                                        content: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.center,
-                                          children: const [
-                                            Text(
-                                              'Taking new reading will replace\ncurrently visible reading.\nIf you haven not saved and\nwould like to, then click\nupload button.',
-                                              style: TextStyle(fontSize: 15),
+                                        context.loaderOverlay.show(widget: const LoadingScreen());
+                                        var response =
+                                        await HmApi.postReadings(data);
+                                        context.loaderOverlay.hide();
+                                        int status =
+                                        json.decode(response.body)['result']
+                                        ['status'];
+                                        if (status == 200) {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.green,
+                                              content: Text("Data Uploaded"),
                                             ),
+                                          );
+                                          _clear();
+                                        } else {
+                                          ScaffoldMessenger.of(context)
+                                              .showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.red,
+                                              content: Text("Data Upload Failed!"),
+                                            ),
+                                          );
+                                          setState(() {
+                                            uploaded = false;
+                                          });
+                                        }
+                                      }
+
+                                    },
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 70,
+                                  width: 150,
+                                  child: RoundedButton(
+                                    buttonText: 'New readings',
+                                    buttonColor: Theme.of(context).primaryColor,
+                                    buttonFunction: () async {
+                                      await showDialog(
+                                        context: context,
+                                        builder: (_) => AlertDialog(
+                                          title: const Center(
+                                              child: Icon(
+                                            Icons.warning,
+                                            color: Colors.red,
+                                            size: 40,
+                                          )),
+                                          content: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                            crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                            children: const [
+                                              Text(
+                                                'Taking new reading will replace\ncurrently visible reading.\nIf you haven not saved and\nwould like to, then click\nupload button.',
+                                                style: TextStyle(fontSize: 15),
+                                              ),
+                                            ],
+                                          ),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.pushReplacementNamed(
+                                                    context, HealthMonitor.id);
+                                                // Navigator.pop(context);
+                                              },
+                                              child: Text('Cancel',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      decoration: TextDecoration
+                                                          .underline)),
+                                            ),
+                                            TextButton(
+                                              onPressed: () async {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Replace readings',
+                                                  style: TextStyle(
+                                                      color: Theme.of(context)
+                                                          .primaryColor,
+                                                      decoration: TextDecoration
+                                                          .underline)),
+                                            )
                                           ],
                                         ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () {
-                                              Navigator.pushReplacementNamed(
-                                                  context, HealthMonitor.id);
-                                              // Navigator.pop(context);
-                                            },
-                                            child: Text('Cancel',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    decoration: TextDecoration
-                                                        .underline)),
-                                          ),
-                                          TextButton(
-                                            onPressed: () async {
-                                              Navigator.pop(context);
-                                            },
-                                            child: Text('Replace readings',
-                                                style: TextStyle(
-                                                    color: Theme.of(context)
-                                                        .primaryColor,
-                                                    decoration: TextDecoration
-                                                        .underline)),
-                                          )
-                                        ],
-                                      ),
-                                    );
-                                    await openHealthMonitor(context);
-                                    assignReadings();
-                                  },
+                                      );
+                                      await openHealthMonitor(context);
+                                      assignReadings();
+                                    },
+                                  ),
                                 ),
-                              ),
-                            ],
-                          ),
-                          SizedBox(
-                            height: 70,
-                            width: 150,
-                            child: RoundedButton(
-                              buttonText: 'View ECG',
-                              buttonColor: Theme.of(context).primaryColor,
-                              buttonFunction: () async {
-                                if (ecgWave != null) {
-                                  List<int> lint = ecgWave
-                                      .toString()
-                                      .split(',')
-                                      .map(int.parse)
-                                      .toList();
-                                  WaveformData data =
-                                      WaveformData.fromJson(jsonEncode({
-                                    "version": 2,
-                                    "channels": 1,
-                                    "sample_rate": 250,
-                                    "samples_per_pixel": 64,
-                                    "bits": 16,
-                                    "length": lint.length,
-                                    "data": lint
-                                  }));
-                                  Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                          builder: (context) => PaintedWaveform(
-                                              sampleData: data)));
-                                }
-                              },
+                              ],
                             ),
-                          ),
-                        ],
+                            SizedBox(
+                              height: 70,
+                              width: 150,
+                              child: RoundedButton(
+                                buttonText: 'View ECG',
+                                buttonColor: Theme.of(context).primaryColor,
+                                buttonFunction: () async {
+                                  if (ecgWave != null) {
+                                    List<int> lint = ecgWave
+                                        .toString()
+                                        .split(',')
+                                        .map(int.parse)
+                                        .toList();
+                                    WaveformData data =
+                                        WaveformData.fromJson(jsonEncode({
+                                      "version": 2,
+                                      "channels": 1,
+                                      "sample_rate": 250,
+                                      "samples_per_pixel": 64,
+                                      "bits": 16,
+                                      "length": lint.length,
+                                      "data": lint
+                                    }));
+                                    Navigator.push(
+                                        context,
+                                        MaterialPageRoute(
+                                            builder: (context) => PaintedWaveform(
+                                                sampleData: data)));
+                                  }
+                                },
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
