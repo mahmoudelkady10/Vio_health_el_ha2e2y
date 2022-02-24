@@ -310,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Image.asset('assets/google.png')),
                       ),
                       onTap: () async {
-                        await _launchURL1();
+                        await launch('https://www.google.com');
                       },
                     ),
                     GestureDetector(
@@ -322,7 +322,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Image.asset('assets/instgram.png')),
                       ),
                       onTap: () async {
-                        await _launchURL2();
+                        await launch('https://www.instagram.com');
                       },
                     ),
                     GestureDetector(
@@ -334,7 +334,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             child: Image.asset('assets/youtube.png')),
                       ),
                       onTap: () async {
-                        await _launchURL3();
+                        await launch('https://www.youtube.com');
                       },
                     )
                   ]
@@ -408,25 +408,6 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
-  }
-
-  _launchURL1() async {
-    final Uri emailLaunchUri = Uri(
-        scheme: 'mailto',
-        path: 'https://www.google.ru/');
-    launch(emailLaunchUri.toString());
-  }
-  _launchURL2() async {
-    final Uri emailLaunchUri = Uri(
-        scheme: 'mailto',
-        path: 'https://www.instagram.com/');
-    launch(emailLaunchUri.toString());
-  }
-  _launchURL3() async {
-    final Uri emailLaunchUri = Uri(
-        scheme: 'mailto',
-        path: 'https://www.youtube.com/');
-    launch(emailLaunchUri.toString());
   }
 
   SizedBox optioncard(Size deviceSize, ImageIcon icon, String option,

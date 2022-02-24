@@ -24,7 +24,6 @@ import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 
-
 class HealthMonitor extends StatefulWidget {
   const HealthMonitor({Key? key}) : super(key: key);
   static const id = 'health_monitor_screen';
@@ -62,7 +61,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
   static dynamic dateBg = '';
 
   bool uploaded = false;
-  void _clear() async{
+
+  void _clear() async {
     await deleteNativePrefs();
     setState(() {
       bodyTemp = null;
@@ -96,7 +96,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
     assignReadings();
   }
 
-  Future<void> deleteNativePrefs() async{
+  Future<void> deleteNativePrefs() async {
     try {
       var temp = await platform.invokeMethod('deleteData');
     } on PlatformException catch (e) {
@@ -334,9 +334,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
         body: TabBarView(
           children: [
             ListView(
-              children: [
-
-              ],
+              children: [],
             ),
             RefreshIndicator(
               key: _refreshIndicatorKey,
@@ -377,13 +375,15 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           itemCount:
                                               readings[categories[i]].length,
                                           itemBuilder: (context, j) {
-                                            var temp = readings[categories[i]][j]
+                                            var temp = readings[categories[i]]
+                                                    [j]
                                                 .toString()
                                                 .split(' ');
                                             var n = temp.length;
                                             if (n < 3) {
                                               if (temp[0] == 'null' ||
-                                                  temp[1] == 'null' || temp[1] == 'null%') {
+                                                  temp[1] == 'null' ||
+                                                  temp[1] == 'null%') {
                                                 return const Text(
                                                   'N/A',
                                                   textAlign: TextAlign.left,
@@ -433,16 +433,19 @@ class _HealthMonitorState extends State<HealthMonitor> {
                           child: Column(
                             children: [
                               Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
                                 children: [
                                   SizedBox(
                                     height: 70,
                                     width: 150,
                                     child: RoundedButton(
                                       buttonText: 'Save',
-                                      buttonColor: uploaded == false?Theme.of(context).primaryColor: Colors.grey,
+                                      buttonColor: uploaded == false
+                                          ? Theme.of(context).primaryColor
+                                          : Colors.grey,
                                       buttonFunction: () async {
-                                        if (uploaded == false){
+                                        if (uploaded == false) {
                                           var img64 = null;
                                           if (ecgWave != null) {
                                             List<int> lint = ecgWave
@@ -451,7 +454,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 .map(int.parse)
                                                 .toList();
                                             WaveformData waveData =
-                                            WaveformData.fromJson(jsonEncode({
+                                                WaveformData.fromJson(
+                                                    jsonEncode({
                                               "version": 2,
                                               "channels": 1,
                                               "sample_rate": 250,
@@ -460,39 +464,49 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               "length": lint.length,
                                               "data": lint
                                             }));
-                                            var img = await createImageFromWidget(
-                                                WaveSegments(
-                                                    data: waveData,
-                                                    zoomLevel: 1.0,
-                                                    globalKey: globalKey));
+                                            var img =
+                                                await createImageFromWidget(
+                                                    WaveSegments(
+                                                        data: waveData,
+                                                        zoomLevel: 1.0,
+                                                        globalKey: globalKey));
                                             img64 = base64Encode(img);
                                           }
-                                          var dateTimeBg = dateBg.toString() != 'null'
-                                              ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                              .parse(dateBg)
-                                              : null;
-                                          var dateTimeBp = dateBp.toString() != 'null'
-                                              ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                              .parse(dateBp)
-                                              : null;
-                                          var dateTimeBt = dateBt.toString() != 'null'
-                                              ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                              .parse(dateBt)
-                                              : null;
+                                          var dateTimeBg =
+                                              dateBg.toString() != 'null'
+                                                  ? DateFormat(
+                                                          'yyyy-MM-dd HH:mm:ss')
+                                                      .parse(dateBg)
+                                                  : null;
+                                          var dateTimeBp =
+                                              dateBp.toString() != 'null'
+                                                  ? DateFormat(
+                                                          'yyyy-MM-dd HH:mm:ss')
+                                                      .parse(dateBp)
+                                                  : null;
+                                          var dateTimeBt =
+                                              dateBt.toString() != 'null'
+                                                  ? DateFormat(
+                                                          'yyyy-MM-dd HH:mm:ss')
+                                                      .parse(dateBt)
+                                                  : null;
                                           var dateTimeEcg =
-                                          dateEcg.toString() != 'null'
-                                              ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                              .parse(dateEcg)
-                                              : null;
+                                              dateEcg.toString() != 'null'
+                                                  ? DateFormat(
+                                                          'yyyy-MM-dd HH:mm:ss')
+                                                      .parse(dateEcg)
+                                                  : null;
                                           var dateTimeSpo2 =
-                                          dateSpo2.toString() != 'null'
-                                              ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                              .parse(dateSpo2)
-                                              : null;
+                                              dateSpo2.toString() != 'null'
+                                                  ? DateFormat(
+                                                          'yyyy-MM-dd HH:mm:ss')
+                                                      .parse(dateSpo2)
+                                                  : null;
                                           print(dateTimeSpo2);
                                           var data = {
-                                            'token': Provider.of<UserModel>(context,
-                                                listen: false)
+                                            'token': Provider.of<UserModel>(
+                                                    context,
+                                                    listen: false)
                                                 .token
                                                 .toString(),
                                             'blood_glucose': {
@@ -500,16 +514,20 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               'date_bg': dateTimeBg.toString()
                                             },
                                             'blood_pressure': {
-                                              'systolic_pressure': systolicPressure,
-                                              'diastolic_pressure': diastolicPressure,
+                                              'systolic_pressure':
+                                                  systolicPressure,
+                                              'diastolic_pressure':
+                                                  diastolicPressure,
                                               'heart_rate_bp': heartRateBp,
-                                              'date_bp':
-                                              dateTimeBp.toString().split('.')[0]
+                                              'date_bp': dateTimeBp
+                                                  .toString()
+                                                  .split('.')[0]
                                             },
                                             'body_temperature': {
                                               'body_temp': bodyTemp,
-                                              'date_bt':
-                                              dateTimeBt.toString().split('.')[0]
+                                              'date_bt': dateTimeBt
+                                                  .toString()
+                                                  .split('.')[0]
                                             },
                                             'ecg': {
                                               'rrmax': rrMax,
@@ -517,7 +535,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               'heart_rate_ecg': heartRateEcg,
                                               'hrv': hrv,
                                               'mood': mood,
-                                              'respiratory_rate': respiratoryRate,
+                                              'respiratory_rate':
+                                                  respiratoryRate,
                                               'duration_ecg': durationEcg,
                                               'date_ecg': dateTimeEcg
                                                   .toString()
@@ -535,13 +554,14 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           setState(() {
                                             uploaded = true;
                                           });
-                                          context.loaderOverlay.show(widget: const LoadingScreen());
+                                          context.loaderOverlay.show(
+                                              widget: const LoadingScreen());
                                           var response =
-                                          await HmApi.postReadings(data);
+                                              await HmApi.postReadings(data);
                                           context.loaderOverlay.hide();
-                                          int status =
-                                          json.decode(response.body)['result']
-                                          ['status'];
+                                          int status = json.decode(
+                                                  response.body)['result']
+                                              ['status'];
                                           if (status == 200) {
                                             ScaffoldMessenger.of(context)
                                                 .showSnackBar(
@@ -556,7 +576,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 .showSnackBar(
                                               const SnackBar(
                                                 backgroundColor: Colors.red,
-                                                content: Text("Data Upload Failed!"),
+                                                content:
+                                                    Text("Data Upload Failed!"),
                                               ),
                                             );
                                             setState(() {
@@ -564,7 +585,6 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                             });
                                           }
                                         }
-
                                       },
                                     ),
                                   ),
@@ -573,7 +593,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                     width: 150,
                                     child: RoundedButton(
                                       buttonText: 'New readings',
-                                      buttonColor: Theme.of(context).primaryColor,
+                                      buttonColor:
+                                          Theme.of(context).primaryColor,
                                       buttonFunction: () async {
                                         await showDialog(
                                           context: context,
@@ -592,23 +613,27 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               children: const [
                                                 Text(
                                                   'Taking new reading will replace\ncurrently visible reading.\nIf you haven not saved and\nwould like to, then click\nupload button.',
-                                                  style: TextStyle(fontSize: 15),
+                                                  style:
+                                                      TextStyle(fontSize: 15),
                                                 ),
                                               ],
                                             ),
                                             actions: [
                                               TextButton(
                                                 onPressed: () {
-                                                  Navigator.pushReplacementNamed(
-                                                      context, HealthMonitor.id);
+                                                  Navigator
+                                                      .pushReplacementNamed(
+                                                          context,
+                                                          HealthMonitor.id);
                                                   // Navigator.pop(context);
                                                 },
                                                 child: Text('Cancel',
                                                     style: TextStyle(
                                                         color: Theme.of(context)
                                                             .primaryColor,
-                                                        decoration: TextDecoration
-                                                            .underline)),
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline)),
                                               ),
                                               TextButton(
                                                 onPressed: () async {
@@ -618,8 +643,9 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                     style: TextStyle(
                                                         color: Theme.of(context)
                                                             .primaryColor,
-                                                        decoration: TextDecoration
-                                                            .underline)),
+                                                        decoration:
+                                                            TextDecoration
+                                                                .underline)),
                                               )
                                             ],
                                           ),
@@ -657,8 +683,9 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => PaintedWaveform(
-                                                  sampleData: data)));
+                                              builder: (context) =>
+                                                  PaintedWaveform(
+                                                      sampleData: data)));
                                     }
                                   },
                                 ),
@@ -704,121 +731,72 @@ class _HealthMonitorState extends State<HealthMonitor> {
                     );
                   } else if (snapshot.connectionState == ConnectionState.done &&
                       snapshot.data != null) {
-                    return ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          if (snapshot.data[index].category ==
-                              'blood_glucose') {
-                            return Card(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
+                    return Column(
+                      children: [
+                        Visibility(
+                          visible: snapshot.data
+                                  .where((HmModel x) =>
+                                      x.category == 'blood_glucose')
+                                  .toList()
+                                  .length >=
+                              3,
+                          child: Container(
+                            height: 250,
+                            width: deviceSize.width,
+                            alignment: Alignment.topCenter,
+                            child: DrawGraph(
+                                data: snapshot.data
+                                    .where((HmModel x) =>
+                                        x.category == 'blood_glucose')
+                                    .toList()),
+                          ),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context, index) {
+                                if (snapshot.data[index].category ==
+                                    'blood_glucose') {
+                                  return Card(
+                                    child: Column(
                                       mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
+                                          MainAxisAlignment.start,
                                       children: [
-                                        const Text('Blood Glucose(mmol/L):'),
-                                        Text(snapshot.data[index].bgMeasure)
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text(
+                                                  'Blood Glucose(mmol/L):'),
+                                              Text(snapshot
+                                                  .data[index].bgMeasure)
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text('Date of reading:'),
+                                              Text(snapshot.data[index].date)
+                                            ],
+                                          ),
+                                        ),
                                       ],
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('Date of reading:'),
-                                        Text(snapshot.data[index].date)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        });
-                  } else {
-                    return const Center(
-                      child: Text('No readings found'),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                        ),
+                      ],
                     );
-                  }
-                }),
-            FutureBuilder(
-                future: HmApi.getReadings(context, userId, token),
-                builder: (BuildContext context, AsyncSnapshot snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done &&
-                      snapshot.data != null) {
-                    return ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          if (snapshot.data[index].category ==
-                              'blood_pressure') {
-                            return Card(
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('SBP(mmHg):'),
-                                        Text(snapshot
-                                            .data[index].systolicPressure)
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('DBP(mmHg):'),
-                                        Text(snapshot
-                                            .data[index].diastolicPressure)
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('Heart rate(BPM):'),
-                                        Text(snapshot.data[index].heartRate)
-                                      ],
-                                    ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        const Text('Date of reading:'),
-                                        Text(snapshot.data[index].date)
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
-                          } else {
-                            return const SizedBox.shrink();
-                          }
-                        });
                   } else {
                     return const Center(
                       child: Text('No readings found'),
@@ -837,16 +815,141 @@ class _HealthMonitorState extends State<HealthMonitor> {
                     return Column(
                       children: [
                         Visibility(
-                          visible: snapshot.data.length >= 3,
+                          visible: snapshot.data
+                                  .where((HmModel x) =>
+                                      x.category == 'blood_pressure')
+                                  .toList()
+                                  .length >=
+                              3,
                           child: Container(
                             height: 250,
                             width: deviceSize.width,
                             alignment: Alignment.topCenter,
-                            child: DrawGraph(data: snapshot.data.where((HmModel x) => x.category == 'body_temperature').toList()),
+                            child: DrawGraph2(
+                                data: snapshot.data
+                                    .where((HmModel x) =>
+                                        x.category == 'blood_pressure')
+                                    .toList()),
+                          ),
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: const [
+                            Text('Sysytolic P.',
+                                style: TextStyle(color: Colors.blue)),
+                            SizedBox(width: 10,),
+                            Text(
+                              'Diastolic P.',
+                              style: TextStyle(color: Colors.red),
+                            )
+                          ],
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                              shrinkWrap: true,
+                              itemCount: snapshot.data.length,
+                              itemBuilder: (context, index) {
+                                if (snapshot.data[index].category ==
+                                    'blood_pressure') {
+                                  return Card(
+                                    child: Column(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text('SBP(mmHg):'),
+                                              Text(snapshot
+                                                  .data[index].systolicPressure)
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text('DBP(mmHg):'),
+                                              Text(snapshot.data[index]
+                                                  .diastolicPressure)
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text('Heart rate(BPM):'),
+                                              Text(snapshot
+                                                  .data[index].heartRate)
+                                            ],
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              const Text('Date of reading:'),
+                                              Text(snapshot.data[index].date)
+                                            ],
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                } else {
+                                  return const SizedBox.shrink();
+                                }
+                              }),
+                        ),
+                      ],
+                    );
+                  } else {
+                    return const Center(
+                      child: Text('No readings found'),
+                    );
+                  }
+                }),
+            FutureBuilder(
+                future: HmApi.getReadings(context, userId, token),
+                builder: (BuildContext context, AsyncSnapshot snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(
+                      child: CircularProgressIndicator(),
+                    );
+                  } else if (snapshot.connectionState == ConnectionState.done &&
+                      snapshot.data != null) {
+                    return Column(
+                      children: [
+                        Visibility(
+                          visible: snapshot.data
+                                  .where((HmModel x) =>
+                                      x.category == 'body_temperature')
+                                  .toList()
+                                  .length >=
+                              3,
+                          child: Container(
+                            height: 250,
+                            width: deviceSize.width,
+                            alignment: Alignment.topCenter,
+                            child: DrawGraph(
+                                data: snapshot.data
+                                    .where((HmModel x) =>
+                                        x.category == 'body_temperature')
+                                    .toList()),
                           ),
                         ),
                         ListView.builder(
-                          shrinkWrap: true,
+                            shrinkWrap: true,
                             itemCount: snapshot.data.length,
                             itemBuilder: (context, index) {
                               if (snapshot.data[index].category ==
@@ -862,7 +965,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           mainAxisAlignment:
                                               MainAxisAlignment.spaceBetween,
                                           children: [
-                                            const Text('Body Temperature(`C/F):'),
+                                            const Text(
+                                                'Body Temperature(`C/F):'),
                                             Text(snapshot.data[index].bodyTemp)
                                           ],
                                         ),
@@ -1027,23 +1131,31 @@ class _HealthMonitorState extends State<HealthMonitor> {
                     return Column(
                       children: [
                         Visibility(
-                          visible: snapshot.data.length >= 3,
+                          visible: snapshot.data
+                                  .where((HmModel x) => x.category == 'spo2')
+                                  .toList()
+                                  .length >=
+                              3,
                           child: Container(
                             height: 250,
                             width: deviceSize.width,
                             alignment: Alignment.topCenter,
-                            child: DrawGraph(data: snapshot.data.where((HmModel x) => x.category == 'spo2').toList()),
+                            child: DrawGraph(
+                                data: snapshot.data
+                                    .where((HmModel x) => x.category == 'spo2')
+                                    .toList()),
                           ),
                         ),
                         Expanded(
                           child: ListView.builder(
-                            shrinkWrap: true,
+                              shrinkWrap: true,
                               itemCount: snapshot.data.length,
                               itemBuilder: (context, index) {
                                 if (snapshot.data[index].category == 'spo2') {
                                   return Card(
                                     child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
@@ -1063,7 +1175,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 MainAxisAlignment.spaceBetween,
                                             children: [
                                               const Text('Heart rate(BPM):'),
-                                              Text(snapshot.data[index].heartRate)
+                                              Text(snapshot
+                                                  .data[index].heartRate)
                                             ],
                                           ),
                                         ),

@@ -28,7 +28,8 @@ class DrawGraph extends StatelessWidget {
                 yValueMapper: (HmModel data, _) => category == 'body_temperature'?double.parse(data.bodyTemp):double.parse(data.spo2),
                 // Enable data label
                 dataLabelSettings: const DataLabelSettings(isVisible: true)
-            )
+            ),
+
           ]
 
       ),
@@ -57,10 +58,19 @@ class DrawGraph2 extends StatelessWidget {
             SplineSeries<HmModel, dynamic>(
                 dataSource:  data,
                 xValueMapper: (HmModel data, _) => data.date.toString(),
-                yValueMapper: (HmModel data, _) => category == 'body_temperature'?double.parse(data.bodyTemp):double.parse(data.spo2),
+                yValueMapper: (HmModel data, _) => double.parse(data.systolicPressure),
                 // Enable data label
                 dataLabelSettings: const DataLabelSettings(isVisible: true)
-            )
+            ),
+            SplineSeries<HmModel, dynamic>(
+                dataSource:  data,
+                xValueMapper: (HmModel data, _) => data.date.toString(),
+                yValueMapper: (HmModel data, _) => double.parse(data.diastolicPressure),
+                // Enable data label
+                dataLabelSettings: const DataLabelSettings(isVisible: true),
+                color: Colors.red,
+            ),
+
           ]
 
       ),
