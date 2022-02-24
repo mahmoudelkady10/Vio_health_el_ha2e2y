@@ -253,6 +253,7 @@ class _DoctorSearchState extends State<DoctorSearch> {
                               DoctorSearch.dropDownValue1 = '';
                               DoctorSearch.dropDownValue2 = '';
                             });
+                            Navigator.pop(context);
                           }),
                     ),
                   ],
