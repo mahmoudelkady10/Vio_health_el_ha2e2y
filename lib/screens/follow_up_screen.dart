@@ -201,32 +201,18 @@ class _PastReadingsState extends State<PastReadings> {
                                     shrinkWrap: true,
                                     itemBuilder: (context, j) {
                                       return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
+                                              MainAxisAlignment.spaceBetween,
                                               children: [
                                                 Text(
-                                                    '${widget.sortedReadings[snapshot.data[index].date]![j]['sub_category']}: ')
+                                                    '${widget.sortedReadings[snapshot.data[index].date]![j]['sub_category']}: '),
+                                                Text(widget.sortedReadings[
+                                                snapshot.data[index]
+                                                    .date]![j]
+                                                ['readings']),
                                               ],
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 35.0),
-                                              child: Row(
-                                                mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
-                                                children: [
-                                                  Text(widget.sortedReadings[
-                                                          snapshot.data[index]
-                                                              .date]![j]
-                                                      ['readings'])
-                                                ],
-                                              ),
                                             ),
                                           ]);
                                     }))),
@@ -253,35 +239,24 @@ class _PastReadingsState extends State<PastReadings> {
                                         .length,
                                     shrinkWrap: true,
                                     itemBuilder: (context, j) {
-                                      return Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.start,
-                                          children: [
-                                            Row(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.spaceEvenly,
-                                              children: [
-                                                Text(
-                                                    '${widget.sortedReadings[snapshot.data[index].date]![j]['sub_category']}: ')
-                                              ],
-                                            ),
-                                            Padding(
-                                              padding:
-                                                  const EdgeInsets.symmetric(
-                                                      horizontal: 35.0),
-                                              child: Row(
+                                      return Padding(
+                                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                                        child: Column(
+                                            children: [
+                                              Row(
                                                 mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceEvenly,
+                                                    MainAxisAlignment.spaceBetween,
                                                 children: [
+                                                  Text(
+                                                      '${widget.sortedReadings[snapshot.data[index].date]![j]['sub_category']}: '),
                                                   Text(widget.sortedReadings[
-                                                          snapshot.data[index]
-                                                              .date]![j]
-                                                      ['readings'])
+                                                  snapshot.data[index]
+                                                      .date]![j]
+                                                  ['readings']),
                                                 ],
                                               ),
-                                            ),
-                                          ]);
+                                            ]),
+                                      );
                                     }))),
                       );
                     } else {
