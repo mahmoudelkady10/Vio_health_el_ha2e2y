@@ -12,6 +12,7 @@ import 'package:medic_app/screens/healthmonitor_history_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
 import 'package:medic_app/screens/packages_screen.dart';
 import 'package:medic_app/screens/wallet_screen.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
@@ -28,6 +29,7 @@ import 'gallery_screen.dart';
 import 'reach_us_screen.dart';
 import 'follow_up_screen.dart';
 import 'package:flutter/services.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -282,32 +284,34 @@ class _MyHomePageState extends State<MyHomePage> {
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 15.0),
-                child: GridView.count(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 15,
-                  mainAxisSpacing: 13,
-                  children: [
-                    optioncard(deviceSize, icons[0], options[0],
-                        DoctorSearch.id, context),
-                    optioncard(
-                        deviceSize, icons[1], options[1], Services.id, context),
-                    optioncard(deviceSize, icons[2], options[2], Appointment.id,
-                        context),
-                    optioncard(deviceSize, icons[3], options[3],
-                        Testimonials.id, context),
-                    optioncard(deviceSize, icons[4], options[4], Medication.id,
-                        context),
-                    optioncard(deviceSize, icons[5], options[5],
-                        PastAppointments.id, context),
-                    optioncard(
-                        deviceSize, icons[6], options[6], FollowUp.id, context),
-                    optioncard(
-                        deviceSize, icons[7], options[7], AlManara.id, context),
-                    optioncard(deviceSize, icons[8], options[8],
-                        HealthMonitor.id, context),
-                    optioncard(deviceSize, icons[9], options[9],
-                        PackagesScreen.id, context),
-                  ],
+                child: LoaderOverlay(
+                  child: GridView.count(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 15,
+                    mainAxisSpacing: 13,
+                    children: [
+                      optioncard(deviceSize, icons[0], options[0],
+                          DoctorSearch.id, context),
+                      optioncard(
+                          deviceSize, icons[1], options[1], Services.id, context),
+                      optioncard(deviceSize, icons[2], options[2], Appointment.id,
+                          context),
+                      optioncard(deviceSize, icons[3], options[3],
+                          Testimonials.id, context),
+                      optioncard(deviceSize, icons[4], options[4], Medication.id,
+                          context),
+                      optioncard(deviceSize, icons[5], options[5],
+                          PastAppointments.id, context),
+                      optioncard(
+                          deviceSize, icons[6], options[6], FollowUp.id, context),
+                      optioncard(
+                          deviceSize, icons[7], options[7], AlManara.id, context),
+                      optioncard(deviceSize, icons[8], options[8],
+                          HealthMonitor.id, context),
+                      optioncard(deviceSize, icons[9], options[9],
+                          PackagesScreen.id, context),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -375,21 +379,13 @@ class _MyHomePageState extends State<MyHomePage> {
           if (option == '\nHealth Monitor') {
             const CHANNEL = 'com.example.viohealth/channels';
             const platform = MethodChannel(CHANNEL);
-            try {
-              var temp =
-                  await platform.invokeMethod('getData', <String, dynamic>{
-                'key': "spo2",
-                'file': "Data",
-              });
-              print(temp);
-            } on PlatformException catch (e) {
-              print(e.message);
-            }
             Navigator.pushNamed(context, screen);
           } else if (option == '\nDoctor') {
+            context.loaderOverlay.show(widget: const LoadingScreen());
             var governorate = await GovernorateApi.getGovernorate(context);
             var city = await CityApi.getCity(context);
             var specialty = await SpecialtiesApi.getSpecialties(context);
+            context.loaderOverlay.hide();
             Navigator.push(
               context,
               MaterialPageRoute(

@@ -64,7 +64,10 @@ class _RegistrationState extends State<Registration> {
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
-    Icon blood = const Icon(Icons.bloodtype, color: Colors.grey,);
+    Icon blood = const Icon(
+      Icons.bloodtype,
+      color: Colors.grey,
+    );
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -140,6 +143,11 @@ class _RegistrationState extends State<Registration> {
               fieldController: Registration.phoneNumberController,
               hintText: 'Phone Number',
               labelText: 'Phone Number',
+              fieldValidator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'This field is required';
+                }
+              },
               fieldIcon: Icons.assignment_ind_outlined,
             ),
             ValidatedTextField(

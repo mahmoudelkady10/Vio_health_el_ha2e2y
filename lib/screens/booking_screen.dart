@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:intl/intl.dart';
+import 'package:medic_app/network/clinic_api.dart';
 import 'package:medic_app/widgets/animated_tile.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
@@ -370,7 +371,7 @@ class BookingD extends StatelessWidget {
                                   Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => BookingT(
+                                          builder: (context) => BookingC(
                                                 doctorId:
                                                     snapshot.data[index].id,
                                                 specialtyId: specialtyId,
@@ -385,6 +386,92 @@ class BookingD extends StatelessWidget {
                           } else {
                             return const SizedBox.shrink();
                           }
+                        }),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No Specialties found'));
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class BookingC extends StatelessWidget {
+  const BookingC(
+      {Key? key,
+      required this.doctorId,
+      required this.specialtyId,
+      required this.type,
+      this.date})
+      : super(key: key);
+  final int doctorId;
+  final int specialtyId;
+  final int type;
+  final DateTime? date;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Choose Clinic'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: Center(
+        child: FutureBuilder(
+          future: ClinicApi.getClinics(context, doctorId),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.data != null) {
+              return Flex(
+                direction: Axis.vertical,
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            child: Card(
+                              elevation: 4,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(10))),
+                              child: SizedBox(
+                                height: 120,
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: ListTile(
+                                        title: Text(
+                                            '${snapshot.data[index].name}'),
+                                        subtitle:
+                                            const Text('ADDRESS/LOCATION'),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BookingT(
+                                            doctorId: doctorId,
+                                            specialtyId: specialtyId,
+                                            type: type,
+                                            clinicId: snapshot.data[index].id,
+                                            date: date,
+                                          )));
+                            },
+                          );
                         }),
                   ),
                 ],
@@ -417,12 +504,14 @@ class BookingT extends StatefulWidget {
       required this.doctorId,
       required this.specialtyId,
       required this.type,
+      required this.clinicId,
       this.date})
       : super(key: key);
   final int doctorId;
   final int specialtyId;
   final int type;
   final DateTime? date;
+  final int clinicId;
 
   @override
   State<BookingT> createState() => _BookingTState();
@@ -436,7 +525,7 @@ class _BookingTState extends State<BookingT> {
   Future<dynamic> getData(updatedDate) async {
     try {
       dynamic data =
-          await TimesApi.getTimeSlots(context, updatedDate!, widget.doctorId);
+          await TimesApi.getTimeSlots(context, updatedDate!, widget.doctorId, widget.clinicId);
       return data;
     } catch (e) {
       throw Exception(e);
@@ -526,13 +615,16 @@ class _BookingTState extends State<BookingT> {
                                                   int status =
                                                       await CreateAppointmentApi
                                                           .createAppointment(
-                                                    context,
-                                                    updatedDate!,
-                                                    widget.doctorId,
-                                                    partnerId!,
-                                                    widget.type,
-                                                    snapshot.data[index].id,
-                                                  );
+                                                              context,
+                                                              updatedDate!,
+                                                              widget.doctorId,
+                                                              partnerId!,
+                                                              widget.type,
+                                                              snapshot
+                                                                  .data[index]
+                                                                  .id,
+                                                              null,
+                                                              widget.clinicId);
                                                   context.loaderOverlay.hide();
                                                   if (status == 200) {
                                                     ScaffoldMessenger.of(

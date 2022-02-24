@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medic_app/network/medication_api.dart';
 import 'package:medic_app/screens/medication_screen.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class AddMedication extends StatefulWidget {
   const AddMedication({Key? key, required this.appId}) : super(key: key);
@@ -41,154 +43,159 @@ class _AddMedicationState extends State<AddMedication> {
                   TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
         ),
         backgroundColor: Theme.of(context).primaryColor,
+
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(35.0),
-        child: Column(
-          children: [
-            SizedBox(
-              width: 200,
-              height: 50,
-              child: Card(
-                child: Column(
-                  children: [
-                    const Text('Instructions',
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFFB22234))),
-                    const SizedBox(
-                      height: 5,
-                    ),
-                    Text('Add drugs one by one',
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
-                  ],
+      body: LoaderOverlay(
+        child: Padding(
+          padding: const EdgeInsets.all(35.0),
+          child: Column(
+            children: [
+              SizedBox(
+                width: 200,
+                height: 50,
+                child: Card(
+                  child: Column(
+                    children: [
+                      const Text('Instructions',
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB22234))),
+                      const SizedBox(
+                        height: 5,
+                      ),
+                      Text('Add drugs one by one',
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor)),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            TextField(
-              controller: name,
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: const InputDecoration(
-                hintText: 'Name',
+              TextField(
+                controller: name,
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: const InputDecoration(
+                  hintText: 'Name',
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: type,
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: const InputDecoration(
-                hintText: 'Type',
+              const SizedBox(
+                height: 5,
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: amount,
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: const InputDecoration(
-                hintText: 'Amount/dose',
+              TextField(
+                controller: type,
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: const InputDecoration(
+                  hintText: 'Type',
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: dose,
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: const InputDecoration(
-                hintText: 'Doses/day',
+              const SizedBox(
+                height: 5,
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            TextField(
-              controller: duration,
-              style: Theme.of(context).textTheme.subtitle1,
-              decoration: const InputDecoration(
-                hintText: 'Duration',
+              TextField(
+                controller: amount,
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: const InputDecoration(
+                  hintText: 'Amount/dose',
+                ),
               ),
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            RoundedButton(
-                buttonText: 'Submit',
-                buttonColor: Theme.of(context).primaryColor,
-                buttonFunction: () async {
-                  if (name.text != '' &&
-                      type.text != '' &&
-                      amount.text != '' &&
-                      dose.text != '' &&
-                      duration.text != '') {
-                    var status = await MedicationApi.postPrescription(
-                        context,
-                        widget.appId,
-                        name.text,
-                        type.text,
-                        amount.text,
-                        dose.text,
-                        duration.text,
-                        null);
-                    if (status == 200) {
+              const SizedBox(
+                height: 5,
+              ),
+              TextField(
+                controller: dose,
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: const InputDecoration(
+                  hintText: 'Doses/day',
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              TextField(
+                controller: duration,
+                style: Theme.of(context).textTheme.subtitle1,
+                decoration: const InputDecoration(
+                  hintText: 'Duration',
+                ),
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              RoundedButton(
+                  buttonText: 'Submit',
+                  buttonColor: Theme.of(context).primaryColor,
+                  buttonFunction: () async {
+                    if (name.text != '' &&
+                        type.text != '' &&
+                        amount.text != '' &&
+                        dose.text != '' &&
+                        duration.text != '') {
+                      context.loaderOverlay.show(widget: const LoadingScreen());
+                      var status = await MedicationApi.postPrescription(
+                          context,
+                          widget.appId,
+                          name.text,
+                          type.text,
+                          amount.text,
+                          dose.text,
+                          duration.text,
+                          null);
+                      context.loaderOverlay.hide();
                       if (status == 200) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.green,
-                            content: Text("Prescription uploaded successfully"),
-                          ),
-                        );
-                        Navigator.pushReplacement(context,
-                            MaterialPageRoute(builder: (context) {
-                          return MedicationDetails(appId: widget.appId);
-                        }));
-                      } else {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            backgroundColor: Colors.red,
-                            content: Text("Failed to Upload your prescription"),
-                          ),
-                        );
+                        if (status == 200) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.green,
+                              content: Text("Prescription uploaded successfully"),
+                            ),
+                          );
+                          Navigator.pushReplacement(context,
+                              MaterialPageRoute(builder: (context) {
+                            return MedicationDetails(appId: widget.appId);
+                          }));
+                        } else {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              backgroundColor: Colors.red,
+                              content: Text("Failed to Upload your prescription"),
+                            ),
+                          );
+                        }
                       }
+                      _clear();
+                    } else {
+                      showDialog(
+                          context: context,
+                          builder: (_) => AlertDialog(
+                                  elevation: 10,
+                                  title: const Center(
+                                      child: Icon(
+                                    Icons.announcement_outlined,
+                                    color: Color(0xFFB22234),
+                                    size: 50,
+                                  )),
+                                  content: Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: const [
+                                        Text('Please fill out all information'),
+                                      ]),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () {
+                                        Navigator.pop(context);
+                                      },
+                                      child: const Text('ok',
+                                          style: TextStyle(
+                                              color: Colors.black,
+                                              decoration:
+                                                  TextDecoration.underline)),
+                                    )
+                                  ]));
                     }
-                    _clear();
-                  } else {
-                    showDialog(
-                        context: context,
-                        builder: (_) => AlertDialog(
-                                elevation: 10,
-                                title: const Center(
-                                    child: Icon(
-                                  Icons.announcement_outlined,
-                                  color: Color(0xFFB22234),
-                                  size: 50,
-                                )),
-                                content: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: const [
-                                      Text('Please fill out all information'),
-                                    ]),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.pop(context);
-                                    },
-                                    child: const Text('ok',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            decoration:
-                                                TextDecoration.underline)),
-                                  )
-                                ]));
-                  }
-                })
-          ],
+                  })
+            ],
+          ),
         ),
       ),
     );

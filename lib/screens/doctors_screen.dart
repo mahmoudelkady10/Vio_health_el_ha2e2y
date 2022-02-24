@@ -1,5 +1,4 @@
 import 'dart:ui';
-import 'package:intl/intl.dart';
 import 'package:medic_app/network/create_appointment_api.dart';
 import 'package:medic_app/network/services_api.dart';
 import 'package:medic_app/network/time_slots_api.dart';
@@ -439,7 +438,7 @@ class _BookingTState extends State<BookingT> {
   Future<dynamic> getData(updatedDate) async {
     try {
       dynamic data =
-          await TimesApi.getTimeSlots(context, updatedDate!, widget.doctorId);
+          await TimesApi.getTimeSlots(context, updatedDate!, widget.doctorId, 1);
       return data;
     } catch (e) {
       throw Exception(e);
@@ -541,6 +540,8 @@ class _BookingTState extends State<BookingT> {
                                                       partnerId!,
                                                       widget.type,
                                                       snapshot.data[index].id,
+                                                          null,
+                                                          1
                                                     );
                                                     if (status == 200) {
                                                       ScaffoldMessenger.of(
@@ -637,7 +638,6 @@ class _BookingTState extends State<BookingT> {
 
   @override
   Widget build(BuildContext context) {
-    DateFormat dFormat = DateFormat('dd/MM/yyy');
     int? partnerId = Provider.of<UserModel>(context).partnerId;
     return Scaffold(
       appBar: AppBar(

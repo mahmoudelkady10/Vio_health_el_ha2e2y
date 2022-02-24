@@ -47,7 +47,7 @@ class MedicationApi extends BaseApiManagement {
           'amount': amount,
           'dose': dose,
           'duration': duration,
-          'image': image
+          'image': image?? false
         },
       ),
     );

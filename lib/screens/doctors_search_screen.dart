@@ -1,11 +1,13 @@
 import 'dart:ui';
 import 'package:intl/intl.dart';
 import 'package:medic_app/model/governorate_model.dart';
+import 'package:medic_app/network/clinic_api.dart';
 import 'package:medic_app/network/create_appointment_api.dart';
 import 'package:medic_app/network/search_filters_api.dart';
 import 'package:medic_app/network/services_api.dart';
 import 'package:medic_app/network/time_slots_api.dart';
 import 'package:medic_app/widgets/animated_tile.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:provider/provider.dart';
 import 'package:date_picker_timeline/date_picker_timeline.dart';
@@ -16,6 +18,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:medic_app/model/specialties_model.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/network/doctors_api.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 import 'doctors_screen.dart';
 import 'home_screen.dart';
@@ -902,7 +905,7 @@ class BookingType extends StatelessWidget {
                                         Navigator.push(
                                             context,
                                             MaterialPageRoute(
-                                                builder: (context) => BookingT(
+                                                builder: (context) => BookingC(
                                                       type: snapshot
                                                           .data[index].id,
                                                       doctorId: doctorId,
@@ -913,7 +916,7 @@ class BookingType extends StatelessWidget {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) => BookingT(
+                                              builder: (context) => BookingC(
                                                     type:
                                                         snapshot.data[index].id,
                                                     doctorId: doctorId,
@@ -941,6 +944,92 @@ class BookingType extends StatelessWidget {
   }
 }
 
+class BookingC extends StatelessWidget {
+  const BookingC(
+      {Key? key,
+        required this.doctorId,
+        required this.specialtyId,
+        required this.type,
+        this.date})
+      : super(key: key);
+  final int doctorId;
+  final int specialtyId;
+  final int type;
+  final DateTime? date;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Choose Clinic'),
+        backgroundColor: Theme.of(context).primaryColor,
+      ),
+      body: Center(
+        child: FutureBuilder(
+          future: ClinicApi.getClinics(context, doctorId),
+          builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.connectionState == ConnectionState.done &&
+                snapshot.data != null) {
+              return Flex(
+                direction: Axis.vertical,
+                children: [
+                  Expanded(
+                    child: ListView.builder(
+                        itemCount: snapshot.data.length,
+                        itemBuilder: (context, index) {
+                          return GestureDetector(
+                            child: Card(
+                              elevation: 4,
+                              shape: const RoundedRectangleBorder(
+                                  borderRadius:
+                                  BorderRadius.all(Radius.circular(10))),
+                              child: SizedBox(
+                                height: 120,
+                                child: Row(
+                                  mainAxisAlignment:
+                                  MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: ListTile(
+                                        title: Text(
+                                            '${snapshot.data[index].name}'),
+                                        subtitle:
+                                        const Text('ADDRESS/LOCATION'),
+                                      ),
+                                    )
+                                  ],
+                                ),
+                              ),
+                            ),
+                            onTap: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => BookingT(
+                                        doctorId: doctorId,
+                                        specialtyId: specialtyId,
+                                        type: type,
+                                        clinicId: snapshot.data[index].id,
+                                        date: date,
+                                      )));
+                            },
+                          );
+                        }),
+                  ),
+                ],
+              );
+            } else {
+              return const Center(child: Text('No Specialties found'));
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
+
 class SpecialtyId {
   final int specialtyId;
 
@@ -956,13 +1045,17 @@ class Type {
 class BookingT extends StatefulWidget {
   const BookingT(
       {Key? key,
-      required this.doctorId,
-      required this.specialtyId,
-      required this.type})
+        required this.doctorId,
+        required this.specialtyId,
+        required this.type,
+        required this.clinicId,
+        this.date})
       : super(key: key);
   final int doctorId;
   final int specialtyId;
   final int type;
+  final DateTime? date;
+  final int clinicId;
 
   @override
   State<BookingT> createState() => _BookingTState();
@@ -976,7 +1069,7 @@ class _BookingTState extends State<BookingT> {
   Future<dynamic> getData(updatedDate) async {
     try {
       dynamic data =
-          await TimesApi.getTimeSlots(context, updatedDate!, widget.doctorId);
+      await TimesApi.getTimeSlots(context, updatedDate!, widget.doctorId, widget.clinicId);
       return data;
     } catch (e) {
       throw Exception(e);
@@ -986,6 +1079,7 @@ class _BookingTState extends State<BookingT> {
   @override
   void initState() {
     super.initState();
+    updatedDate = widget.date ?? DateTime.now();
     futureData = getData(updatedDate);
   }
 
@@ -999,169 +1093,162 @@ class _BookingTState extends State<BookingT> {
               snapshot.data != null) {
             if (snapshot.data.isNotEmpty) {
               return Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Text(
-                      '       Available Time',
-                      textAlign: TextAlign.left,
-                    ),
-                    ListView.builder(
-                        shrinkWrap: true,
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          return Stack(
-                            fit: StackFit.loose,
-                            clipBehavior: Clip.antiAlias,
+                padding:
+                const EdgeInsets.only(top: 20.0, left: 20.0, right: 20.0),
+                child: ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: snapshot.data.length,
+                    itemBuilder: (context, index) {
+                      return Stack(
+                        fit: StackFit.loose,
+                        clipBehavior: Clip.antiAlias,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            mainAxisSize: MainAxisSize.max,
                             children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                mainAxisSize: MainAxisSize.max,
-                                children: [
-                                  SizedBox(
-                                    height: 50,
-                                    child: Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 16.0),
-                                      child: Row(
-                                        children: [
-                                          const Icon(Icons.timer),
-                                          const SizedBox(
-                                            width: 5,
-                                          ),
-                                          Text(
-                                            snapshot.data[index].time,
-                                            textAlign: TextAlign.left,
-                                          ),
-                                        ],
+                              SizedBox(
+                                height: 50,
+                                child: Padding(
+                                  padding: const EdgeInsets.only(left: 16.0),
+                                  child: Row(
+                                    children: [
+                                      const Icon(Icons.timer),
+                                      const SizedBox(
+                                        width: 5,
                                       ),
-                                    ),
+                                      Text(
+                                        snapshot.data[index].time,
+                                        textAlign: TextAlign.left,
+                                      ),
+                                    ],
                                   ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                        left: 8.0,
-                                        right: 18.0,
-                                        top: 0.0,
-                                        bottom: 0.0),
-                                    child: SizedBox(
-                                      width: 80,
-                                      height: 60,
-                                      child: RoundedButton(
-                                        buttonText: 'Book',
-                                        buttonColor:
-                                            Theme.of(context).primaryColor,
-                                        buttonFunction: () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (_) => AlertDialog(
-                                              title: const Center(
-                                                  child: Icon(
-                                                Icons.assignment_outlined,
-                                                color: Colors.deepOrangeAccent,
-                                                size: 50,
-                                              )),
-                                              content: Text(
-                                                  'Confirm Appointment at ${snapshot.data[index].time}'),
-                                              actions: [
-                                                TextButton(
-                                                  onPressed: () async {
-                                                    int status =
-                                                        await CreateAppointmentApi
-                                                            .createAppointment(
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(
+                                    left: 8.0,
+                                    right: 18.0,
+                                    top: 0.0,
+                                    bottom: 0.0),
+                                child: SizedBox(
+                                  width: 80,
+                                  height: 60,
+                                  child: RoundedButton(
+                                    buttonText: 'Book',
+                                    buttonColor: Theme.of(context).primaryColor,
+                                    buttonFunction: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (_) => LoaderOverlay(
+                                          child: AlertDialog(
+                                            title: const Center(
+                                                child: Icon(
+                                                  Icons.assignment_outlined,
+                                                  color: Colors.deepOrangeAccent,
+                                                  size: 50,
+                                                )),
+                                            content: Text(
+                                                'Confirm Appointment at ${snapshot.data[index].time}'),
+                                            actions: [
+                                              TextButton(
+                                                onPressed: () async {
+                                                  context.loaderOverlay.show(
+                                                      widget:
+                                                      const LoadingScreen());
+                                                  int status =
+                                                  await CreateAppointmentApi
+                                                      .createAppointment(
                                                       context,
                                                       updatedDate!,
                                                       widget.doctorId,
                                                       partnerId!,
                                                       widget.type,
-                                                      snapshot.data[index].id,
-                                                    );
-                                                    if (status == 200) {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        const SnackBar(
-                                                          backgroundColor:
-                                                              Colors.green,
-                                                          content: Text(
-                                                              "Appointment Booked"),
-                                                        ),
-                                                      );
-                                                    } else {
-                                                      ScaffoldMessenger.of(
-                                                              context)
-                                                          .showSnackBar(
-                                                        const SnackBar(
-                                                          backgroundColor:
-                                                              Colors.red,
-                                                          content: Text(
-                                                              "Booking Failed"),
-                                                        ),
-                                                      );
-                                                    }
-                                                    Navigator
-                                                        .pushReplacementNamed(
-                                                            context,
-                                                            MyHomePage.id);
-                                                  },
-                                                  child: const Padding(
-                                                    padding: EdgeInsets.only(
-                                                        right: 10.0),
-                                                    child: SizedBox(
-                                                      width: 100,
-                                                      height: 70,
-                                                      child: RoundedButton(
-                                                        buttonText: 'Confirm',
+                                                      snapshot
+                                                          .data[index]
+                                                          .id,
+                                                      null,
+                                                      widget.clinicId);
+                                                  context.loaderOverlay.hide();
+                                                  if (status == 200) {
+                                                    ScaffoldMessenger.of(
+                                                        context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        backgroundColor:
+                                                        Colors.green,
+                                                        content: Text(
+                                                            "Appointment Booked"),
                                                       ),
+                                                    );
+                                                  } else {
+                                                    ScaffoldMessenger.of(
+                                                        context)
+                                                        .showSnackBar(
+                                                      const SnackBar(
+                                                        backgroundColor:
+                                                        Colors.red,
+                                                        content: Text(
+                                                            "Booking Failed"),
+                                                      ),
+                                                    );
+                                                  }
+                                                  Navigator.pushNamed(
+                                                      context, MyHomePage.id);
+                                                },
+                                                child: const Padding(
+                                                  padding: EdgeInsets.only(
+                                                      right: 10.0),
+                                                  child: SizedBox(
+                                                    width: 100,
+                                                    height: 70,
+                                                    child: RoundedButton(
+                                                      buttonText: 'Confirm',
                                                     ),
                                                   ),
                                                 ),
-                                                TextButton(
-                                                  onPressed: () {
-                                                    Navigator.pop(context);
-                                                  },
-                                                  child: Padding(
-                                                    padding:
-                                                        const EdgeInsets.only(
-                                                            left: 7.0),
-                                                    child: SizedBox(
-                                                      width: 100,
-                                                      height: 70,
-                                                      child: RoundedButton(
-                                                        buttonText: 'Cancel',
-                                                        textColor:
-                                                            Theme.of(context)
-                                                                .primaryColor,
-                                                        buttonColor:
-                                                            Colors.white,
-                                                      ),
+                                              ),
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: Padding(
+                                                  padding:
+                                                  const EdgeInsets.only(
+                                                      left: 7.0),
+                                                  child: SizedBox(
+                                                    width: 100,
+                                                    height: 70,
+                                                    child: RoundedButton(
+                                                      buttonText: 'Cancel',
+                                                      textColor:
+                                                      Theme.of(context)
+                                                          .primaryColor,
+                                                      buttonColor: Colors.white,
                                                     ),
                                                   ),
-                                                )
-                                              ],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                                    ),
+                                                ),
+                                              )
+                                            ],
+                                          ),
+                                        ),
+                                      );
+                                    },
                                   ),
-                                ],
-                              ),
-                              const Divider(
-                                height: 0.3,
-                                thickness: 1,
-                                color: Colors.black,
-                                indent: 15,
-                                endIndent: 15,
+                                ),
                               ),
                             ],
-                          );
-                        }),
-                  ],
-                ),
+                          ),
+                          const Divider(
+                            height: 0.3,
+                            thickness: 1,
+                            color: Colors.black,
+                            indent: 15,
+                            endIndent: 15,
+                          ),
+                        ],
+                      );
+                    }),
               );
             } else {
               return const Text('No free time slots on date chosen');
@@ -1181,24 +1268,32 @@ class _BookingTState extends State<BookingT> {
         title: const Text('Choose appointment time'),
         backgroundColor: Theme.of(context).primaryColor,
       ),
-      body: ListView(
+      body: Column(
         children: [
-          DatePicker(
-            DateTime.now(),
-            initialSelectedDate: DateTime.now(),
-            selectionColor: Theme.of(context).primaryColor,
-            selectedTextColor: Colors.white,
-            onDateChange: (date) {
-              // New date selected
-              setState(() {
-                updatedDate = date;
-              });
-            },
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: DatePicker(
+                  widget.date == null ? DateTime.now() : widget.date!,
+                  initialSelectedDate:
+                  widget.date == null ? DateTime.now() : widget.date!,
+                  daysCount: widget.date == null ? 500 : 1,
+                  selectionColor: Theme.of(context).primaryColor,
+                  selectedTextColor: Colors.white,
+                  onDateChange: (date) {
+                    // New date selected
+                    setState(() {
+                      updatedDate = date;
+                    });
+                  },
+                ),
+              ),
+            ],
           ),
-          const SizedBox(
-            height: 15,
-          ),
-          Center(child: showTimes(context, updatedDate, partnerId)),
+          if (updatedDate != null)
+            Expanded(child: showTimes(context, updatedDate, partnerId)),
+          if (updatedDate == null) const SizedBox.shrink(),
         ],
       ),
     );

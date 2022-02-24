@@ -8,10 +8,12 @@ import 'package:image_cropper/image_cropper.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/network/appointments_api.dart';
 import 'package:medic_app/network/gallery_api.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:medic_app/widgets/unit_request_card.dart';
 import 'package:medic_app/widgets/validated_text_field.dart';
 import 'package:provider/provider.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class PastAppointments extends StatelessWidget {
   const PastAppointments({Key? key}) : super(key: key);
@@ -275,74 +277,78 @@ class _PickImageState extends State<PickImage> {
           ],
         ),
       ),
-      body: ListView(
-        children: [
-          if (_imagefile != null) ...[
-            Padding(
-              padding: const EdgeInsets.only(top: 10),
-              child: SizedBox(height: 500, width: 500, child: Image.file(_imagefile)),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: const Icon(Icons.crop),
-                    onPressed: () {
-                      _cropImage();
+      body: LoaderOverlay(
+        child: ListView(
+          children: [
+            if (_imagefile != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(top: 10),
+                child: SizedBox(height: 500, width: 500, child: Image.file(_imagefile)),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FloatingActionButton(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: const Icon(Icons.crop),
+                      onPressed: () {
+                        _cropImage();
+                      }),
+                  FloatingActionButton(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: const Icon(Icons.close),
+                      onPressed: () {
+                        _clear();
+                      }),
+                ],
+              ),
+              const SizedBox(
+                height: 5,
+              ),
+              ValidatedTextField(
+                fieldController: myController,
+                labelText: 'Caption',
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                child: RoundedButton(
+                    buttonText: 'Upload',
+                    buttonColor: Theme.of(context).primaryColor,
+                    buttonFunction: () async {
+                      context.loaderOverlay.show(widget: const LoadingScreen());
+                      dynamic appointments =
+                          await AppointmentsApi.getAppointments(
+                              context,
+                              userId,
+                              Provider.of<UserModel>(context, listen: false)
+                                  .token);
+                      int status = await GalleryApi.postGallery(context, img64,
+                          date, myController.text, widget.appId, widget.doctorId);
+                      context.loaderOverlay.hide();
+                      if (status == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text("Photo uploaded to gallery"),
+                          ),
+                        );
+                        Navigator.pop(context);
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text("Failed to Upload photo"),
+                          ),
+                        );
+                      }
                     }),
-                FloatingActionButton(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: const Icon(Icons.close),
-                    onPressed: () {
-                      _clear();
-                    }),
-              ],
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            ValidatedTextField(
-              fieldController: myController,
-              labelText: 'Caption',
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 70),
-              child: RoundedButton(
-                  buttonText: 'Upload',
-                  buttonColor: Theme.of(context).primaryColor,
-                  buttonFunction: () async {
-                    dynamic appointments =
-                        await AppointmentsApi.getAppointments(
-                            context,
-                            userId,
-                            Provider.of<UserModel>(context, listen: false)
-                                .token);
-                    int status = await GalleryApi.postGallery(context, img64,
-                        date, myController.text, widget.appId, widget.doctorId);
-                    if (status == 200) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text("Photo uploaded to gallery"),
-                        ),
-                      );
-                      Navigator.pop(context);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text("Failed to Upload photo"),
-                        ),
-                      );
-                    }
-                  }),
-            )
-          ]
-        ],
+              )
+            ]
+          ],
+        ),
       ),
     );
   }

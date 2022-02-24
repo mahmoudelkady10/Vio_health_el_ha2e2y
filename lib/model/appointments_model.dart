@@ -13,6 +13,7 @@ class AppointmentsModel {
   String? serviceClass;
   dynamic meetingUrl;
   dynamic room;
+  dynamic doctorName;
 
   AppointmentsModel(
       {this.id,
@@ -26,7 +27,8 @@ class AppointmentsModel {
       this.state,
       this.meetingUrl,
       this.room,
-      this.serviceClass});
+      this.serviceClass,
+      this.doctorName});
 
   factory AppointmentsModel.fromJson(Map<String, dynamic> json) {
     return AppointmentsModel(
@@ -41,8 +43,8 @@ class AppointmentsModel {
         state: json['state'],
         serviceClass: json['service_class'],
         meetingUrl: json['telemedicine_main_url'],
-        room: json['telemedicine_room']
-    );
+        room: json['telemedicine_room'],
+        doctorName: json['doctor_name']);
   }
 }
 

@@ -9,18 +9,19 @@ import 'package:provider/provider.dart';
 
 class TimesApi extends BaseApiManagement {
   static Future<List<TimesModel>> getTimeSlots(
-      BuildContext context, DateTime date, int doctorId) async {
+      BuildContext context, DateTime date, int doctorId, int clinicId) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     String dayName = DateFormat('EEEE').format(date);
     print(dayName);
     var response = await http.post(
-      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_get_time_slots'),
+      Uri.parse('${BaseApiManagement.baseUrl}/techclinic/mob_get_time_slots'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "doctor_id": doctorId,
         "date": formattedDate,
         "day": dayName,
-        "token": Provider.of<UserModel>(context, listen: false).token
+        "token": Provider.of<UserModel>(context, listen: false).token,
+        "clinic_id": clinicId
       }),
     );
     print(response.body);

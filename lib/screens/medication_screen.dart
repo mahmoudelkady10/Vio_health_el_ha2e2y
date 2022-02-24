@@ -9,11 +9,13 @@ import 'package:expandable/expandable.dart';
 import 'package:medic_app/network/appointments_api.dart';
 import 'package:medic_app/network/time_slots_api.dart';
 import 'package:medic_app/screens/add_medication_screen.dart';
+import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:medic_app/widgets/unit_request_card.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:image_cropper/image_cropper.dart';
+import 'package:loader_overlay/loader_overlay.dart';
 
 class Medication extends StatefulWidget {
   const Medication({Key? key}) : super(key: key);
@@ -109,6 +111,7 @@ class _MedicationState extends State<Medication> {
                               date: snapshot.data[index].date,
                               showButton: false,
                               showVideoCall: false,
+                              doctorName: snapshot.data[index].doctorName == false? null: snapshot.data[index].doctorName,
                             ),
                             onTap: () {
                               Navigator.push(
@@ -140,104 +143,110 @@ class _MedicationState extends State<Medication> {
         onPressed: () async {
           showDialog(
             context: context,
-            builder: (_) => AlertDialog(
-              elevation: 10,
-              title: const Center(
-                  child: Icon(
-                Icons.announcement_outlined,
-                color: Colors.black,
-                size: 50,
-              )),
-              content: SizedBox(
-                width: 200,
-                height: 120,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('click confirm to write your\nown prescription\n',
-                        style:
-                            TextStyle(color: Theme.of(context).primaryColor)),
-                    Center(
-                      child: TextField(
-                        controller: myController,
-                        style: Theme.of(context).textTheme.subtitle1,
-                        decoration: const InputDecoration(
-                          hintText: '         Write the doctor name',
+            builder: (_) => LoaderOverlay(
+              child: AlertDialog(
+                elevation: 10,
+                title: const Center(
+                    child: Icon(
+                  Icons.announcement_outlined,
+                  color: Colors.black,
+                  size: 50,
+                )),
+                content: SizedBox(
+                  width: 200,
+                  height: 120,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('click confirm to write your\nown prescription\n',
+                          style:
+                              TextStyle(color: Theme.of(context).primaryColor)),
+                      Center(
+                        child: TextField(
+                          controller: myController,
+                          style: Theme.of(context).textTheme.subtitle1,
+                          decoration: const InputDecoration(
+                            hintText: '         Write the doctor name',
+                          ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
+                actions: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      SizedBox(
+                        width: 100,
+                        height: 70,
+                        child: RoundedButton(
+                          buttonColor: Theme.of(context).primaryColor,
+                          buttonText: 'cancel',
+                          buttonFunction: () {
+                            Navigator.pop(context, Medication.id);
+                          },
+                        ),
+                      ),
+                      SizedBox(
+                        width: 100,
+                        height: 70,
+                        child: RoundedButton(
+                          buttonColor: Theme.of(context).primaryColor,
+                          buttonText: 'confirm',
+                          buttonFunction: () async {
+                            context.loaderOverlay.show(widget: const LoadingScreen());
+                            var time = await TimesApi.getTimeSlots(
+                                context, DateTime.now(), 19, 1);
+                            var status =
+                                await CreateAppointmentApi.createAppointment(
+                              context,
+                              DateTime.now(),
+                              19,
+                              Provider.of<UserModel>(context, listen: false)
+                                  .partnerId,
+                              3,
+                              time.first.id!.toInt(),
+                                  myController.text,
+                                  1
+                            );
+                            context.loaderOverlay.hide();
+                            if (status == 200) {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.green,
+                                  content: Text("successfully"),
+                                ),
+                              );
+                              var appointmentlast =
+                                  await AppointmentsApi.getAppointments(
+                                      context,
+                                      userId,
+                                      Provider.of<UserModel>(context,
+                                              listen: false)
+                                          .token);
+                              print(appointmentlast.last.id);
+                              Navigator.pushReplacement(context,
+                                  MaterialPageRoute(builder: (context) {
+                                return MedicationDetails(
+                                    appId: appointmentlast.last.id!.toInt());
+                              }));
+                            } else {
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                const SnackBar(
+                                  backgroundColor: Colors.red,
+                                  content: Text("Failed"),
+                                ),
+                              );
+                            }
+                          },
+                        ),
+                      ),
+                    ],
+                  )
+                ],
               ),
-              actions: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    SizedBox(
-                      width: 100,
-                      height: 70,
-                      child: RoundedButton(
-                        buttonColor: Theme.of(context).primaryColor,
-                        buttonText: 'cancel',
-                        buttonFunction: () async {
-                          Navigator.pop(context, Medication.id);
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 100,
-                      height: 70,
-                      child: RoundedButton(
-                        buttonColor: Theme.of(context).primaryColor,
-                        buttonText: 'confirm',
-                        buttonFunction: () async {
-                          var time = await TimesApi.getTimeSlots(
-                              context, DateTime.now(), 19);
-                          var status =
-                              await CreateAppointmentApi.createAppointment(
-                            context,
-                            DateTime.now(),
-                            19,
-                            Provider.of<UserModel>(context, listen: false)
-                                .partnerId,
-                            3,
-                            time.first.id!.toInt(),
-                          );
-                          if (status == 200) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text("successfully"),
-                              ),
-                            );
-                            var appointmentlast =
-                                await AppointmentsApi.getAppointments(
-                                    context,
-                                    userId,
-                                    Provider.of<UserModel>(context,
-                                            listen: false)
-                                        .token);
-                            print(appointmentlast.last.id);
-                            Navigator.push(context,
-                                MaterialPageRoute(builder: (context) {
-                              return MedicationDetails(
-                                  appId: appointmentlast.last.id!.toInt());
-                            }));
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text("Failed"),
-                              ),
-                            );
-                          }
-                        },
-                      ),
-                    ),
-                  ],
-                )
-              ],
             ),
           );
         },
@@ -320,61 +329,67 @@ class _MedicationImageState extends State<MedicationImage> {
           ],
         ),
       ),
-      body: ListView(
-        children: [
-          if (image != null) ...[
-            Padding(
-              padding: const EdgeInsets.only(top:10),
-              child: SizedBox(height: 500, width: 500, child: Image.file(image)),
-            ),
-            const SizedBox(
-              height: 15,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                FloatingActionButton(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: const Icon(Icons.crop),
-                    onPressed: () {
-                      _cropImage();
+      body: LoaderOverlay(
+        child: ListView(
+          children: [
+            if (image != null) ...[
+              Padding(
+                padding: const EdgeInsets.only(top:10),
+                child: SizedBox(height: 500, width: 500, child: Image.file(image)),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  FloatingActionButton(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: const Icon(Icons.crop),
+                      onPressed: () {
+                        _cropImage();
+                      }),
+                  FloatingActionButton(
+                      backgroundColor: Theme.of(context).primaryColor,
+                      child: const Icon(Icons.close),
+                      onPressed: () {
+                        _clear();
+                      }),
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 70),
+                child: RoundedButton(
+                    buttonText: 'Upload',
+                    buttonColor: Theme.of(context).primaryColor,
+                    buttonFunction: () async {
+                      context.loaderOverlay.show(widget: const LoadingScreen());
+                      var status = await MedicationApi.postPrescription(
+                          context, widget.appId, '', '', '', '', '', img64);
+                      context.loaderOverlay.hide();
+                      if (status == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.green,
+                            content: Text("image uploaded successfully"),
+                          ),
+                        );
+                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+                          return MedicationDetails(appId: widget.appId);
+                        }));
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            backgroundColor: Colors.red,
+                            content: Text("Failed to Upload your image"),
+                          ),
+                        );
+                      }
                     }),
-                FloatingActionButton(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    child: const Icon(Icons.close),
-                    onPressed: () {
-                      _clear();
-                    }),
-              ],
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 70),
-              child: RoundedButton(
-                  buttonText: 'Upload',
-                  buttonColor: Theme.of(context).primaryColor,
-                  buttonFunction: () async {
-                    var status = await MedicationApi.postPrescription(
-                        context, widget.appId, '', '', '', '', '', img64);
-                    if (status == 200) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.green,
-                          content: Text("image uploaded successfully"),
-                        ),
-                      );
-                      Navigator.pushNamed(context, Medication.id);
-                    } else {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          backgroundColor: Colors.red,
-                          content: Text("Failed to Upload your image"),
-                        ),
-                      );
-                    }
-                  }),
-            )
-          ]
-        ],
+              )
+            ]
+          ],
+        ),
       ),
     );
   }
@@ -405,7 +420,7 @@ class _MedicationDetailsState extends State<MedicationDetails> {
               child: IconButton(
                   icon: const Icon(Icons.add_a_photo_outlined),
                   onPressed: () {
-                    Navigator.push(
+                    Navigator.pushReplacement(
                       context,
                       MaterialPageRoute(
                         builder: (context) {

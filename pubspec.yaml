@@ -77,6 +77,7 @@ dev_dependencies:
   flutter_webview_plugin: ^0.4.0
   jitsi_meet: ^4.0.0
   syncfusion_flutter_pdf: ^19.4.43-beta
+  syncfusion_flutter_charts: ^19.4.53
 
   intl: ^0.17.0
 

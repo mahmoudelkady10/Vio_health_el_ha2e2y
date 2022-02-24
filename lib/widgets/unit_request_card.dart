@@ -19,7 +19,8 @@ class AppointmentCard extends StatelessWidget {
       this.appId,
       this.showVideoCall,
       this.url,
-      this.room})
+      this.room,
+      this.doctorName})
       : super(key: key);
 
   final String? service;
@@ -34,6 +35,7 @@ class AppointmentCard extends StatelessWidget {
   final bool? showVideoCall;
   final dynamic url;
   final dynamic room;
+  final dynamic doctorName;
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +100,9 @@ class AppointmentCard extends StatelessWidget {
                         ),
                       ),
                     ]),
-                    const SizedBox(height: 4,),
+                    const SizedBox(
+                      height: 4,
+                    ),
                     Row(children: [
                       Text(
                         'Doctor: ',
@@ -115,7 +119,33 @@ class AppointmentCard extends StatelessWidget {
                         ),
                       )
                     ]),
-                    const SizedBox(height: 4,),
+                    Visibility(
+                        visible: doctorName != null,
+                        child: const SizedBox(
+                          height: 4,
+                        )),
+                    Visibility(
+                      visible: doctorName != null,
+                      child: Row(children: [
+                        Text(
+                          'Doctor name: ',
+                          style: TextStyle(
+                            color: Theme.of(context).primaryColor,
+                            fontSize: 17.0,
+                          ),
+                        ),
+                        Text(
+                          doctorName.toString(),
+                          style: const TextStyle(
+                            color: Color(0xFFB22234),
+                            fontSize: 15.0,
+                          ),
+                        )
+                      ]),
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
                     Row(children: [
                       Text(
                         'Date: ',
@@ -132,7 +162,9 @@ class AppointmentCard extends StatelessWidget {
                         ),
                       )
                     ]),
-                    const SizedBox(height: 4,),
+                    const SizedBox(
+                      height: 4,
+                    ),
                     if (day != null)
                       Row(children: [
                         Text(
@@ -169,13 +201,18 @@ class AppointmentCard extends StatelessWidget {
                               showDialog(
                                 context: context,
                                 builder: (_) => AlertDialog(
-                                  title: Center(child: Text('Diagnosis', style: TextStyle(color: Theme.of(context).primaryColor),)),
-                                  content: Text(
-                                      diagnosis ?? 'No Diagnosis Made',
-                                      style: const TextStyle(
-                                        color: Color(0xFFB22234),
-                                        fontSize: 15.0,
-                                      )),
+                                  title: Center(
+                                      child: Text(
+                                    'Diagnosis',
+                                    style: TextStyle(
+                                        color: Theme.of(context).primaryColor),
+                                  )),
+                                  content:
+                                      Text(diagnosis ?? 'No Diagnosis Made',
+                                          style: const TextStyle(
+                                            color: Color(0xFFB22234),
+                                            fontSize: 15.0,
+                                          )),
                                   actions: [
                                     TextButton(
                                       onPressed: () async {
@@ -215,28 +252,26 @@ class AppointmentCard extends StatelessWidget {
                             child: RoundedButton(
                               buttonColor: Theme.of(context).primaryColor,
                               buttonText: 'Cancel',
-                              buttonFunction: () async{
-                                var response = await AppointmentAction.cancelAppoint(context, appId!);
-                                int status = jsonDecode(response.body)['result']['status'];
-                                if (status == 200){
+                              buttonFunction: () async {
+                                var response =
+                                    await AppointmentAction.cancelAppoint(
+                                        context, appId!);
+                                int status = jsonDecode(response.body)['result']
+                                    ['status'];
+                                if (status == 200) {
                                   ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor:
-                                        Colors.green,
-                                        content: Text(
-                                            "Appointment Cancelled"),
-                                      ));
+                                      .showSnackBar(const SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text("Appointment Cancelled"),
+                                  ));
                                   Navigator.pop(context);
-                                }else {
+                                } else {
                                   ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor:
-                                        Colors.red,
-                                        content: Text(
-                                            "Failed to cancel appointment!"),
-                                      ));
+                                      .showSnackBar(const SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content:
+                                        Text("Failed to cancel appointment!"),
+                                  ));
                                   Navigator.pop(context);
                                 }
                               },
@@ -248,28 +283,26 @@ class AppointmentCard extends StatelessWidget {
                             child: RoundedButton(
                               buttonColor: Theme.of(context).primaryColor,
                               buttonText: 'Confirm',
-                              buttonFunction: () async{
-                                var response = await AppointmentAction.confirmAppoint(context, appId!);
-                                int status = jsonDecode(response.body)['result']['status'];
-                                if (status == 200){
+                              buttonFunction: () async {
+                                var response =
+                                    await AppointmentAction.confirmAppoint(
+                                        context, appId!);
+                                int status = jsonDecode(response.body)['result']
+                                    ['status'];
+                                if (status == 200) {
                                   ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor:
-                                        Colors.green,
-                                        content: Text(
-                                            "Appointment Confirmed!"),
-                                      ));
+                                      .showSnackBar(const SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text("Appointment Confirmed!"),
+                                  ));
                                   Navigator.pop(context);
-                                }else {
+                                } else {
                                   ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                      const SnackBar(
-                                        backgroundColor:
-                                        Colors.red,
-                                        content: Text(
-                                            "Failed to confirm appointment!"),
-                                      ));
+                                      .showSnackBar(const SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content:
+                                        Text("Failed to confirm appointment!"),
+                                  ));
                                   Navigator.pop(context);
                                 }
                               },
@@ -285,17 +318,22 @@ class AppointmentCard extends StatelessWidget {
                             height: 70,
                             width: 250,
                             child: RoundedButton(
-                              buttonColor: url!= ''? Theme.of(context).primaryColor: Colors.grey,
+                              buttonColor: url != ''
+                                  ? Theme.of(context).primaryColor
+                                  : Colors.grey,
                               buttonText: 'Go to online Appointment',
                               buttonFunction: () {
-                                  if(url!='') {
-                                    Navigator.push(context, MaterialPageRoute(builder: (context) {
-                                      return VideoAppointment(room: room.toString(), url: url.toString(),);
-                                    }));
-                                  }
+                                if (url != '') {
+                                  Navigator.push(context,
+                                      MaterialPageRoute(builder: (context) {
+                                    return VideoAppointment(
+                                      room: room.toString(),
+                                      url: url.toString(),
+                                    );
+                                  }));
+                                }
                               },
                             ),
-
                           )),
                     )
                   ],
