@@ -169,47 +169,40 @@ class WelcomeScreen2 extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: deviceSize.height * 0.20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Padding(
-                  padding: EdgeInsets.only(left: 25.0),
+            CustomPaint(
+              painter: ShapesPainter(),
+              child: SizedBox(
+                height: 280,
+                width:  800,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 130),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Text('WELCOME TO ',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB22234))),
+                      Text('Techno Clinic.',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB22234))),
+                    ],
+                  ),
                 ),
-                Text('WELCOME TO ',
-                    textAlign: TextAlign.end,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFB22234))),
-              ],
+              ),
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 25.0),
-                ),
-                Text('Techno Clinic.',
-                    textAlign: TextAlign.end,
-                    style: TextStyle(
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor)),
-              ],
-            ),
-            SizedBox(
-              height: deviceSize.height * 0.07,
-              width: deviceSize.width * 0.5,
-            ),
+            const SizedBox(height:30),
             Image.asset(
               'assets/techno clinic.png',
               width: 200,
               height: 200,
             ),
-            const SizedBox(
-              height: 50,
-            ),
+            const SizedBox(height:30),
             Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -248,6 +241,25 @@ class WelcomeScreen2 extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+const double _kCurveHeight = 35;
+
+class ShapesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Path();
+    p.lineTo(0, size.height - _kCurveHeight);
+    p.relativeQuadraticBezierTo(size.width / 2, 2 * _kCurveHeight, size.width, 0);
+    p.lineTo(size.width, 0);
+    p.close();
+
+    canvas.drawPath(p, Paint()..color = const Color(0xFF002768));
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
 //'https://images.onhealth.com/images/slideshow/right-doctor-finder-s1-doctors.jpg'
