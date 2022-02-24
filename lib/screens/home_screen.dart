@@ -1,9 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:medic_app/network/city_api.dart';
+import 'package:medic_app/network/governorate_api.dart';
 import 'package:medic_app/network/login_api.dart';
 import 'package:medic_app/network/specialties_api.dart';
 import 'package:medic_app/screens/booking_screen.dart';
+import 'package:medic_app/screens/doctors_search_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
 import 'package:medic_app/screens/healthmonitor_history_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
@@ -38,19 +41,21 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
-  Future<void> _refresh() async{
+      GlobalKey<RefreshIndicatorState>();
+
+  Future<void> _refresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
     String? token = prefs.getString('token');
     dynamic response = await LoginApi.getUserInfo(context, token!);
   }
+
   @override
   Widget build(BuildContext context) {
     UserModel user = Provider.of<UserModel>(context);
     var deviceSize = MediaQuery.of(context).size;
 
     List options = [
-      '\nDoctors',
+      '\nDoctor',
       '\nServices',
       '\nAppointments',
       '\nTestimonials',
@@ -59,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
       '\nFollowUp',
       '\nTechno Information',
       '\nHealth Monitor',
-      '\nPackages'
+      '\nPackages',
     ];
     List icons = [
       const ImageIcon(
@@ -80,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
       const ImageIcon(
         AssetImage('assets/test.png'),
         size: 75,
-        color:Color(0xFFB22234),
+        color: Color(0xFFB22234),
       ),
       const ImageIcon(
         AssetImage('assets/medication.png'),
@@ -261,8 +266,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
-                        Text('Balance: ${Provider.of<UserModel>(context).balance}', style: const TextStyle(color: Colors.green),),
-                        Text('On Hold: ${Provider.of<UserModel>(context).onHold}', style: const TextStyle(color: Colors.red)),
+                        Text(
+                          'Balance: ${Provider.of<UserModel>(context).balance}',
+                          style: const TextStyle(color: Colors.green),
+                        ),
+                        Text(
+                            'On Hold: ${Provider.of<UserModel>(context).onHold}',
+                            style: const TextStyle(color: Colors.red)),
                       ],
                     ),
                   ),
@@ -277,26 +287,26 @@ class _MyHomePageState extends State<MyHomePage> {
                   crossAxisSpacing: 15,
                   mainAxisSpacing: 13,
                   children: [
-                    optioncard(deviceSize, icons[0], options[0], Availability.id,
-                        context),
+                    optioncard(deviceSize, icons[0], options[0],
+                        DoctorSearch.id, context),
                     optioncard(
                         deviceSize, icons[1], options[1], Services.id, context),
                     optioncard(deviceSize, icons[2], options[2], Appointment.id,
                         context),
-                    optioncard(deviceSize, icons[3], options[3], Testimonials.id,
+                    optioncard(deviceSize, icons[3], options[3],
+                        Testimonials.id, context),
+                    optioncard(deviceSize, icons[4], options[4], Medication.id,
                         context),
-                    optioncard(
-                        deviceSize, icons[4], options[4], Medication.id, context),
                     optioncard(deviceSize, icons[5], options[5],
                         PastAppointments.id, context),
                     optioncard(
                         deviceSize, icons[6], options[6], FollowUp.id, context),
                     optioncard(
                         deviceSize, icons[7], options[7], AlManara.id, context),
-                    optioncard(deviceSize, icons[8], options[8], HealthMonitor.id,
-                        context),
-                    optioncard(deviceSize, icons[9], options[9], PackagesScreen.id,
-                        context),
+                    optioncard(deviceSize, icons[8], options[8],
+                        HealthMonitor.id, context),
+                    optioncard(deviceSize, icons[9], options[9],
+                        PackagesScreen.id, context),
                   ],
                 ),
               ),
@@ -359,10 +369,10 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
         onTap: () async {
-          if (option == '\nDoctors') {
-            await SpecialtiesApi.getSpecialties(context);
-            Navigator.pushNamed(context, screen);
-          } else if (option == '\nHealth Monitor') {
+          //   if (option == '\nDoctors') {
+          //     await SpecialtiesApi.getSpecialties(context);
+          //     Navigator.pushNamed(context, screen);
+          if (option == '\nHealth Monitor') {
             const CHANNEL = 'com.example.viohealth/channels';
             const platform = MethodChannel(CHANNEL);
             try {
@@ -376,6 +386,21 @@ class _MyHomePageState extends State<MyHomePage> {
               print(e.message);
             }
             Navigator.pushNamed(context, screen);
+          } else if (option == '\nDoctor') {
+            var governorate = await GovernorateApi.getGovernorate(context);
+            var city = await CityApi.getCity(context);
+            var specialty = await SpecialtiesApi.getSpecialties(context);
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return DoctorSearch(
+                      governorate: governorate,
+                      city: city,
+                      specialty: specialty);
+                },
+              ),
+            );
           } else {
             Navigator.pushNamed(context, screen);
           }

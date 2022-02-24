@@ -1,13 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/network/follow_up_api.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
-import 'package:provider/provider.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:expandable/expandable.dart';
 
 class FollowUp extends StatefulWidget {
   const FollowUp({Key? key}) : super(key: key);
@@ -18,6 +15,8 @@ class FollowUp extends StatefulWidget {
 }
 
 class _FollowUpState extends State<FollowUp> {
+  DateTime? NDate;
+
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
@@ -76,19 +75,38 @@ class _FollowUpState extends State<FollowUp> {
                                   ),
                                 ),
                                 Text(snapshot.data[index].name,
-                                    style: const TextStyle(
-                                        color: Colors.black)),
+                                    style:
+                                        const TextStyle(color: Colors.black)),
                               ],
                             ),
                           ),
                         ),
                       ),
-                      onTap: () {
+                      onTap: () async {
+                        var readings = await FollowUpApi.getReadings(
+                            context, snapshot.data[index].categoryId);
+                        NDate = DateTime.parse(readings[0].date);
+                        Map<dynamic, List<Map<String, dynamic>>>
+                            sortedReadings = {};
+                        // {'sub_category': i.sub_category, 'readings': i.readings}
+                            for (var i in readings) {
+                                if (sortedReadings[i.date] != null) {
+                                  sortedReadings[i.date]!.add({
+                                    'sub_category': i.sub_category,
+                                    'readings': i.readings
+                                  });
+                                } else {
+                                  sortedReadings[i.date] = [];
+                                }
+                            }
+                        print(sortedReadings);
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                              return PastReadings(
-                                  categoryId: snapshot.data[index].categoryId);
-                            }));
+                          return PastReadings(
+                            categoryId: snapshot.data[index].categoryId,
+                            sortedReadings: sortedReadings,
+                          );
+                        }));
                       },
                     ),
                   );
@@ -105,14 +123,36 @@ class _FollowUpState extends State<FollowUp> {
 }
 
 class PastReadings extends StatefulWidget {
-  const PastReadings({Key? key, required this.categoryId}) : super(key: key);
+  const PastReadings(
+      {Key? key, required this.categoryId, required this.sortedReadings})
+      : super(key: key);
   final int categoryId;
+  final Map<dynamic, List> sortedReadings;
 
   @override
   _PastReadingsState createState() => _PastReadingsState();
 }
 
 class _PastReadingsState extends State<PastReadings> {
+  // Future<void> getSortedReadings() async {
+  //   var readings = await FollowUpApi.getReadings(context, widget.categoryId);
+  //   Map<dynamic, List> sortedReadings = {};
+  //   // {'sub_category': i.sub_category, 'readings': i.readings}
+  //   for (var i in readings) {
+  //     sortedReadings[i.date]!
+  //         .add({'sub_category': i.sub_category, 'readings': i.readings});
+  //   }
+  //   print(sortedReadings);
+  //   _sortedReadings = sortedReadings;
+  // }
+
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   getSortedReadings();
+  //
+  // }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -136,22 +176,117 @@ class _PastReadingsState extends State<PastReadings> {
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.data != null) {
               return ListView.builder(
+                  shrinkWrap: true,
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
-                    return SizedBox(
-                      height: 80,
-                      child: Card(
-                        elevation: 10,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            Text('${snapshot.data[index].sub_category}: '),
-                            Text(snapshot.data[index].readings),
-                            Text(snapshot.data[index].date)
-                          ],
-                        ),
-                      ),
-                    );
+                    if (index == 0) {
+                      return Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Card(
+                            elevation: 10,
+                            child: ExpandablePanel(
+                                header: Padding(
+                                  padding: const EdgeInsets.only(top: 9.0),
+                                  child: Text(snapshot.data[index].date,
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          const TextStyle(color: Colors.black)),
+                                ),
+                                collapsed: const SizedBox.shrink(),
+                                expanded: ListView.builder(
+                                    itemCount: widget
+                                        .sortedReadings[
+                                            snapshot.data[index].date]!
+                                        .length,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, j) {
+                                      return Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                    '${widget.sortedReadings[snapshot.data[index].date]![j]['sub_category']}: ')
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 35.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  Text(widget.sortedReadings[
+                                                          snapshot.data[index]
+                                                              .date]![j]
+                                                      ['readings'])
+                                                ],
+                                              ),
+                                            ),
+                                          ]);
+                                    }))),
+                      );
+                    } else if (snapshot.data[index].date !=
+                        snapshot.data[index - 1].date) {
+                      return Padding(
+                        padding: const EdgeInsets.all(15.0),
+                        child: Card(
+                            elevation: 10,
+                            child: ExpandablePanel(
+                                header: Padding(
+                                  padding: const EdgeInsets.only(top: 9.0),
+                                  child: Text(snapshot.data[index].date,
+                                      textAlign: TextAlign.center,
+                                      style:
+                                          const TextStyle(color: Colors.black)),
+                                ),
+                                collapsed: const SizedBox.shrink(),
+                                expanded: ListView.builder(
+                                    itemCount: widget
+                                        .sortedReadings[
+                                            snapshot.data[index].date]!
+                                        .length,
+                                    shrinkWrap: true,
+                                    itemBuilder: (context, j) {
+                                      return Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.spaceEvenly,
+                                              children: [
+                                                Text(
+                                                    '${widget.sortedReadings[snapshot.data[index].date]![j]['sub_category']}: ')
+                                              ],
+                                            ),
+                                            Padding(
+                                              padding:
+                                                  const EdgeInsets.symmetric(
+                                                      horizontal: 35.0),
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment
+                                                        .spaceEvenly,
+                                                children: [
+                                                  Text(widget.sortedReadings[
+                                                          snapshot.data[index]
+                                                              .date]![j]
+                                                      ['readings'])
+                                                ],
+                                              ),
+                                            ),
+                                          ]);
+                                    }))),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
+                    }
                   });
             } else {
               return const Center(
@@ -166,10 +301,10 @@ class _PastReadingsState extends State<PastReadings> {
             builder: (_) => AlertDialog(
               title: Center(
                   child: Icon(
-                    Icons.announcement_outlined,
-                    color: Theme.of(context).primaryColor,
-                    size: 50,
-                  )),
+                Icons.announcement_outlined,
+                color: Theme.of(context).primaryColor,
+                size: 50,
+              )),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -183,8 +318,8 @@ class _PastReadingsState extends State<PastReadings> {
                   onPressed: () {
                     Navigator.pushReplacement(context,
                         MaterialPageRoute(builder: (context) {
-                          return PostReadings(categoryId: widget.categoryId);
-                        }));
+                      return PostReadings(categoryId: widget.categoryId);
+                    }));
                   },
                   child: Text('ok',
                       style: TextStyle(
@@ -254,16 +389,17 @@ class _PostReadingsState extends State<PostReadings> {
                                 children: [
                                   Text(snapshot.data[index].name,
                                       style: TextStyle(
-                                          color: Theme.of(context).primaryColor)),
+                                          color:
+                                              Theme.of(context).primaryColor)),
                                   Center(
                                     child: TextField(
                                       controller: controllers[
-                                      snapshot.data[index].subCategoryId],
+                                          snapshot.data[index].subCategoryId],
                                       style:
-                                      Theme.of(context).textTheme.subtitle1,
+                                          Theme.of(context).textTheme.subtitle1,
                                       decoration: InputDecoration(
-                                        hintText:
-                                        snapshot.data[index].name.toString(),
+                                        hintText: snapshot.data[index].name
+                                            .toString(),
                                       ),
                                     ),
                                   ),
@@ -280,7 +416,8 @@ class _PostReadingsState extends State<PostReadings> {
                         buttonColor: Theme.of(context).primaryColor,
                         buttonFunction: () async {
                           bool successful = false;
-                          context.loaderOverlay.show(widget: const LoadingScreen());
+                          context.loaderOverlay
+                              .show(widget: const LoadingScreen());
                           for (var key in controllers.keys) {
                             var status = await FollowUpApi.postReadings(
                                 context,
@@ -302,7 +439,8 @@ class _PostReadingsState extends State<PostReadings> {
                                 content: Text("readings submitted"),
                               ),
                             );
-                            Navigator.pushReplacementNamed(context, FollowUp.id);
+                            Navigator.pushReplacementNamed(
+                                context, FollowUp.id);
                           }
                         },
                       ),

@@ -59,7 +59,7 @@ class FollowUpApi extends BaseApiManagement {
 
   static Future<int> postReadings(
       BuildContext context, dynamic category, dynamic sub_category, dynamic readings, DateTime sDate) async {
-    String formattedDate = DateFormat('yyyy-MM-dd hh:mm:ss').format(sDate);
+    String formattedDate = DateFormat('yyyy-MM-dd hh:mm').format(sDate);
     http.Response response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_post_manual_readings'),
       headers: {"Content-Type": "application/json"},
@@ -90,9 +90,8 @@ class FollowUpApi extends BaseApiManagement {
       Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_get_manual_readings'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
-        "partner_id": Provider.of<UserModel>(context).uid,
         "token": Provider.of<UserModel>(context, listen: false).token,
-        "id": Provider.of<UserModel>(context).partnerId,
+        "id": Provider.of<UserModel>(context, listen: false).partnerId,
         "category_id": categoryId
       }),
     );

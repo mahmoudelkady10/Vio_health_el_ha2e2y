@@ -17,6 +17,7 @@ import 'package:medic_app/screens/log_in_screen.dart';
 import 'package:medic_app/screens/packages_screen.dart';
 import 'package:medic_app/screens/registration_screen.dart';
 import 'package:medic_app/screens/speciality_screen.dart';
+import 'package:medic_app/screens/doctors_search_screen.dart';
 import 'package:medic_app/screens/appointment_screen.dart';
 import 'package:medic_app/screens/almanara_screen.dart';
 import 'package:medic_app/screens/testimonials_screen.dart';
