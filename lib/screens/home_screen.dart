@@ -30,6 +30,7 @@ import 'reach_us_screen.dart';
 import 'follow_up_screen.dart';
 import 'package:flutter/services.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -43,7 +44,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
 
   Future<void> _refresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -54,7 +55,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     UserModel user = Provider.of<UserModel>(context);
-    var deviceSize = MediaQuery.of(context).size;
+    var deviceSize = MediaQuery
+        .of(context)
+        .size;
 
     List options = [
       '\nDoctor',
@@ -128,7 +131,9 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Theme
+            .of(context)
+            .primaryColor,
         centerTitle: true,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -150,16 +155,16 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 (user.image.toString() != "")
                     ? Container(
-                        width: 130,
-                        height: 130,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          shape: BoxShape.rectangle,
-                          image: DecorationImage(
-                              image: NetworkImage(user.image.toString()),
-                              fit: BoxFit.fill),
-                        ),
-                      )
+                  width: 130,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                        image: NetworkImage(user.image.toString()),
+                        fit: BoxFit.fill),
+                  ),
+                )
                     : const Icon(Icons.person),
               ],
             ),
@@ -207,7 +212,9 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: RoundedButton(
                       buttonColor: Colors.white,
                       buttonText: 'Edit Profile',
-                      textColor: Theme.of(context).primaryColor,
+                      textColor: Theme
+                          .of(context)
+                          .primaryColor,
                       buttonFunction: () {
                         Navigator.pushNamed(context, ManageProfile.id);
                       }),
@@ -222,12 +229,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 250,
                   height: 70,
                   child: RoundedButton(
-                    buttonColor: Theme.of(context).primaryColor,
+                    buttonColor: Theme
+                        .of(context)
+                        .primaryColor,
                     buttonText: 'Log Out',
                     buttonFunction: () async {
                       imageCache?.clear();
                       SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
+                      await SharedPreferences.getInstance();
                       await prefs.clear();
                       await Future.delayed(const Duration(seconds: 2));
 
@@ -235,13 +244,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         // the new route
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
-                              const LoginScreen(),
+                          const LoginScreen(),
                         ),
 
                         // this function should return true when we're done removing routes
                         // but because we want to remove all other screens, we make it
                         // always return false
-                        (Route route) => false,
+                            (Route route) => false,
                       );
                     },
                   ),
@@ -269,17 +278,67 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          'Balance: ${Provider.of<UserModel>(context).balance}',
+                          'Balance: ${Provider
+                              .of<UserModel>(context)
+                              .balance}',
                           style: const TextStyle(color: Colors.green),
                         ),
                         Text(
-                            'On Hold: ${Provider.of<UserModel>(context).onHold}',
+                            'On Hold: ${Provider
+                                .of<UserModel>(context)
+                                .onHold}',
                             style: const TextStyle(color: Colors.red)),
                       ],
                     ),
                   ),
                 )
               ],
+            ),
+            SizedBox(
+              height: 200,
+              width: 800,
+              child: ListView(
+                  padding: const EdgeInsets.all(8),
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    GestureDetector(
+                      child: Card(
+                        elevation: 8,
+                        child: SizedBox(
+                            height: 50,
+                            width: 370,
+                            child: Image.asset('assets/google.png')),
+                      ),
+                      onTap: () async {
+                        await _launchURL1();
+                      },
+                    ),
+                    GestureDetector(
+                      child: Card(
+                        elevation: 8,
+                        child: SizedBox(
+                            height: 50,
+                            width: 370,
+                            child: Image.asset('assets/instgram.png')),
+                      ),
+                      onTap: () async {
+                        await _launchURL2();
+                      },
+                    ),
+                    GestureDetector(
+                      child: Card(
+                        elevation: 8,
+                        child: SizedBox(
+                            height: 50,
+                            width: 370,
+                            child: Image.asset('assets/youtube.png')),
+                      ),
+                      onTap: () async {
+                        await _launchURL3();
+                      },
+                    )
+                  ]
+              ),
             ),
             Expanded(
               child: Padding(
@@ -293,19 +352,24 @@ class _MyHomePageState extends State<MyHomePage> {
                       optioncard(deviceSize, icons[0], options[0],
                           DoctorSearch.id, context),
                       optioncard(
-                          deviceSize, icons[1], options[1], Services.id, context),
-                      optioncard(deviceSize, icons[2], options[2], Appointment.id,
+                          deviceSize, icons[1], options[1], Services.id,
+                          context),
+                      optioncard(
+                          deviceSize, icons[2], options[2], Appointment.id,
                           context),
                       optioncard(deviceSize, icons[3], options[3],
                           Testimonials.id, context),
-                      optioncard(deviceSize, icons[4], options[4], Medication.id,
+                      optioncard(
+                          deviceSize, icons[4], options[4], Medication.id,
                           context),
                       optioncard(deviceSize, icons[5], options[5],
                           PastAppointments.id, context),
                       optioncard(
-                          deviceSize, icons[6], options[6], FollowUp.id, context),
+                          deviceSize, icons[6], options[6], FollowUp.id,
+                          context),
                       optioncard(
-                          deviceSize, icons[7], options[7], AlManara.id, context),
+                          deviceSize, icons[7], options[7], AlManara.id,
+                          context),
                       optioncard(deviceSize, icons[8], options[8],
                           HealthMonitor.id, context),
                       optioncard(deviceSize, icons[9], options[9],
@@ -328,7 +392,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           Radius.circular(10),
                         ),
                       ),
-                      backgroundColor: Theme.of(context).primaryColor,
+                      backgroundColor: Theme
+                          .of(context)
+                          .primaryColor,
                       onPressed: () {
                         Navigator.pushNamed(context, BookingS.id);
                       },
@@ -342,6 +408,25 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
       ), // This trailing comma makes auto-formatting nicer for build methods.
     );
+  }
+
+  _launchURL1() async {
+    final Uri emailLaunchUri = Uri(
+        scheme: 'mailto',
+        path: 'https://www.google.ru/');
+    launch(emailLaunchUri.toString());
+  }
+  _launchURL2() async {
+    final Uri emailLaunchUri = Uri(
+        scheme: 'mailto',
+        path: 'https://www.instagram.com/');
+    launch(emailLaunchUri.toString());
+  }
+  _launchURL3() async {
+    final Uri emailLaunchUri = Uri(
+        scheme: 'mailto',
+        path: 'https://www.youtube.com/');
+    launch(emailLaunchUri.toString());
   }
 
   SizedBox optioncard(Size deviceSize, ImageIcon icon, String option,
@@ -367,7 +452,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 11,
-                    color: Theme.of(context).primaryColor),
+                    color: Theme
+                        .of(context)
+                        .primaryColor),
               ),
             ),
           ),
