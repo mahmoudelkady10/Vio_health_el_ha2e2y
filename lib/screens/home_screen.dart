@@ -266,7 +266,7 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 SizedBox(
                   width: deviceSize.width,
-                  height: 80,
+                  height: 75,
                   child: Card(
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
