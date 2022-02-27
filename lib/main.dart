@@ -185,7 +185,7 @@ class WelcomeScreen2 extends StatelessWidget {
                               fontSize: 20,
                               fontWeight: FontWeight.bold,
                               color: Color(0xFFB22234))),
-                      Text('Techno Clinic.',
+                      Text('Techno Clinic',
                           textAlign: TextAlign.start,
                           style: TextStyle(
                               fontSize: 40,

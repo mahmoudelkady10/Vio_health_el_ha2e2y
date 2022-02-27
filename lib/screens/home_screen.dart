@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
+import 'package:medic_app/network/ads_api.dart';
 import 'package:medic_app/network/city_api.dart';
 import 'package:medic_app/network/governorate_api.dart';
 import 'package:medic_app/network/login_api.dart';
@@ -44,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
 
   Future<void> _refresh() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -55,9 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     UserModel user = Provider.of<UserModel>(context);
-    var deviceSize = MediaQuery
-        .of(context)
-        .size;
+    var deviceSize = MediaQuery.of(context).size;
 
     List options = [
       '\nDoctor',
@@ -67,7 +67,7 @@ class _MyHomePageState extends State<MyHomePage> {
       '\nMedication',
       '\nGallery',
       '\nFollowUp',
-      '\nTechno Information',
+      '\nAbout Techno',
       '\nHealth Monitor',
       '\nPackages',
     ];
@@ -131,9 +131,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme
-            .of(context)
-            .primaryColor,
+        backgroundColor: Theme.of(context).primaryColor,
         centerTitle: true,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
@@ -155,16 +153,16 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 (user.image.toString() != "")
                     ? Container(
-                  width: 130,
-                  height: 130,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    shape: BoxShape.rectangle,
-                    image: DecorationImage(
-                        image: NetworkImage(user.image.toString()),
-                        fit: BoxFit.fill),
-                  ),
-                )
+                        width: 130,
+                        height: 130,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          shape: BoxShape.rectangle,
+                          image: DecorationImage(
+                              image: NetworkImage(user.image.toString()),
+                              fit: BoxFit.fill),
+                        ),
+                      )
                     : const Icon(Icons.person),
               ],
             ),
@@ -212,9 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: RoundedButton(
                       buttonColor: Colors.white,
                       buttonText: 'Edit Profile',
-                      textColor: Theme
-                          .of(context)
-                          .primaryColor,
+                      textColor: Theme.of(context).primaryColor,
                       buttonFunction: () {
                         Navigator.pushNamed(context, ManageProfile.id);
                       }),
@@ -229,14 +225,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   width: 250,
                   height: 70,
                   child: RoundedButton(
-                    buttonColor: Theme
-                        .of(context)
-                        .primaryColor,
+                    buttonColor: Theme.of(context).primaryColor,
                     buttonText: 'Log Out',
                     buttonFunction: () async {
                       imageCache?.clear();
                       SharedPreferences prefs =
-                      await SharedPreferences.getInstance();
+                          await SharedPreferences.getInstance();
                       await prefs.clear();
                       await Future.delayed(const Duration(seconds: 2));
 
@@ -244,13 +238,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         // the new route
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
-                          const LoginScreen(),
+                              const LoginScreen(),
                         ),
 
                         // this function should return true when we're done removing routes
                         // but because we want to remove all other screens, we make it
                         // always return false
-                            (Route route) => false,
+                        (Route route) => false,
                       );
                     },
                   ),
@@ -278,15 +272,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         Text(
-                          'Balance: ${Provider
-                              .of<UserModel>(context)
-                              .balance}',
+                          'Balance: ${Provider.of<UserModel>(context).balance}',
                           style: const TextStyle(color: Colors.green),
                         ),
                         Text(
-                            'On Hold: ${Provider
-                                .of<UserModel>(context)
-                                .onHold}',
+                            'On Hold: ${Provider.of<UserModel>(context).onHold}',
                             style: const TextStyle(color: Colors.red)),
                       ],
                     ),
@@ -296,79 +286,63 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             SizedBox(
               height: 200,
-              width: 800,
-              child: ListView(
-                  padding: const EdgeInsets.all(8),
-                  scrollDirection: Axis.horizontal,
-                  children: [
-                    GestureDetector(
-                      child: Card(
-                        elevation: 8,
-                        child: SizedBox(
-                            height: 50,
-                            width: 370,
-                            child: Image.asset('assets/google.png')),
-                      ),
-                      onTap: () async {
-                        await launch('https://www.google.com');
-                      },
-                    ),
-                    GestureDetector(
-                      child: Card(
-                        elevation: 8,
-                        child: SizedBox(
-                            height: 50,
-                            width: 370,
-                            child: Image.asset('assets/instgram.png')),
-                      ),
-                      onTap: () async {
-                        await launch('https://www.instagram.com');
-                      },
-                    ),
-                    GestureDetector(
-                      child: Card(
-                        elevation: 8,
-                        child: SizedBox(
-                            height: 50,
-                            width: 370,
-                            child: Image.asset('assets/youtube.png')),
-                      ),
-                      onTap: () async {
-                        await launch('https://www.youtube.com');
-                      },
-                    )
-                  ]
-              ),
+              width: 900,
+              child: FutureBuilder(
+                  future: AdsApi.getAds(context),
+                  builder: (BuildContext context, AsyncSnapshot snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(
+                        child: CircularProgressIndicator(),
+                      );
+                    } else if (snapshot.connectionState ==
+                            ConnectionState.done &&
+                        snapshot.data != null) {
+                      return ListView.builder(
+                        scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                              child: Card(
+                                elevation: 10,
+                                child: Image.network(
+                                    snapshot.data[index].image.toString(), height: 150,width: 350),
+                              ),
+                            );
+                          });
+                    } else {
+                      return const Center(
+                        child: Text('try again'),
+                      );
+                    }
+                  }),
             ),
             Expanded(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 15.0),
+                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 0),
                 child: LoaderOverlay(
                   child: GridView.count(
+                    shrinkWrap: true,
                     crossAxisCount: 2,
-                    crossAxisSpacing: 15,
-                    mainAxisSpacing: 13,
+                    crossAxisSpacing: 17,
+                    mainAxisSpacing: 2,
                     children: [
                       optioncard(deviceSize, icons[0], options[0],
                           DoctorSearch.id, context),
-                      optioncard(
-                          deviceSize, icons[1], options[1], Services.id,
+                      optioncard(deviceSize, icons[1], options[1], Services.id,
                           context),
-                      optioncard(
-                          deviceSize, icons[2], options[2], Appointment.id,
-                          context),
+                      optioncard(deviceSize, icons[2], options[2],
+                          Appointment.id, context),
                       optioncard(deviceSize, icons[3], options[3],
                           Testimonials.id, context),
-                      optioncard(
-                          deviceSize, icons[4], options[4], Medication.id,
-                          context),
+                      optioncard(deviceSize, icons[4], options[4],
+                          Medication.id, context),
                       optioncard(deviceSize, icons[5], options[5],
                           PastAppointments.id, context),
-                      optioncard(
-                          deviceSize, icons[6], options[6], FollowUp.id,
+                      optioncard(deviceSize, icons[6], options[6], FollowUp.id,
                           context),
-                      optioncard(
-                          deviceSize, icons[7], options[7], AlManara.id,
+                      optioncard(deviceSize, icons[7], options[7], AlManara.id,
                           context),
                       optioncard(deviceSize, icons[8], options[8],
                           HealthMonitor.id, context),
@@ -379,42 +353,65 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
               ),
             ),
-            BottomAppBar(
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  SizedBox(
-                    width: 200,
-                    height: 50,
-                    child: FloatingActionButton(
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(
-                          Radius.circular(10),
-                        ),
-                      ),
-                      backgroundColor: Theme
-                          .of(context)
-                          .primaryColor,
-                      onPressed: () {
-                        Navigator.pushNamed(context, BookingS.id);
-                      },
-                      child: const Text('Book an Appointment'),
-                    ),
-                  ),
-                ],
-              ),
-            )
+            // BottomAppBar(
+            //   child: Row(
+            //     mainAxisAlignment: MainAxisAlignment.center,
+            //     children: [
+            //       SizedBox(
+            //         width: 200,
+            //         height: 50,
+            //         child: FloatingActionButton(
+            //           shape: const RoundedRectangleBorder(
+            //             borderRadius: BorderRadius.all(
+            //               Radius.circular(10),
+            //             ),
+            //           ),
+            //           backgroundColor: Theme.of(context).primaryColor,
+            //           onPressed: () {
+            //             Navigator.pushNamed(context, BookingS.id);
+            //           },
+            //           child: const Text('Book an Appointment'),
+            //         ),
+            //       ),
+            //     ],
+            //   ),
+            // )
           ],
         ),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+      ),
+      drawerDragStartBehavior: DragStartBehavior.start,
+      bottomNavigationBar: BottomNavigationBar(
+        items: [
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home),
+            label: 'Techno',
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.home_repair_service_rounded),
+            label: 'n',
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.shopping_bag_sharp),
+            label: 'h',
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+          BottomNavigationBarItem(
+            icon: const Icon(Icons.notifications),
+            label: 'l',
+            backgroundColor: Theme.of(context).primaryColor,
+          ),
+        ],
+        unselectedItemColor: Colors.white,
+        selectedItemColor: Colors.white,
+      ),// This trailing comma makes auto-formatting nicer for build methods.
     );
   }
 
   SizedBox optioncard(Size deviceSize, ImageIcon icon, String option,
       String screen, BuildContext context) {
     return SizedBox(
-      height: deviceSize.height * 0.35,
-      width: deviceSize.width * 0.31,
       child: GestureDetector(
         child: Center(
           child: Card(
@@ -425,17 +422,15 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.all(35.0),
+              contentPadding: const EdgeInsets.all(30.0),
               title: icon,
               subtitle: Text(
                 option,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 11,
-                    color: Theme
-                        .of(context)
-                        .primaryColor),
+                    fontSize: 12.5,
+                    color: Theme.of(context).primaryColor),
               ),
             ),
           ),
