@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:pinch_zoom/pinch_zoom.dart';
 
 class Medication extends StatefulWidget {
   const Medication({Key? key}) : super(key: key);
@@ -562,9 +563,10 @@ class _MedicationDetailsState extends State<MedicationDetails> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             ClipRRect(
-                              child: Center(
+                              child: InteractiveViewer(
                                 child: Image.network(
                                     snapshot.data[index].image.toString()),
+                                maxScale: 5,
                               ),
                               borderRadius: const BorderRadius.only(
                                 topLeft: Radius.circular(16.0),
