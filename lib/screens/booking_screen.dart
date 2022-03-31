@@ -24,10 +24,13 @@ class BookingS extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var deviceSize = MediaQuery.of(context).size;
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Choose Specialty"),
-        backgroundColor: Theme.of(context).primaryColor,
+        title: Text("Choose Specialty", style: TextStyle(color: Theme.of(context).primaryColor),),
+        backgroundColor: Colors.white,
+        centerTitle: true,
       ),
       body: Center(
         child: FutureBuilder(
@@ -41,93 +44,26 @@ class BookingS extends StatelessWidget {
                 direction: Axis.vertical,
                 children: [
                   Expanded(
-                    child: ListView.builder(
-                        itemCount: snapshot.data.length,
-                        itemBuilder: (context, index) {
-                          return GestureDetector(
-                            child: SizedBox(
-                              height: 120,
-                              child: Card(
-                                elevation: 4,
-                                shape: const RoundedRectangleBorder(
-                                    borderRadius:
-                                        BorderRadius.all(Radius.circular(10))),
-                                child: SizedBox(
-                                  height: 80,
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      Container(
-                                        alignment: Alignment.centerLeft,
-                                        child: Container(
-                                          alignment: Alignment.centerLeft,
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Padding(
-                                                padding:
-                                                    const EdgeInsets.symmetric(
-                                                        horizontal: 8.0),
-                                                child: Container(
-                                                  height: 100,
-                                                  width: 80,
-                                                  decoration: BoxDecoration(
-                                                      image: DecorationImage(
-                                                          image: NetworkImage(
-                                                              snapshot
-                                                                  .data[index]
-                                                                  .imageUrl),
-                                                          fit: BoxFit.fill)),
-                                                ),
-                                              )
-                                            ],
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ListTile(
-                                          title:
-                                              Text(snapshot.data[index].name),
-                                          subtitle: Text(
-                                              snapshot.data[index].description),
-                                        ),
-                                      ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(
-                                            horizontal: 10, vertical: 10),
-                                        child: SizedBox(
-                                          width: 95,
-                                          height: 60,
-                                          child: RoundedButton(
-                                            buttonText: 'choose',
-                                            buttonColor:
-                                                Theme.of(context).primaryColor,
-                                            buttonFunction: () {
-                                              Navigator.push(
-                                                  context,
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          BookingType(
-                                                            specialtyId:
-                                                                snapshot
-                                                                    .data[index]
-                                                                    .id,
-                                                          )));
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          );
-                        }),
+                    child: Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: GridView.builder(
+                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                              maxCrossAxisExtent: 200,
+                              childAspectRatio: 1,
+                              mainAxisSpacing: 1,
+                              crossAxisSpacing: 3),
+                          itemCount: snapshot.data.length,
+                          itemBuilder: (context, index) {
+                            return GestureDetector(
+                              child: optioncardS(deviceSize, Image(image: NetworkImage(snapshot.data[index].imageUrl), width: 100, height: 100,), snapshot.data[index].name, context),
+                              onTap: () {
+                                Navigator.push(context, MaterialPageRoute(builder: (context) {
+                                  return BookingType(specialtyId: snapshot.data[index].id);
+                                }));
+                              },
+                            );
+                          }),
+                    ),
                   ),
                 ],
               );
@@ -135,6 +71,39 @@ class BookingS extends StatelessWidget {
               return const Center(child: Text('No Specialties found'));
             }
           },
+        ),
+      ),
+    );
+  }
+
+  SizedBox optioncardS(Size deviceSize, dynamic icon, String option,
+      BuildContext context) {
+    return SizedBox(
+      height: deviceSize.height * 0.35,
+      width: deviceSize.width * 0.31,
+      child: Center(
+        child: Card(
+          elevation: 10,
+          shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(
+              Radius.circular(10),
+            ),
+          ),
+          child: ListTile(
+            contentPadding: const EdgeInsets.all(6.0),
+            title: icon,
+            subtitle: Padding(
+              padding: const EdgeInsets.only(top: 5.0),
+              child: Text(
+                option,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 11,
+                    color: Theme.of(context).primaryColor),
+              ),
+            ),
+          ),
         ),
       ),
     );
@@ -149,8 +118,8 @@ class BookingType extends StatelessWidget {
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
     Icon icon = Icon(
-      Icons.local_hospital_outlined,
-      size: 35,
+      Icons.medical_services,
+      size: 50,
       color: Theme.of(context).primaryColor,
     );
     return Scaffold(
@@ -180,58 +149,71 @@ class BookingType extends StatelessWidget {
                       padding: const EdgeInsets.only(top: 130.0),
                       child: Container(
                           alignment: Alignment.topCenter,
-                          child: AnimatedTitle()),
+                          child: const Text('Offered Services', style: TextStyle(color: Color(0xFF577BBC), fontSize: 24, fontWeight: FontWeight.bold),)),
                     ),
                     Padding(
                       padding: const EdgeInsets.symmetric(
-                          vertical: 280, horizontal: 20),
+                          vertical: 250, horizontal: 20),
                       child: ListView.builder(
                           scrollDirection: Axis.horizontal,
                           itemCount: snapshot.data.length,
                           itemBuilder: (context, index) {
                             if (snapshot.data[index].specialtyId ==
-                                    specialtyId ||
+                                specialtyId ||
                                 snapshot.data[index].specialtyId == false) {
                               return GestureDetector(
                                 child: SizedBox(
-                                  height: deviceSize.height * 0.2,
+                                  height: deviceSize.height * 0.6,
                                   width: deviceSize.width * 0.5,
                                   child: Card(
                                     child: Column(
                                       crossAxisAlignment:
-                                          CrossAxisAlignment.center,
+                                      CrossAxisAlignment.center,
                                       mainAxisAlignment:
-                                          MainAxisAlignment.center,
+                                      MainAxisAlignment.center,
                                       mainAxisSize: MainAxisSize.min,
                                       children: [
+                                        Padding(
+                                          padding: const EdgeInsets.all(8.0),
+                                          child: Text(
+                                              snapshot.data[index].name
+                                                  .toString(),
+                                              textAlign: TextAlign.center,
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Arial',
+                                                  fontSize: 16,
+                                                  color: Colors.black54)),
+                                        ),
+                                        const SizedBox(height: 20,),
                                         icon,
                                         Text(
-                                            snapshot.data[index].name
-                                                .toString(),
-                                            textAlign: TextAlign.center,
-                                            style: const TextStyle(
-                                                fontWeight: FontWeight.bold,
-                                                fontFamily: 'Arial',
-                                                fontSize: 16,
-                                                color: Colors.black54)),
-                                        Text(
-                                            '${snapshot.data[index].price.toString()} EGP')
+                                            '${snapshot.data[index].price.toString()} EGP'),
+                                        const SizedBox(height: 35,),
+                                        SizedBox(
+                                          width:deviceSize.height * 0.5,
+                                          height: 60,
+                                          child: RoundedButton(
+                                            buttonColor: Theme.of(context).primaryColor,
+                                            buttonText: 'Select',
+                                          ),
+                                        )
                                       ],
                                     ),
                                     elevation: 8,
                                     shadowColor: Colors.blueGrey,
                                     margin: const EdgeInsets.all(5.0),
-                                    shape: const RoundedRectangleBorder(
-                                        side: BorderSide(
-                                            width: 1.0, color: Colors.white70)),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(5.0),
+                                    ),
                                   ),
                                 ),
                                 onTap: () {
                                   if (snapshot.data[index].serviceClass ==
                                       'telemedicine') {
                                     if (Provider.of<UserModel>(context,
-                                                listen: false)
-                                            .balance <
+                                        listen: false)
+                                        .balance <
                                         snapshot.data[index].price) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -245,23 +227,23 @@ class BookingType extends StatelessWidget {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) => BookingD(
-                                                    type:
-                                                        snapshot.data[index].id,
-                                                    doctorId: snapshot
-                                                        .data[index].doctorId,
-                                                    specialtyId: specialtyId,
-                                                  )));
+                                                type:
+                                                snapshot.data[index].id,
+                                                doctorId: snapshot
+                                                    .data[index].doctorId,
+                                                specialtyId: specialtyId,
+                                              )));
                                     }
                                   } else {
                                     Navigator.push(
                                         context,
                                         MaterialPageRoute(
                                             builder: (context) => BookingD(
-                                                  type: snapshot.data[index].id,
-                                                  doctorId: snapshot
-                                                      .data[index].doctorId,
-                                                  specialtyId: specialtyId,
-                                                )));
+                                              type: snapshot.data[index].id,
+                                              doctorId: snapshot
+                                                  .data[index].doctorId,
+                                              specialtyId: specialtyId,
+                                            )));
                                   }
                                 },
                               );

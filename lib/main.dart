@@ -6,7 +6,7 @@ import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/doctors_screen.dart';
 import 'package:medic_app/screens/follow_up_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
-import 'package:medic_app/screens/healthmonitor_history_screen.dart';
+import 'package:medic_app/screens/lab_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
 import 'package:medic_app/screens/medication_screen.dart';
 import 'package:medic_app/screens/contact_screen.dart';
@@ -25,7 +25,6 @@ import 'package:medic_app/screens/reach_us_screen.dart';
 import 'package:medic_app/screens/video_call_screen.dart';
 import 'package:medic_app/screens/wallet_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
-import 'package:medic_app/screens/add_medication_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'model/time_slots_model.dart';
@@ -78,9 +77,13 @@ class MyApp extends StatelessWidget {
             ManageProfile.id: (context) => const ManageProfile(),
             WalletScreen.id: (context) => const WalletScreen(),
             VideoAppointment.id: (context) => const VideoAppointment(),
-            HealthMonitor.id: (context) => const HealthMonitor(),
-            HealthMonitorHistory.id: (context) => const HealthMonitorHistory(),
             PackagesScreen.id: (context) => const PackagesScreen(),
+            Labs.id: (context) => const Labs(),
+            DoctorSearch.id: (context) => const DoctorSearch(),
+            HmDashBoard.id: (context) => const HmDashBoard(),
+            HealthMonitor.id: (context) => const HealthMonitor()
+
+
           }),
     );
   }

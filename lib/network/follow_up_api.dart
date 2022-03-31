@@ -59,7 +59,7 @@ class FollowUpApi extends BaseApiManagement {
 
   static Future<int> postReadings(
       BuildContext context, dynamic category, dynamic sub_category, dynamic readings, DateTime sDate) async {
-    String formattedDate = DateFormat('yyyy-MM-dd hh:mm').format(sDate);
+    String formattedDate = DateFormat('yyyy-MM-dd HH:mm:ss').format(sDate);
     http.Response response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_post_manual_readings'),
       headers: {"Content-Type": "application/json"},
@@ -90,6 +90,7 @@ class FollowUpApi extends BaseApiManagement {
       Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_get_manual_readings'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
+        "partner_id": Provider.of<UserModel>(context, listen: false).uid,
         "token": Provider.of<UserModel>(context, listen: false).token,
         "id": Provider.of<UserModel>(context, listen: false).partnerId,
         "category_id": categoryId
@@ -103,7 +104,7 @@ class FollowUpApi extends BaseApiManagement {
         followUpReadingsList.add(FollowUpReadingsModel.fromJson(index));
       }
       print(followUpReadingsList);
-      return followUpReadingsList;
+      return followUpReadingsList.reversed.toList();
     } else {
       throw Exception('Error Failed to get readings');
     }

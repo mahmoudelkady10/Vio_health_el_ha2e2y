@@ -14,10 +14,7 @@ class EditProfileApi extends BaseApiManagement {
       "partner_id": partnerId,
       "name": name,
       "email": email,
-      "blood_group": bloodGroup,
       "image": image,
-      "weight": weight,
-      "gender": gender,
       "token": Provider.of<UserModel>(context, listen: false).token
 
     };

@@ -153,11 +153,11 @@ public class BgFragment extends MeasureFragment implements OnBgResultListener {
                 assert context != null;
                 SharedPreferences sharedPreferences = context.getSharedPreferences("Data", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
-                editor.putString("bg_measure", String.valueOf(obj));
-                DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-   dd HH:mm:ss");
+                editor.putString("bg_measure", String.valueOf(Double.parseDouble(String.valueOf(obj)) * 18));
+                DateTimeFormatter myFormatObj = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                 editor.putString("date_bg", String.valueOf(LocalDateTime.now().format(myFormatObj)));
                 editor.apply();
-                model.setValue((double) obj);
+                model.setValue(((double) obj) * 18);
                 resetState();
                 break;
             default:

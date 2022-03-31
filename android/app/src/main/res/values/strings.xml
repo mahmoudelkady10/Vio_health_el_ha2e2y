@@ -29,7 +29,7 @@
     <string name="weight_value">Weight: %1$d kg</string>
     <string name="ir_progress">Brightness of Infrared: %1$d/255</string>
     <string name="red_progress">Brightness of Red: %1$d/255</string>
-    <string name="bs_result">%1$.1f mmol/L</string>
+    <string name="bs_result">%1$.1f mg/dL</string>
     <string name="health_devices">Health devices:</string>
     <string name="health_monitor">Health Monitor</string>
     <string name="thermometer">Thermometer</string>

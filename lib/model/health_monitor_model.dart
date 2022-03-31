@@ -15,6 +15,7 @@ class HmModel {
   dynamic spo2;
   dynamic date;
   dynamic respiratoryRate;
+  dynamic ecgWave;
 
   HmModel({
     this.category,
@@ -31,24 +32,26 @@ class HmModel {
     this.rrMin,
     this.spo2,
     this.respiratoryRate,
+    this.ecgWave
   });
 
   factory HmModel.fromJson(Map<String, dynamic> json) {
     return HmModel(
-      category: json['category'],
-      bgMeasure: json['bg_measure'],
-      systolicPressure: json['systolic_pressure'],
-      diastolicPressure: json['diastolic_pressure'],
-      heartRate: json['heart_rate'],
-      bodyTemp: json['body_temp'],
-      rrMax: json['rrmax'],
-      rrMin: json['rrmin'],
-      hrv: json['hrv'],
-      mood: json['mood'],
-      durationEcg: json['duration_ecg'],
-      spo2: json['spo2'],
-      date: json['date_stamp'],
-      respiratoryRate: json['respiratory_rate']
+        category: json['category'],
+        bgMeasure: json['bg_measure'],
+        systolicPressure: json['systolic_pressure'],
+        diastolicPressure: json['diastolic_pressure'],
+        heartRate: json['heart_rate'],
+        bodyTemp: json['body_temp'],
+        rrMax: json['rrmax'],
+        rrMin: json['rrmin'],
+        hrv: json['hrv'],
+        mood: json['mood'],
+        durationEcg: json['duration_ecg'],
+        spo2: json['spo2'],
+        date: json['date_stamp'],
+        respiratoryRate: json['respiratory_rate'],
+        ecgWave: json['ecg_wave']
     );
   }
 }

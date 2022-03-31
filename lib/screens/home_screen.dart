@@ -10,7 +10,7 @@ import 'package:medic_app/network/specialties_api.dart';
 import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/doctors_search_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
-import 'package:medic_app/screens/healthmonitor_history_screen.dart';
+import 'package:medic_app/screens/lab_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
 import 'package:medic_app/screens/packages_screen.dart';
 import 'package:medic_app/screens/wallet_screen.dart';
@@ -45,84 +45,19 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-      GlobalKey<RefreshIndicatorState>();
-
-  Future<void> _refresh() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    String? token = prefs.getString('token');
-    dynamic response = await LoginApi.getUserInfo(context, token!);
-  }
+  int _selectedIndex = 0;
+  final List<Widget> _displayScreen = <Widget>[
+    const DashBoard(),
+    const BookingS(),
+    const FollowUpDashboard(),
+    const WalletScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
     UserModel user = Provider.of<UserModel>(context);
     var deviceSize = MediaQuery.of(context).size;
 
-    List options = [
-      '\nDoctor',
-      '\nServices',
-      '\nAppointments',
-      '\nTestimonials',
-      '\nMedication',
-      '\nGallery',
-      '\nFollowUp',
-      '\nAbout Techno',
-      '\nHealth Monitor',
-      '\nPackages',
-    ];
-    List icons = [
-      const ImageIcon(
-        AssetImage('assets/doctor.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/services.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/appointment.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/test.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/medication.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/gallery.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/follow_up.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/about-us.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/health_monitor.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-      const ImageIcon(
-        AssetImage('assets/packages.png'),
-        size: 75,
-        color: Color(0xFFB22234),
-      ),
-    ];
     // This method is rerun every time setState is called, for instance as done
     // by the _incrementCounter method above.
     //
@@ -131,14 +66,37 @@ class _MyHomePageState extends State<MyHomePage> {
     // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).primaryColor,
+        systemOverlayStyle: SystemUiOverlayStyle.dark,
+        backgroundColor: Colors.white,
         centerTitle: true,
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text(
-          widget.title,
-          textAlign: TextAlign.center,
+        title: const Image(
+          image: AssetImage('assets/techno clinic.png'),
+          width: 80,
+          height: 40,
         ),
+        leading: Builder(builder: (BuildContext context) {
+          return IconButton(
+            icon: CircleAvatar(
+              foregroundImage:
+              NetworkImage(Provider.of<UserModel>(context).image),
+              radius: 20,
+            ),
+            onPressed: () => Scaffold.of(context).openDrawer(),
+          );
+        }),
+        actions: [
+          IconButton(
+              onPressed: () {
+                Navigator.pushNamed(context, AlManara.id);
+              },
+              icon: const Icon(
+                Icons.info_outline,
+                color: Color(0xFFCBCFD1),
+                size: 35,
+              ))
+        ],
       ),
       drawer: Drawer(
         elevation: 56.0,
@@ -153,17 +111,27 @@ class _MyHomePageState extends State<MyHomePage> {
               children: [
                 (user.image.toString() != "")
                     ? Container(
-                        width: 130,
-                        height: 130,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                          shape: BoxShape.rectangle,
-                          image: DecorationImage(
-                              image: NetworkImage(user.image.toString()),
-                              fit: BoxFit.fill),
-                        ),
-                      )
-                    : const Icon(Icons.person),
+                  width: 130,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                        image: NetworkImage(user.image.toString()),
+                        fit: BoxFit.fill),
+                  ),
+                )
+                    : Container(
+                  width: 130,
+                  height: 130,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(8),
+                    shape: BoxShape.rectangle,
+                    image: DecorationImage(
+                        image: NetworkImage(user.image.toString()),
+                        fit: BoxFit.fill),
+                  ),
+                )
               ],
             ),
             const SizedBox(
@@ -173,32 +141,12 @@ class _MyHomePageState extends State<MyHomePage> {
               user.name.toString(),
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.grey.shade600,
+                  color: Theme.of(context).primaryColor,
                   fontWeight: FontWeight.bold,
                   fontSize: 25),
             ),
             const SizedBox(
               height: 30,
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.account_balance_wallet_outlined,
-                color: Color(0xFFB22234),
-                size: 40,
-              ),
-              title: const Text(
-                'Wallet',
-                style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 17,
-                    color: Color(0xFFB22234)),
-              ),
-              onTap: () {
-                Navigator.pushNamed(context, WalletScreen.id);
-              },
-            ),
-            const SizedBox(
-              height: 20,
             ),
             Row(
               mainAxisSize: MainAxisSize.min,
@@ -207,13 +155,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   width: 250,
                   height: 70,
-                  child: RoundedButton(
-                      buttonColor: Colors.white,
-                      buttonText: 'Edit Profile',
-                      textColor: Theme.of(context).primaryColor,
-                      buttonFunction: () {
-                        Navigator.pushNamed(context, ManageProfile.id);
-                      }),
+                  child: InkWell(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Icon(
+                          Icons.person_pin,
+                          color: Color(0xFF979797),
+                          size: 35,
+                        ),
+                        SizedBox(width: 5.0,),
+                        Text(
+                          'Profile',
+                          style: TextStyle(color: Color(0xFF979797), fontSize: 18),
+                        ),
+                        SizedBox(width: 50.0,),
+                        Icon(Icons.keyboard_arrow_right, color: Color(0xFF979797), size: 50,)
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.pushNamed(context, ManageProfile.id);
+                    },
+                  ),
                 ),
               ],
             ),
@@ -224,13 +187,28 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(
                   width: 250,
                   height: 70,
-                  child: RoundedButton(
-                    buttonColor: Theme.of(context).primaryColor,
-                    buttonText: 'Log Out',
-                    buttonFunction: () async {
+                  child: InkWell(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Icon(
+                          Icons.exit_to_app_rounded,
+                          color: Color(0xFF979797),
+                          size: 35,
+                        ),
+                        SizedBox(width: 5.0,),
+                        Text(
+                          'Log Out',
+                          style: TextStyle(color: Color(0xFF979797), fontSize: 18),
+                        ),
+                        SizedBox(width: 50.0,),
+                        Icon(Icons.keyboard_arrow_right, color: Color(0xFF979797), size: 50,)
+                      ],
+                    ),
+                    onTap: () async{
                       imageCache?.clear();
                       SharedPreferences prefs =
-                          await SharedPreferences.getInstance();
+                      await SharedPreferences.getInstance();
                       await prefs.clear();
                       await Future.delayed(const Duration(seconds: 2));
 
@@ -238,13 +216,13 @@ class _MyHomePageState extends State<MyHomePage> {
                         // the new route
                         MaterialPageRoute(
                           builder: (BuildContext context) =>
-                              const LoginScreen(),
+                          const LoginScreen(),
                         ),
 
                         // this function should return true when we're done removing routes
                         // but because we want to remove all other screens, we make it
                         // always return false
-                        (Route route) => false,
+                            (Route route) => false,
                       );
                     },
                   ),
@@ -254,164 +232,239 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
       ),
+      bottomNavigationBar: BottomNavigationBar(
+        selectedLabelStyle: TextStyle(color: Theme.of(context).primaryColor),
+        unselectedLabelStyle: const TextStyle(color: Color(0xFFCBCFD1)),
+        selectedItemColor: Theme.of(context).primaryColor,
+        unselectedItemColor: const Color(0xFFCBCFD1),
+        showUnselectedLabels: true,
+        iconSize: 30,
+        currentIndex: _selectedIndex,
+        items: const [
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/home.png')),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/calendar-2.png')),
+            label: 'Book Now',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.bar_chart_sharp),
+            label: 'Follow Up',
+          ),
+          BottomNavigationBarItem(
+            icon: ImageIcon(AssetImage('assets/Group 345.png')),
+            label: 'Wallet',
+          ),
+        ],
+        onTap: (int index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+      body: _displayScreen.elementAt(_selectedIndex),
+    );
+  }
+}
 
-      body: RefreshIndicator(
-        key: _refreshIndicatorKey,
-        onRefresh: _refresh,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Column(
-              children: [
-                SizedBox(
-                  width: deviceSize.width,
-                  height: 75,
-                  child: Card(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                      children: [
-                        Text(
-                          'Balance: ${Provider.of<UserModel>(context).balance}',
-                          style: const TextStyle(color: Colors.green),
-                        ),
-                        Text(
-                            'On Hold: ${Provider.of<UserModel>(context).onHold}',
-                            style: const TextStyle(color: Colors.red)),
-                      ],
-                    ),
-                  ),
-                )
-              ],
-            ),
-            SizedBox(
-              height: 200,
-              width: 900,
-              child: FutureBuilder(
-                  future: AdsApi.getAds(context),
-                  builder: (BuildContext context, AsyncSnapshot snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(
-                        child: CircularProgressIndicator(),
-                      );
-                    } else if (snapshot.connectionState ==
-                            ConnectionState.done &&
-                        snapshot.data != null) {
-                      return ListView.builder(
-                        scrollDirection: Axis.horizontal,
-                          shrinkWrap: true,
-                          itemCount: snapshot.data.length,
-                          itemBuilder: (context, index) {
-                            return Padding(
-                              padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                              child: Card(
-                                elevation: 10,
-                                child: Image.network(
-                                    snapshot.data[index].image.toString(), height: 150,width: 350),
-                              ),
-                            );
-                          });
-                    } else {
-                      return const Center(
-                        child: Text('try again'),
-                      );
-                    }
-                  }),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 25.0,vertical: 0),
-                child: LoaderOverlay(
-                  child: GridView.count(
-                    shrinkWrap: true,
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 17,
-                    mainAxisSpacing: 2,
+
+class DashBoard extends StatefulWidget {
+  const DashBoard({Key? key}) : super(key: key);
+
+  @override
+  _DashBoardState createState() => _DashBoardState();
+}
+
+class _DashBoardState extends State<DashBoard> {
+  final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
+  GlobalKey<RefreshIndicatorState>();
+
+  Future<void> _refresh() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+    dynamic response = await LoginApi.getUserInfo(context, token!);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    UserModel user = Provider.of<UserModel>(context);
+    var deviceSize = MediaQuery.of(context).size;
+
+    List options = [
+      '\nDoctors',
+      // '\nServices',
+      '\nAppointments',
+      // '\nTestimonials',
+      '\nMedication',
+      '\nGallery',
+      // '\nReach Us',
+      // '\nVIO Health',
+      '\nHealth Monitor',
+      '\nPackages',
+      // '\nFollow Up',
+      // '\nLab'
+    ];
+    List icons = [
+      ImageIcon(
+        const AssetImage('assets/doctor.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      // ImageIcon(
+      //   const AssetImage('assets/services.png'),
+      //   size: 75,
+      //   color: Theme.of(context).primaryColor,
+      // ),
+      ImageIcon(
+        const AssetImage('assets/appointment.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      // ImageIcon(
+      //   const AssetImage('assets/test.png'),
+      //   size: 75,
+      //   color: Theme.of(context).primaryColor,
+      // ),
+      ImageIcon(
+        const AssetImage('assets/medication.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      ImageIcon(
+        const AssetImage('assets/Group-1.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      // ImageIcon(
+      //   const AssetImage('assets/reach-us.png'),
+      //   size: 75,
+      //   color: Theme.of(context).primaryColor,
+      // ),
+      // ImageIcon(
+      //   const AssetImage('assets/about-us.png'),
+      //   size: 75,
+      //   color: Theme.of(context).primaryColor,
+      // ),
+      ImageIcon(
+        const AssetImage('assets/health monitor.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      ImageIcon(
+        const AssetImage('assets/your package.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
+      // ImageIcon(
+      //   const AssetImage('assets/follow_up.png'),
+      //   size: 75,
+      //   color: Theme.of(context).primaryColor,
+      // ),
+      // ImageIcon(
+      //   const AssetImage('assets/health_monitor.png'),
+      //   size: 75,
+      //   color: Theme.of(context).primaryColor,
+      // ),
+    ];
+    return RefreshIndicator(
+      key: _refreshIndicatorKey,
+      onRefresh: _refresh,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Column(
+            children: [
+              SizedBox(
+                width: deviceSize.width,
+                height: 60,
+                child: Card(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      optioncard(deviceSize, icons[0], options[0],
-                          DoctorSearch.id, context),
-                      optioncard(deviceSize, icons[1], options[1], Services.id,
-                          context),
-                      optioncard(deviceSize, icons[2], options[2],
-                          Appointment.id, context),
-                      optioncard(deviceSize, icons[3], options[3],
-                          Testimonials.id, context),
-                      optioncard(deviceSize, icons[4], options[4],
-                          Medication.id, context),
-                      optioncard(deviceSize, icons[5], options[5],
-                          PastAppointments.id, context),
-                      optioncard(deviceSize, icons[6], options[6], FollowUp.id,
-                          context),
-                      optioncard(deviceSize, icons[7], options[7], AlManara.id,
-                          context),
-                      optioncard(deviceSize, icons[8], options[8],
-                          HealthMonitor.id, context),
-                      optioncard(deviceSize, icons[9], options[9],
-                          PackagesScreen.id, context),
+                      Text(
+                        'Balance: ${Provider.of<UserModel>(context).balance}',
+                        style: const TextStyle(color: Colors.green),
+                      ),
+                      Text('On Hold: ${Provider.of<UserModel>(context).onHold}',
+                          style: const TextStyle(color: Colors.red)),
                     ],
                   ),
                 ),
               ),
+              SizedBox(
+                height: 200,
+                width: 900,
+                child: FutureBuilder(
+                    future: AdsApi.getAds(context),
+                    builder: (BuildContext context, AsyncSnapshot snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(
+                          child: CircularProgressIndicator(),
+                        );
+                      } else if (snapshot.connectionState ==
+                          ConnectionState.done &&
+                          snapshot.data != null) {
+                        return ListView.builder(
+                            scrollDirection: Axis.horizontal,
+                            shrinkWrap: true,
+                            itemCount: snapshot.data.length,
+                            itemBuilder: (context, index) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
+                                child: Card(
+                                  elevation: 10,
+                                  child: Image.network(
+                                      snapshot.data[index].image.toString(), height: 150,width: 350),
+                                ),
+                              );
+                            });
+                      } else {
+                        return const Center(
+                          child: Text('try again'),
+                        );
+                      }
+                    }),
+              ),
+            ],
+          ),
+          Expanded(
+            child: Padding(
+              padding:
+              const EdgeInsets.symmetric(horizontal: 5.0, vertical: 5.0),
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 13,
+                children: [
+                  optioncard(deviceSize, icons[0], options[0], DoctorSearch.id,
+                      context),
+                  optioncard(deviceSize, icons[1], options[1], Appointment.id,
+                      context),
+                  optioncard(
+                      deviceSize, icons[2], options[2], Medication.id, context),
+                  optioncard(deviceSize, icons[3], options[3],
+                      PastAppointments.id, context),
+                  optioncard(deviceSize, icons[4], options[4], HmDashBoard.id,
+                      context),
+                  optioncard(deviceSize, icons[5], options[5],
+                      PackagesScreen.id, context),
+                ],
+              ),
             ),
-            // BottomAppBar(
-            //   child: Row(
-            //     mainAxisAlignment: MainAxisAlignment.center,
-            //     children: [
-            //       SizedBox(
-            //         width: 200,
-            //         height: 50,
-            //         child: FloatingActionButton(
-            //           shape: const RoundedRectangleBorder(
-            //             borderRadius: BorderRadius.all(
-            //               Radius.circular(10),
-            //             ),
-            //           ),
-            //           backgroundColor: Theme.of(context).primaryColor,
-            //           onPressed: () {
-            //             Navigator.pushNamed(context, BookingS.id);
-            //           },
-            //           child: const Text('Book an Appointment'),
-            //         ),
-            //       ),
-            //     ],
-            //   ),
-            // )
-          ],
-        ),
-      ),
-      drawerDragStartBehavior: DragStartBehavior.start,
-      bottomNavigationBar: BottomNavigationBar(
-        items: [
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home),
-            label: 'Techno',
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.home_repair_service_rounded),
-            label: 'n',
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.shopping_bag_sharp),
-            label: 'h',
-            backgroundColor: Theme.of(context).primaryColor,
-          ),
-          BottomNavigationBarItem(
-            icon: const Icon(Icons.notifications),
-            label: 'l',
-            backgroundColor: Theme.of(context).primaryColor,
           ),
         ],
-        unselectedItemColor: Colors.white,
-        selectedItemColor: Colors.white,
-      ),// This trailing comma makes auto-formatting nicer for build methods.
-    );
+      ),
+    ); // This trailing comma makes auto-formatting nicer for build methods.
   }
 
   SizedBox optioncard(Size deviceSize, ImageIcon icon, String option,
       String screen, BuildContext context) {
     return SizedBox(
+      height: deviceSize.height * 0.35,
+      width: deviceSize.width * 0.31,
       child: GestureDetector(
         child: Center(
           child: Card(
@@ -422,44 +475,41 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.all(30.0),
+              contentPadding: const EdgeInsets.all(35.0),
               title: icon,
               subtitle: Text(
                 option,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    fontSize: 12,
+                    fontSize: 11,
                     color: Theme.of(context).primaryColor),
               ),
             ),
           ),
         ),
         onTap: () async {
-          //   if (option == '\nDoctors') {
-          //     await SpecialtiesApi.getSpecialties(context);
-          //     Navigator.pushNamed(context, screen);
-          if (option == '\nHealth Monitor') {
+          if (option == '\nDoctors') {
+            var specialties = await SpecialtiesApi.getSpecialties(context);
+            var cities = await CityApi.getCity(context);
+            var govs = await GovernorateApi.getGovernorate(context);
+            Navigator.push(context, MaterialPageRoute(builder: (context) {
+              return DoctorSearch(city: cities, governorate: govs, specialty: specialties,);
+            }));
+          } else if (option == '\nHealth Monitor') {
             const CHANNEL = 'com.example.viohealth/channels';
             const platform = MethodChannel(CHANNEL);
+            try {
+              var temp =
+              await platform.invokeMethod('getData', <String, dynamic>{
+                'key': "spo2",
+                'file': "Data",
+              });
+              print(temp);
+            } on PlatformException catch (e) {
+              print(e.message);
+            }
             Navigator.pushNamed(context, screen);
-          } else if (option == '\nDoctor') {
-            context.loaderOverlay.show(widget: const LoadingScreen());
-            var governorate = await GovernorateApi.getGovernorate(context);
-            var city = await CityApi.getCity(context);
-            var specialty = await SpecialtiesApi.getSpecialties(context);
-            context.loaderOverlay.hide();
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) {
-                  return DoctorSearch(
-                      governorate: governorate,
-                      city: city,
-                      specialty: specialty);
-                },
-              ),
-            );
           } else {
             Navigator.pushNamed(context, screen);
           }
@@ -468,3 +518,4 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+

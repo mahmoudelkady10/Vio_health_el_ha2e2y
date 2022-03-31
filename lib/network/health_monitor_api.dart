@@ -34,7 +34,7 @@ class HmApi extends BaseApiManagement {
 
         hmDataList.add(HmModel.fromJson(index));
       }
-      return hmDataList;
+      return hmDataList.reversed.toList();
     } else {
       throw Exception('Errrr Failed to get appointments');
     }

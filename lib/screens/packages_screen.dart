@@ -333,153 +333,164 @@ class BuyPackage extends StatelessWidget {
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.data != null) {
               return LoaderOverlay(
-                child: ListView.builder(
+                child:GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        childAspectRatio: 1,
+                        mainAxisSpacing: 1,
+                        crossAxisSpacing: 3),
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        child: SizedBox(
-                          width: deviceSize.width,
-                          height: 80,
-                          child: Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 8.0, left: 8.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        'Package Code',
-                                        style: TextStyle(
-                                            color:
-                                            Theme.of(context).primaryColor),
-                                      ),
-                                      // const Text('     '),
-                                      Text('Category',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                      Text("Price",
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          child: SizedBox(
+                            width: 150,
+                            height: 150,
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(snapshot.data[index].name.toString()),
-                                    Text(snapshot.data[index].mainCategory
-                                        .toString()),
-                                    Text(snapshot.data[index].price.toString()),
+                                    Text(snapshot.data[index].name.toString(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF707070)),),
+                                    const Divider(thickness: 1, color: Color(0xFF707070),),
+                                    const SizedBox(height: 10,),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const Text(
+                                          'Category: ',
+                                          style: TextStyle(
+                                              color:
+                                              Color(0xFF979797)),
+                                        ),
+                                        // const Text('     '),
+                                        Text(snapshot.data[index].mainCategory
+                                            .toString(),
+                                            style: const TextStyle(
+                                                color: Color(0xFF979797))),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const Text('Price:', style: TextStyle(
+                                            color: Color(0xFF979797))),
+                                        Text(snapshot.data[index].price.toString(), style: const TextStyle(
+                                            color: Color(0xFF979797))),
+                                      ],
+                                    ),
+                                    SizedBox(height: 15,),
+                                    InkWell(
+                                      child: Text('Purchase', style: TextStyle(color: Theme.of(context).primaryColor, decoration: TextDecoration.underline),),
+                                      onTap: () async{
+                                        var balance =
+                                            Provider.of<UserModel>(context, listen: false)
+                                                .balance;
+                                        if (balance < snapshot.data[index].price) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.red,
+                                              content: Text("Top Up wallet"),
+                                            ),
+                                          );
+                                        } else {
+                                          await showDialog(
+                                            context: context,
+                                            builder: (_) => AlertDialog(
+                                              title: const Center(
+                                                  child: Icon(
+                                                    Icons.monetization_on,
+                                                    color: Colors.green,
+                                                    size: 40,
+                                                  )),
+                                              content: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                                children: const [
+                                                  Text(
+                                                    'Buy Package using wallet?',
+                                                    style: TextStyle(fontSize: 15),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () async{
+                                                    var temp = [snapshot.data[index].id];
+                                                    Navigator.pop(context);
+                                                    context.loaderOverlay.show(
+                                                        widget: const LoadingScreen());
+                                                    var status = await ServiceRequestApi.serviceRequest(
+                                                        context,
+                                                        DateTime.now(),
+                                                        false,
+                                                        temp,
+                                                        6,
+                                                        snapshot.data[index].mainCategory);
+                                                    context.loaderOverlay.hide();
+                                                    if (status != 200) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        const SnackBar(
+                                                          backgroundColor: Colors.red,
+                                                          content: Text("Request Failed"),
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        const SnackBar(
+                                                          backgroundColor: Colors.green,
+                                                          content: Text("Request Successful"),
+                                                        ),
+                                                      );
+                                                      Navigator.pushReplacementNamed(
+                                                          context, MyHomePage.id);
+                                                    }
+                                                  },
+                                                  child: Text('Buy Package',
+                                                      style: TextStyle(
+                                                          color: Theme.of(context)
+                                                              .primaryColor,
+                                                          decoration: TextDecoration
+                                                              .underline)),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text('Cancel',
+                                                      style: TextStyle(
+                                                          color: Theme.of(context)
+                                                              .primaryColor,
+                                                          decoration: TextDecoration
+                                                              .underline)),
+                                                )
+                                              ],
+                                            ),
+                                          );
+
+                                        }
+                                      },
+                                    )
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
+                          onTap: () async {
+
+
+                          },
                         ),
-                        onTap: () async {
-
-                          var balance =
-                              Provider.of<UserModel>(context, listen: false)
-                                  .balance;
-                          if (balance < snapshot.data[index].price) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text("Top Up wallet"),
-                              ),
-                            );
-                          } else {
-                            await showDialog(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                title: const Center(
-                                    child: Icon(
-                                      Icons.monetization_on,
-                                      color: Colors.green,
-                                      size: 40,
-                                    )),
-                                content: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.center,
-                                  children: const [
-                                    Text(
-                                      'Buy Package using wallet?',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () async{
-                                      var temp = [snapshot.data[index].id];
-                                      Navigator.pop(context);
-                                      context.loaderOverlay.show(
-                                          widget: const LoadingScreen());
-                                      var status = await ServiceRequestApi.serviceRequest(
-                                          context,
-                                          DateTime.now(),
-                                          false,
-                                          temp,
-                                          6,
-                                          snapshot.data[index].mainCategory);
-                                      context.loaderOverlay.hide();
-                                      if (status != 200) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content: Text("Request Failed"),
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.green,
-                                            content: Text("Request Successful"),
-                                          ),
-                                        );
-                                        Navigator.pushReplacementNamed(
-                                            context, MyHomePage.id);
-                                      }
-                                    },
-                                    child: Text('Buy Package',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                            decoration: TextDecoration
-                                                .underline)),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('Cancel',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                            decoration: TextDecoration
-                                                .underline)),
-                                  )
-                                ],
-                              ),
-                            );
-
-                          }
-                        },
                       );
                     }),
               );
