@@ -262,6 +262,7 @@ class MedicationImage extends StatefulWidget {
   const MedicationImage({Key? key, required this.appId}) : super(key: key);
   final int appId;
 
+
   @override
   State<MedicationImage> createState() => _MedicationImageState();
 }

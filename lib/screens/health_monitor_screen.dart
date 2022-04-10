@@ -2228,56 +2228,25 @@ class WaveSegments extends StatelessWidget {
                   height = constraints.maxHeight;
                 }
 
-                return Transform.rotate(
-                  angle: math.pi,
-                  child: GridPaper(
-                    color: Colors.black38,
-                    child: CustomPaint(
-                      size: Size(
-                        constraints.maxWidth,
-                        150,
-                      ),
-                      foregroundPainter: WaveformPainter2(
-                        data,
-                        zoomLevel: zoomLevel,
-                        startingFrame: data.frameIdxFromPercent(1.0),
-                        color: Colors.green,
-                        endFrame: data.frameIdxFromPercent(25.0),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            const SizedBox(
-              height: 5,
-            ),
-            LayoutBuilder(
-              builder: (context, BoxConstraints constraints) {
-                // adjust the shape based on parent's orientation/shape
-                // the waveform should always be wider than taller
-                double height;
-                if (constraints.maxWidth < constraints.maxHeight) {
-                  height = constraints.maxWidth;
-                } else {
-                  height = constraints.maxHeight;
-                }
-
-                return Transform.rotate(
-                  angle: math.pi,
-                  child: GridPaper(
-                    color: Colors.black38,
-                    child: CustomPaint(
-                      size: Size(
-                        constraints.maxWidth,
-                        150,
-                      ),
-                      foregroundPainter: WaveformPainter2(
-                        data,
-                        zoomLevel: zoomLevel,
-                        startingFrame: data.frameIdxFromPercent(25.0),
-                        color: Colors.green,
-                        endFrame: data.frameIdxFromPercent(50.0),
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(math.pi),
+                  child: Transform.rotate(
+                    angle: math.pi,
+                    child: GridPaper(
+                      color: Colors.black38,
+                      child: CustomPaint(
+                        size: Size(
+                          constraints.maxWidth,
+                          150,
+                        ),
+                        foregroundPainter: WaveformPainter2(
+                          data,
+                          zoomLevel: zoomLevel,
+                          startingFrame: data.frameIdxFromPercent(1.0),
+                          color: Colors.green,
+                          endFrame: data.frameIdxFromPercent(25.0),
+                        ),
                       ),
                     ),
                   ),
@@ -2298,21 +2267,25 @@ class WaveSegments extends StatelessWidget {
                   height = constraints.maxHeight;
                 }
 
-                return Transform.rotate(
-                  angle: math.pi,
-                  child: GridPaper(
-                    color: Colors.black38,
-                    child: CustomPaint(
-                      size: Size(
-                        constraints.maxWidth,
-                        150,
-                      ),
-                      foregroundPainter: WaveformPainter2(
-                        data,
-                        zoomLevel: zoomLevel,
-                        startingFrame: data.frameIdxFromPercent(50.0),
-                        color: Colors.green,
-                        endFrame: data.frameIdxFromPercent(75.0),
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(math.pi),
+                  child: Transform.rotate(
+                    angle: math.pi,
+                    child: GridPaper(
+                      color: Colors.black38,
+                      child: CustomPaint(
+                        size: Size(
+                          constraints.maxWidth,
+                          150,
+                        ),
+                        foregroundPainter: WaveformPainter2(
+                          data,
+                          zoomLevel: zoomLevel,
+                          startingFrame: data.frameIdxFromPercent(25.0),
+                          color: Colors.green,
+                          endFrame: data.frameIdxFromPercent(50.0),
+                        ),
                       ),
                     ),
                   ),
@@ -2333,21 +2306,64 @@ class WaveSegments extends StatelessWidget {
                   height = constraints.maxHeight;
                 }
 
-                return Transform.rotate(
-                  angle: math.pi,
-                  child: GridPaper(
-                    color: Colors.black38,
-                    child: CustomPaint(
-                      size: Size(
-                        constraints.maxWidth,
-                        150,
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(math.pi),
+                  child: Transform.rotate(
+                    angle: math.pi,
+                    child: GridPaper(
+                      color: Colors.black38,
+                      child: CustomPaint(
+                        size: Size(
+                          constraints.maxWidth,
+                          150,
+                        ),
+                        foregroundPainter: WaveformPainter2(
+                          data,
+                          zoomLevel: zoomLevel,
+                          startingFrame: data.frameIdxFromPercent(50.0),
+                          color: Colors.green,
+                          endFrame: data.frameIdxFromPercent(75.0),
+                        ),
                       ),
-                      foregroundPainter: WaveformPainter2(
-                        data,
-                        zoomLevel: zoomLevel,
-                        startingFrame: data.frameIdxFromPercent(75.0),
-                        color: Colors.green,
-                        endFrame: data.frameIdxFromPercent(100.0),
+                    ),
+                  ),
+                );
+              },
+            ),
+            const SizedBox(
+              height: 5,
+            ),
+            LayoutBuilder(
+              builder: (context, BoxConstraints constraints) {
+                // adjust the shape based on parent's orientation/shape
+                // the waveform should always be wider than taller
+                double height;
+                if (constraints.maxWidth < constraints.maxHeight) {
+                  height = constraints.maxWidth;
+                } else {
+                  height = constraints.maxHeight;
+                }
+
+                return Transform(
+                  alignment: Alignment.center,
+                  transform: Matrix4.rotationY(math.pi),
+                  child: Transform.rotate(
+                    angle: math.pi,
+                    child: GridPaper(
+                      color: Colors.black38,
+                      child: CustomPaint(
+                        size: Size(
+                          constraints.maxWidth,
+                          150,
+                        ),
+                        foregroundPainter: WaveformPainter2(
+                          data,
+                          zoomLevel: zoomLevel,
+                          startingFrame: data.frameIdxFromPercent(75.0),
+                          color: Colors.green,
+                          endFrame: data.frameIdxFromPercent(100.0),
+                        ),
                       ),
                     ),
                   ),

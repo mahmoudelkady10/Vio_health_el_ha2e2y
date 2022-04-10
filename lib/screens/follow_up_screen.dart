@@ -4,24 +4,23 @@ import 'package:medic_app/model/follow_up_model.dart';
 import 'package:medic_app/model/lab_model.dart';
 import 'package:medic_app/network/follow_up_api.dart';
 import 'package:medic_app/screens/lab_screen.dart';
+import 'package:medic_app/screens/radiology_screen.dart';
 import 'package:medic_app/widgets/graph_drawer.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:intl/intl.dart';
 
-
-
 class FollowUpDashboard extends StatelessWidget {
   const FollowUpDashboard({Key? key}) : super(key: key);
   static const id = 'follow_up_dashboard';
-
 
   @override
   Widget build(BuildContext context) {
     List options = [
       'Follow up',
       'Lab',
+      'Radiology'
     ];
     List icons = [
       ImageIcon(
@@ -34,9 +33,14 @@ class FollowUpDashboard extends StatelessWidget {
         size: 75,
         color: Theme.of(context).primaryColor,
       ),
+      ImageIcon(
+        const AssetImage('assets/radicon.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
     ];
 
-    List screens = [FollowUp.id, Labs.id];
+    List screens = [FollowUp.id, Labs.id, Radiology.id];
     var deviceSize = MediaQuery.of(context).size;
 
     return Padding(
@@ -50,15 +54,15 @@ class FollowUpDashboard extends StatelessWidget {
           itemCount: options.length,
           itemBuilder: (context, index) {
             return GestureDetector(
-              child: optioncardS(deviceSize, icons[index], options[index], screens[index], context),
+              child: optioncardS(deviceSize, icons[index], options[index],
+                  screens[index], context),
             );
           }),
     );
-
   }
 
-  SizedBox optioncardS(Size deviceSize, dynamic icon, String option, String screen,
-      BuildContext context) {
+  SizedBox optioncardS(Size deviceSize, dynamic icon, String option,
+      String screen, BuildContext context) {
     return SizedBox(
       height: deviceSize.height * 0.35,
       width: deviceSize.width * 0.31,
@@ -94,8 +98,6 @@ class FollowUpDashboard extends StatelessWidget {
   }
 }
 
-
-
 class FollowUp extends StatefulWidget {
   const FollowUp({Key? key}) : super(key: key);
   static const id = 'follow_up_screen';
@@ -116,9 +118,11 @@ class _FollowUpState extends State<FollowUp> {
           color: Theme.of(context).primaryColor, //change your color here
         ),
         centerTitle: true,
-        title:  Text(
+        title: Text(
           "Follow Up",
-          style: TextStyle(fontWeight: FontWeight.bold, color: Theme.of(context).primaryColor),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).primaryColor),
         ),
         backgroundColor: Colors.white,
       ),
@@ -166,8 +170,7 @@ class _FollowUpState extends State<FollowUp> {
                                   ),
                                 ),
                                 Text(snapshot.data[index].name,
-                                    style:
-                                    TextStyle(
+                                    style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 12,
                                         color: Theme.of(context).primaryColor)),
@@ -208,12 +211,12 @@ class _FollowUpState extends State<FollowUp> {
                         print(tabs);
                         Navigator.push(context,
                             MaterialPageRoute(builder: (context) {
-                              return PastReadings(
-                                categoryId: snapshot.data[index].categoryId,
-                                tabs: tabs,
-                                readings: readings,
-                              );
-                            }));
+                          return PastReadings(
+                            categoryId: snapshot.data[index].categoryId,
+                            tabs: tabs,
+                            readings: readings,
+                          );
+                        }));
                       },
                     ),
                   );
@@ -232,9 +235,9 @@ class _FollowUpState extends State<FollowUp> {
 class PastReadings extends StatefulWidget {
   const PastReadings(
       {Key? key,
-        required this.categoryId,
-        required this.tabs,
-        required this.readings})
+      required this.categoryId,
+      required this.tabs,
+      required this.readings})
       : super(key: key);
   final int categoryId;
   final List<FollowUpReadingsModel> readings;
@@ -276,6 +279,7 @@ class _PastReadingsState extends State<PastReadings> {
   // }
   final DateFormat dateFormatter = DateFormat('dd-MM-yyyy');
   final DateFormat timeFormatter = DateFormat('HH:mm');
+
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
@@ -295,7 +299,8 @@ class _PastReadingsState extends State<PastReadings> {
           ),
           bottom: TabBar(
             unselectedLabelStyle: const TextStyle(fontSize: 14.0),
-            labelStyle: const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            labelStyle:
+                const TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
             labelPadding: const EdgeInsets.all(8.0),
             isScrollable: true,
             unselectedLabelColor: const Color(0xFF979797),
@@ -325,36 +330,71 @@ class _PastReadingsState extends State<PastReadings> {
                       children: [
                         Visibility(
                           visible: snapshot.data
-                              .where((FollowUpReadingsModel x) =>
-                          x.sub_category == e && x.type == 'single')
-                              .toList()
-                              .length >=
-                              3,
+                                  .where((FollowUpReadingsModel x) =>
+                                      x.sub_category == e && x.type == 'single')
+                                  .toList()
+                                  .length >=
+                              7,
                           child: Container(
                             height: 250,
                             width: deviceSize.width,
                             alignment: Alignment.topCenter,
                             child: DrawGraph3(
                                 data: snapshot.data
-                                    .where((FollowUpReadingsModel x) =>
-                                x.sub_category == e).toList().reversed.toList()),
+                                            .where((FollowUpReadingsModel x) =>
+                                                x.sub_category == e &&
+                                                x.type == 'combine')
+                                            .toList()
+                                            .length >=
+                                        7
+                                    ? snapshot.data
+                                        .where((FollowUpReadingsModel x) =>
+                                            x.sub_category == e)
+                                        .toList()
+                                        .getRange(0, 7)
+                                        .reversed
+                                        .toList()
+                                    : snapshot.data
+                                        .where((FollowUpReadingsModel x) =>
+                                            x.sub_category == e)
+                                        .toList()
+                                        .reversed
+                                        .toList()),
                           ),
                         ),
                         Visibility(
                           visible: snapshot.data
-                              .where((FollowUpReadingsModel x) =>
-                          x.sub_category == e && x.type == 'combine')
-                              .toList()
-                              .length >=
-                              3,
+                                  .where((FollowUpReadingsModel x) =>
+                                      x.sub_category == e &&
+                                      x.type == 'combine')
+                                  .toList()
+                                  .length >=
+                              7,
                           child: Container(
                             height: 250,
                             width: deviceSize.width,
                             alignment: Alignment.topCenter,
                             child: DrawGraph4(
                                 data: snapshot.data
-                                    .where((FollowUpReadingsModel x) =>
-                                x.sub_category == e).toList().reversed.toList()),
+                                            .where((FollowUpReadingsModel x) =>
+                                                x.sub_category == e &&
+                                                x.type == 'combine')
+                                            .toList()
+                                            .length >=
+                                        7
+                                    ? snapshot.data
+                                        .where((FollowUpReadingsModel x) =>
+                                            x.sub_category == e)
+                                        .toList()
+                                        .getRange(0, 7)
+                                        .reversed
+                                        .toList()
+                                    : snapshot.data
+                                        .where((FollowUpReadingsModel x) =>
+                                            x.sub_category == e)
+                                        .toList()
+                                        .reversed
+                                        .toList()),
                           ),
                         ),
                         Expanded(
@@ -364,22 +404,25 @@ class _PastReadingsState extends State<PastReadings> {
                               itemBuilder: (context, index) {
                                 if (snapshot.data[index].sub_category == e) {
                                   return Padding(
-                                      padding: const EdgeInsets.only(left: 8.0, right: 8.0, top: 6.0),
+                                      padding: const EdgeInsets.only(
+                                          left: 8.0, right: 8.0, top: 6.0),
                                       child: Card(
                                         elevation: 10,
                                         child: Column(children: [
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 7.0, vertical: 7.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 7.0, vertical: 7.0),
                                             child: Container(
                                               alignment: Alignment.topLeft,
                                               child: Column(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.start,
+                                                    MainAxisAlignment.start,
                                                 children: [
                                                   Text(
                                                     '${snapshot.data[index].sub_category}',
                                                     style: const TextStyle(
-                                                        color: Color(0xFF707070),
+                                                        color:
+                                                            Color(0xFF707070),
                                                         fontSize: 14),
                                                   ),
                                                   Text(
@@ -387,20 +430,23 @@ class _PastReadingsState extends State<PastReadings> {
                                                       textAlign: TextAlign.left,
                                                       style: const TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontWeight:
-                                                          FontWeight.bold,
+                                                              FontWeight.bold,
                                                           fontSize: 18))
                                                 ],
                                               ),
                                             ),
                                           ),
-                                          const SizedBox( height: 10,),
+                                          const SizedBox(
+                                            height: 10,
+                                          ),
                                           Padding(
-                                            padding: const EdgeInsets.symmetric(horizontal: 20.0),
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 20.0),
                                             child: Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.end,
+                                                  MainAxisAlignment.end,
                                               children: [
                                                 const Icon(
                                                   Icons.calendar_today_rounded,
@@ -409,14 +455,16 @@ class _PastReadingsState extends State<PastReadings> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.all(7.0),
+                                                      const EdgeInsets.all(7.0),
                                                   child: Text(
                                                       dateFormatter.format(
-                                                          DateTime.parse(snapshot
-                                                              .data[index].date)),
+                                                          DateTime.parse(
+                                                              snapshot
+                                                                  .data[index]
+                                                                  .date)),
                                                       style: const TextStyle(
-                                                          color:
-                                                          Color(0xFF707070))),
+                                                          color: Color(
+                                                              0xFF707070))),
                                                 ),
                                                 const Icon(
                                                   Icons.access_time,
@@ -425,14 +473,16 @@ class _PastReadingsState extends State<PastReadings> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.all(7.0),
+                                                      const EdgeInsets.all(7.0),
                                                   child: Text(
                                                       timeFormatter.format(
-                                                          DateTime.parse(snapshot
-                                                              .data[index].date)),
+                                                          DateTime.parse(
+                                                              snapshot
+                                                                  .data[index]
+                                                                  .date)),
                                                       style: const TextStyle(
-                                                          color:
-                                                          Color(0xFF707070))),
+                                                          color: Color(
+                                                              0xFF707070))),
                                                 ),
                                               ],
                                             ),
@@ -444,7 +494,9 @@ class _PastReadingsState extends State<PastReadings> {
                                 }
                               }),
                         ),
-                        const SizedBox(height: 80,),
+                        const SizedBox(
+                          height: 80,
+                        ),
                       ],
                     );
                   } else {
@@ -462,10 +514,10 @@ class _PastReadingsState extends State<PastReadings> {
               builder: (_) => AlertDialog(
                 title: Center(
                     child: Icon(
-                      Icons.announcement_outlined,
-                      color: Theme.of(context).primaryColor,
-                      size: 50,
-                    )),
+                  Icons.announcement_outlined,
+                  color: Theme.of(context).primaryColor,
+                  size: 50,
+                )),
                 content: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -480,8 +532,8 @@ class _PastReadingsState extends State<PastReadings> {
                       Navigator.pop(context);
                       Navigator.pushReplacement(context,
                           MaterialPageRoute(builder: (context) {
-                            return PostReadings(categoryId: widget.categoryId);
-                          }));
+                        return PostReadings(categoryId: widget.categoryId);
+                      }));
                     },
                     child: Text('ok',
                         style: TextStyle(
@@ -492,9 +544,11 @@ class _PastReadingsState extends State<PastReadings> {
               ),
             );
           },
-          child: Icon(Icons.add, color: Colors.blue.shade700,),
+          child: Icon(
+            Icons.add,
+            color: Colors.blue.shade700,
+          ),
           backgroundColor: Colors.white,
-
         ),
       ),
     );
@@ -544,7 +598,7 @@ class _PostReadingsState extends State<PostReadings> {
                         itemBuilder: (context, index) {
                           controllers[snapshot.data[index].subCategoryId] =
                               TextEditingController();
-                          if (snapshot.data[index].type == 'single'){
+                          if (snapshot.data[index].type == 'single') {
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Card(
@@ -556,15 +610,16 @@ class _PostReadingsState extends State<PostReadings> {
                                   children: [
                                     Text(snapshot.data[index].name,
                                         style: TextStyle(
-                                            color:
-                                            Theme.of(context).primaryColor)),
+                                            color: Theme.of(context)
+                                                .primaryColor)),
                                     Center(
                                       child: TextField(
                                         keyboardType: TextInputType.number,
                                         controller: controllers[
-                                        snapshot.data[index].subCategoryId],
-                                        style:
-                                        Theme.of(context).textTheme.subtitle1,
+                                            snapshot.data[index].subCategoryId],
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .subtitle1,
                                         decoration: InputDecoration(
                                           hintText: snapshot.data[index].name
                                               .toString(),
@@ -574,9 +629,12 @@ class _PostReadingsState extends State<PostReadings> {
                                   ],
                                 ),
                               ),
-                            );} else if (snapshot.data[index].type == 'combine') {
-                            TextEditingController temp = TextEditingController();
-                            TextEditingController temp2 = TextEditingController();
+                            );
+                          } else if (snapshot.data[index].type == 'combine') {
+                            TextEditingController temp =
+                                TextEditingController();
+                            TextEditingController temp2 =
+                                TextEditingController();
                             return Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Card(
@@ -588,11 +646,12 @@ class _PostReadingsState extends State<PostReadings> {
                                   children: [
                                     Text(snapshot.data[index].name,
                                         style: TextStyle(
-                                            color:
-                                            Theme.of(context).primaryColor)),
+                                            color: Theme.of(context)
+                                                .primaryColor)),
                                     Row(
                                       mainAxisSize: MainAxisSize.min,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
                                       children: [
                                         SizedBox(
                                           height: 60,
@@ -600,21 +659,27 @@ class _PostReadingsState extends State<PostReadings> {
                                           child: TextField(
                                             keyboardType: TextInputType.number,
                                             controller: temp2,
-                                            style:
-                                            Theme.of(context).textTheme.subtitle1,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1,
                                             decoration: InputDecoration(
-                                              hintText: snapshot.data[index].name
+                                              hintText: snapshot
+                                                  .data[index].name
                                                   .toString(),
                                             ),
                                             onChanged: (String x) {
-                                              controllers[
-                                              snapshot.data[index].subCategoryId]!.text = '${temp2.text}${snapshot.data[index].operator.toString()}${temp.text}';
+                                              controllers[snapshot.data[index]
+                                                          .subCategoryId]!
+                                                      .text =
+                                                  '${temp2.text}${snapshot.data[index].operator.toString()}${temp.text}';
                                             },
                                           ),
                                         ),
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
-                                          child: Text(snapshot.data[index].operator.toString()),
+                                          child: Text(snapshot
+                                              .data[index].operator
+                                              .toString()),
                                         ),
                                         SizedBox(
                                           height: 60,
@@ -622,15 +687,19 @@ class _PostReadingsState extends State<PostReadings> {
                                           child: TextField(
                                             keyboardType: TextInputType.number,
                                             controller: temp,
-                                            style:
-                                            Theme.of(context).textTheme.subtitle1,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .subtitle1,
                                             decoration: InputDecoration(
-                                              hintText: snapshot.data[index].name
+                                              hintText: snapshot
+                                                  .data[index].name
                                                   .toString(),
                                             ),
                                             onChanged: (String x) {
-                                              controllers[
-                                              snapshot.data[index].subCategoryId]!.text = '${temp2.text}${snapshot.data[index].operator.toString()}${temp.text}';
+                                              controllers[snapshot.data[index]
+                                                          .subCategoryId]!
+                                                      .text =
+                                                  '${temp2.text}${snapshot.data[index].operator.toString()}${temp.text}';
                                             },
                                           ),
                                         ),
@@ -654,7 +723,8 @@ class _PostReadingsState extends State<PostReadings> {
                           bool successful = false;
                           context.loaderOverlay
                               .show(widget: const LoadingScreen());
-                          print(DateFormat("yyyy-MM-dd HH:mm").parse(DateTime.now().toLocal().toString()));
+                          print(DateFormat("yyyy-MM-dd HH:mm")
+                              .parse(DateTime.now().toLocal().toString()));
                           for (var key in controllers.keys) {
                             if (controllers[key]!.text.isNotEmpty) {
                               var status = await FollowUpApi.postReadings(
@@ -662,7 +732,8 @@ class _PostReadingsState extends State<PostReadings> {
                                   widget.categoryId,
                                   key,
                                   controllers[key]!.text,
-                                  DateFormat("yyyy-MM-dd HH:mm").parse(DateTime.now().toLocal().toString()));
+                                  DateFormat("yyyy-MM-dd HH:mm").parse(
+                                      DateTime.now().toLocal().toString()));
                               if (status == 200) {
                                 successful = true;
                               } else {

@@ -15,6 +15,7 @@ import 'package:medic_app/screens/gallery_screen.dart';
 import 'package:medic_app/screens/home_screen.dart';
 import 'package:medic_app/screens/log_in_screen.dart';
 import 'package:medic_app/screens/packages_screen.dart';
+import 'package:medic_app/screens/radiology_screen.dart';
 import 'package:medic_app/screens/registration_screen.dart';
 import 'package:medic_app/screens/speciality_screen.dart';
 import 'package:medic_app/screens/doctors_search_screen.dart';
@@ -81,7 +82,8 @@ class MyApp extends StatelessWidget {
             Labs.id: (context) => const Labs(),
             DoctorSearch.id: (context) => const DoctorSearch(),
             HmDashBoard.id: (context) => const HmDashBoard(),
-            HealthMonitor.id: (context) => const HealthMonitor()
+            HealthMonitor.id: (context) => const HealthMonitor(),
+            Radiology.id: (context) => const Radiology()
 
 
           }),

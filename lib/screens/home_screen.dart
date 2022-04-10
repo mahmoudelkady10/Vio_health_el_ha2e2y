@@ -423,7 +423,7 @@ class _DashBoardState extends State<DashBoard> {
                             });
                       } else {
                         return const Center(
-                          child: Text('try again'),
+                          child: Text('No posts found'),
                         );
                       }
                     }),

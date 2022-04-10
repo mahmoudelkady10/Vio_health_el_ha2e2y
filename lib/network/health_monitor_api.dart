@@ -40,3 +40,10 @@ class HmApi extends BaseApiManagement {
     }
   }
 }
+
+
+// if (json.decode(response.body)['result']['data']['user_type'] == 'employee') {
+//   e7def 3ala employee model
+// } else if (json.decode(response.body)['result']['data']['user_type'] == 'customer'){
+//   e7def 3ala user model
+// }
