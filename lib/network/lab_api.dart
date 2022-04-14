@@ -10,13 +10,14 @@ import 'package:provider/provider.dart';
 
 class LabApi extends BaseApiManagement {
   static Future<List<Lab>> getLabs(
-      BuildContext context) async {
+      BuildContext context, int appId) async {
     var response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/techclinic/mob_get_labs'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode({
         "token": Provider.of<UserModel>(context, listen: false).token,
-        "partner_id": Provider.of<UserModel>(context, listen: false).partnerId
+        "partner_id": Provider.of<UserModel>(context, listen: false).partnerId,
+        "app_id": appId
       }),
     );
     print(response.body);
@@ -35,7 +36,8 @@ class LabApi extends BaseApiManagement {
     }
   }
 
-  static Future<int> postLab(BuildContext context, List measures, List results, List units, String name) async {
+  static Future<int> postLab(BuildContext context, List measures, List results, List units, String name, int appId, DateTime date) async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     http.Response response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/techclinic/mob_create_lab'),
       headers: {"Content-Type": "application/json"},
@@ -48,7 +50,9 @@ class LabApi extends BaseApiManagement {
           'name': name,
           'results': results,
           'measures': measures,
-          'units': units
+          'units': units,
+          'app_id': appId,
+          'date': formattedDate
         },
       ),
     );
@@ -60,7 +64,8 @@ class LabApi extends BaseApiManagement {
     return responseStatus;
   }
 
-  static Future<int> postLabImage(BuildContext context, String image, String name) async {
+  static Future<int> postLabImage(BuildContext context, String image, String name, int appId, DateTime date) async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     http.Response response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/techclinic/mob_create_lab'),
       headers: {"Content-Type": "application/json"},
@@ -71,7 +76,9 @@ class LabApi extends BaseApiManagement {
           'token':
           Provider.of<UserModel>(context, listen: false).token,
           'image': image,
-          'name': name
+          'name': name,
+          'app_id': appId,
+          'date': formattedDate
         },
       ),
     );

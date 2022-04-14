@@ -443,14 +443,14 @@ class _DashBoardState extends State<DashBoard> {
                       context),
                   optioncard(deviceSize, icons[1], options[1], Appointment.id,
                       context),
-                  optioncard(
-                      deviceSize, icons[2], options[2], Medication.id, context),
+                  // optioncard(
+                  //     deviceSize, icons[2], options[2], Medication.id, context),
                   optioncard(deviceSize, icons[3], options[3],
                       PastAppointments.id, context),
                   optioncard(deviceSize, icons[4], options[4], HmDashBoard.id,
                       context),
-                  optioncard(deviceSize, icons[5], options[5],
-                      PackagesScreen.id, context),
+                  // optioncard(deviceSize, icons[5], options[5],
+                  //     PackagesScreen.id, context),
                 ],
               ),
             ),

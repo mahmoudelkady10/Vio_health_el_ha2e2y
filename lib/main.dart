@@ -79,11 +79,11 @@ class MyApp extends StatelessWidget {
             WalletScreen.id: (context) => const WalletScreen(),
             VideoAppointment.id: (context) => const VideoAppointment(),
             PackagesScreen.id: (context) => const PackagesScreen(),
-            Labs.id: (context) => const Labs(),
             DoctorSearch.id: (context) => const DoctorSearch(),
             HmDashBoard.id: (context) => const HmDashBoard(),
             HealthMonitor.id: (context) => const HealthMonitor(),
-            Radiology.id: (context) => const Radiology()
+            Radiology.id: (context) => const Radiology(),
+            LabApointments.id: (context) => const LabApointments(),
 
 
           }),

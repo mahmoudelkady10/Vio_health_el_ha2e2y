@@ -4,11 +4,14 @@ import 'package:image_picker/image_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medic_app/network/create_appointment_api.dart';
+import 'package:medic_app/network/lab_api.dart';
 import 'package:medic_app/network/medication_api.dart';
 import 'package:expandable/expandable.dart';
 import 'package:medic_app/network/appointments_api.dart';
+import 'package:medic_app/network/radiologgy_api.dart';
 import 'package:medic_app/network/time_slots_api.dart';
 import 'package:medic_app/screens/add_medication_screen.dart';
+import 'package:medic_app/screens/radiology_screen.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:medic_app/widgets/unit_request_card.dart';
@@ -17,6 +20,9 @@ import 'package:medic_app/model/user_model.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:pinch_zoom/pinch_zoom.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+
+import 'lab_screen.dart';
 
 class Medication extends StatefulWidget {
   const Medication({Key? key}) : super(key: key);
@@ -32,6 +38,7 @@ class _MedicationState extends State<Medication> {
   @override
   Widget build(BuildContext context) {
     int? userId = Provider.of<UserModel>(context).partnerId;
+    DateTime? selectedDate;
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -408,215 +415,455 @@ class MedicationDetails extends StatefulWidget {
 class _MedicationDetailsState extends State<MedicationDetails> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Center(
-          child: Text('Prescriptions',
-              style:
-                  TextStyle(color: Colors.white, fontWeight: FontWeight.bold)),
-        ),
-        backgroundColor: Theme.of(context).primaryColor,
-        actions: [
-          Padding(
-              padding: const EdgeInsets.only(right: 10),
-              child: IconButton(
-                  icon: const Icon(Icons.add_a_photo_outlined),
-                  onPressed: () {
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) {
-                          return MedicationImage(appId: widget.appId);
-                        },
-                      ),
-                    );
-                  })) // add more IconButton
-        ],
-      ),
-      body: FutureBuilder(
-        future: MedicationApi.getMedication(context, widget.appId),
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else if (snapshot.connectionState == ConnectionState.done &&
-              snapshot.data != null) {
-            return ListView.builder(
-                itemCount: snapshot.data.length,
-                itemBuilder: (context, index) {
-                  if (snapshot.data[index].image == null) {
-                    return Padding(
-                      padding: const EdgeInsets.all(15.0),
-                      child: Card(
-                        child: ExpandablePanel(
-                            header: Padding(
-                              padding: const EdgeInsets.only(top: 9.0),
-                              child: Text(snapshot.data[index].medicineId,
-                                  textAlign: TextAlign.center,
-                                  style: const TextStyle(color: Colors.black)),
-                            ),
-                            collapsed: const SizedBox.shrink(),
-                            expanded: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 35.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Name:',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                      Text(snapshot.data[index].medicineId,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 35.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Type:',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                      Text(snapshot.data[index].medicineFormId,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 35.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Amount/dose:',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                      Text(snapshot.data[index].dosageQuantity,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 35.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Doses/day:',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                      Text(snapshot.data[index].frequency,
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 35.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      const Text('Duration: ',
-                                          style:
-                                              TextStyle(color: Colors.black)),
-                                      Text(
-                                          '${snapshot.data[index].days} Day(s)',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            )),
-                      ),
-                    );
-                  } else {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      child: Card(
-                        elevation: 10.0,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(16.0),
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: AppBar(
+          backgroundColor: Colors.white,
+          bottom: const TabBar(
+            unselectedLabelStyle: TextStyle(fontSize: 14.0),
+            labelStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
+            labelPadding: EdgeInsets.all(8.0),
+            isScrollable: true,
+            unselectedLabelColor: Color(0xFF979797),
+            labelColor: Color(0xFF707070),
+            indicatorColor: Colors.white,
+            indicatorWeight: 0.5,
+            tabs: [
+              Text('Medication'),
+              Text('Lab'),
+              Text('Radiology'),
+            ],
+          ),
+          iconTheme: IconThemeData(
+            color: Theme.of(context).primaryColor, //change your color here
+          ),
+          actions: [
+            Padding(
+                padding: const EdgeInsets.only(right: 10),
+                child: IconButton(
+                    icon: const Icon(Icons.add_a_photo_outlined),
+                    onPressed: () {
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) {
+                            return MedicationImage(appId: widget.appId);
+                          },
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            ClipRRect(
-                              child: InteractiveViewer(
-                                child: Image.network(
-                                    snapshot.data[index].image.toString()),
-                                maxScale: 5,
+                      );
+                    })) // add more IconButton
+          ],
+        ),
+        body: TabBarView(
+          children: [
+            FutureBuilder(
+              future: MedicationApi.getMedication(context, widget.appId),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null) {
+                  return ListView.builder(
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        if (snapshot.data[index].image == null) {
+                          return Padding(
+                            padding: const EdgeInsets.all(15.0),
+                            child: Card(
+                              child: ExpandablePanel(
+                                  header: Padding(
+                                    padding: const EdgeInsets.only(top: 9.0),
+                                    child: Text(snapshot.data[index].medicineId,
+                                        textAlign: TextAlign.center,
+                                        style: const TextStyle(color: Colors.black)),
+                                  ),
+                                  collapsed: const SizedBox.shrink(),
+                                  expanded: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 35.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text('Name:',
+                                                style:
+                                                    TextStyle(color: Colors.black)),
+                                            Text(snapshot.data[index].medicineId,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 35.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text('Type:',
+                                                style:
+                                                    TextStyle(color: Colors.black)),
+                                            Text(snapshot.data[index].medicineFormId,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 35.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text('Amount/dose:',
+                                                style:
+                                                    TextStyle(color: Colors.black)),
+                                            Text(snapshot.data[index].dosageQuantity,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 35.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text('Doses/day:',
+                                                style:
+                                                    TextStyle(color: Colors.black)),
+                                            Text(snapshot.data[index].frequency,
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor)),
+                                          ],
+                                        ),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 35.0),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            const Text('Duration: ',
+                                                style:
+                                                    TextStyle(color: Colors.black)),
+                                            Text(
+                                                '${snapshot.data[index].days} Day(s)',
+                                                style: TextStyle(
+                                                    color: Theme.of(context)
+                                                        .primaryColor)),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
+                                  )),
+                            ),
+                          );
+                        } else {
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: Card(
+                              elevation: 10.0,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16.0),
                               ),
-                              borderRadius: const BorderRadius.only(
-                                topLeft: Radius.circular(16.0),
-                                topRight: Radius.circular(16.0),
-                                bottomLeft: Radius.circular(16.0),
-                                bottomRight: Radius.circular(16.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  ClipRRect(
+                                    child: InteractiveViewer(
+                                      child: Image.network(
+                                          snapshot.data[index].image.toString()),
+                                      maxScale: 5,
+                                    ),
+                                    borderRadius: const BorderRadius.only(
+                                      topLeft: Radius.circular(16.0),
+                                      topRight: Radius.circular(16.0),
+                                      bottomLeft: Radius.circular(16.0),
+                                      bottomRight: Radius.circular(16.0),
+                                    ),
+                                  ),
+                                ],
                               ),
                             ),
+                          );
+                        }
+                      });
+                } else {
+                  return Center(
+                    child: SizedBox(
+                      width: 350,
+                      height: 80,
+                      child: Card(
+                        child: Column(
+                          children: [
+                            const Text('Instructions',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black)),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                                'click on the below button to add prescription\nor use the upper camera icon to add image',
+                                style:
+                                    TextStyle(color: Theme.of(context).primaryColor)),
                           ],
                         ),
                       ),
-                    );
-                  }
-                });
-          } else {
-            return Center(
-              child: SizedBox(
-                width: 350,
-                height: 80,
-                child: Card(
-                  child: Column(
-                    children: [
-                      const Text('Instructions',
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                      const SizedBox(
-                        height: 5,
+                    ),
+                  );
+                }
+              },
+            ),
+            FutureBuilder(
+              future: LabApi.getLabs(context, widget.appId),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null) {
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0, top: 6.0),
+                            child: Card(
+                              elevation: 10,
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Test Type:',
+                                          ),
+                                          Text(snapshot.data[index].name),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Date: ',
+                                          ),
+                                          Text(
+                                            snapshot.data[index].date,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      alignment: Alignment.bottomRight,
+                                      height: 80,
+                                      width: 150,
+                                      child: RoundedButton(
+                                        buttonText: 'Check Results',
+                                        buttonColor: Theme.of(context).primaryColor,
+                                        buttonFunction: () {
+                                          if (snapshot.data[index].labLines.isNotEmpty) {
+                                            print(snapshot.data[index].labLines);
+                                            Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) {
+                                                  return LabResults(
+                                                      name: snapshot.data[index].name,
+                                                      date: snapshot.data[index].date,
+                                                      results:
+                                                      snapshot.data[index].labLines);
+                                                }));
+                                          } else {
+                                            Navigator.push(context,
+                                                MaterialPageRoute(builder: (context) {
+                                                  return LabResults(
+                                                      name: snapshot.data[index].name,
+                                                      date: snapshot.data[index].date,
+                                                      image: snapshot.data[index].image.toString());
+                                                }));
+                                          }
+                                        },
+                                      ),
+                                    )
+                                  ]),
+                            ));
+                      });
+                } else {
+                  return Center(
+                    child: SizedBox(
+                      width: 350,
+                      height: 80,
+                      child: Card(
+                        child: Column(
+                          children: [
+                            const Text('Instructions',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black)),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                                'Go to lab main page to add records',
+                                style:
+                                TextStyle(color: Theme.of(context).primaryColor)),
+                          ],
+                        ),
                       ),
-                      Text(
-                          'click on the below button to add prescription\nor use the upper camera icon to add image',
-                          style:
-                              TextStyle(color: Theme.of(context).primaryColor)),
-                    ],
-                  ),
-                ),
-              ),
-            );
-          }
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
-            return AddMedication(appId: widget.appId);
-          }));
-        },
-        child: const Icon(Icons.add),
-        backgroundColor: Theme.of(context).primaryColor,
+                    ),
+                  );
+                }
+              },
+            ),
+            FutureBuilder(
+              future: RadiologyApi.getRads(context, widget.appId),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(
+                    child: CircularProgressIndicator(),
+                  );
+                } else if (snapshot.connectionState == ConnectionState.done &&
+                    snapshot.data != null) {
+                  return ListView.builder(
+                      shrinkWrap: true,
+                      itemCount: snapshot.data.length,
+                      itemBuilder: (context, index) {
+                        return Padding(
+                            padding: const EdgeInsets.only(
+                                left: 8.0, right: 8.0, top: 6.0),
+                            child: Card(
+                              elevation: 10,
+                              child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Scan Type:',
+                                          ),
+                                          Text(snapshot.data[index].name),
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(
+                                      height: 10,
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 40.0),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          const Text(
+                                            'Date: ',
+                                          ),
+                                          Text(
+                                            snapshot.data[index].date,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Container(
+                                      alignment: Alignment.bottomRight,
+                                      height: 80,
+                                      width: 150,
+                                      child: RoundedButton(
+                                        buttonText: 'Check/Add Results',
+                                        buttonColor: Theme
+                                            .of(context)
+                                            .primaryColor,
+                                        buttonFunction: () {
+                                          Navigator.push(context,
+                                              MaterialPageRoute(builder: (context) {
+                                                return RadiologyResults(
+                                                  name: snapshot.data[index].name,
+                                                  date: snapshot.data[index].date,
+                                                  results: snapshot.data[index]
+                                                      .radLines,
+                                                  radId: snapshot.data[index].id,);
+                                              }));
+                                        },
+                                      ),
+                                    )
+                                  ]),
+                            ));
+                      });
+                } else {
+                  return Center(
+                    child: SizedBox(
+                      width: 350,
+                      height: 80,
+                      child: Card(
+                        child: Column(
+                          children: [
+                            const Text('Instructions',
+                                style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black)),
+                            const SizedBox(
+                              height: 5,
+                            ),
+                            Text(
+                                'Go to radiology main page to add records.',
+                                style:
+                                TextStyle(color: Theme.of(context).primaryColor)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  );
+                }
+              },
+            ),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) {
+              return AddMedication(appId: widget.appId);
+            }));
+          },
+          child: const Icon(Icons.add),
+          backgroundColor: Theme.of(context).primaryColor,
+        ),
       ),
     );
   }

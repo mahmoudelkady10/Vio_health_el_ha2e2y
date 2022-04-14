@@ -4,6 +4,7 @@ import 'package:medic_app/model/follow_up_model.dart';
 import 'package:medic_app/model/lab_model.dart';
 import 'package:medic_app/network/follow_up_api.dart';
 import 'package:medic_app/screens/lab_screen.dart';
+import 'package:medic_app/screens/medication_screen.dart';
 import 'package:medic_app/screens/radiology_screen.dart';
 import 'package:medic_app/widgets/graph_drawer.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
@@ -20,7 +21,8 @@ class FollowUpDashboard extends StatelessWidget {
     List options = [
       'Follow up',
       'Lab',
-      'Radiology'
+      'Radiology',
+      'Medication'
     ];
     List icons = [
       ImageIcon(
@@ -38,9 +40,14 @@ class FollowUpDashboard extends StatelessWidget {
         size: 75,
         color: Theme.of(context).primaryColor,
       ),
+      ImageIcon(
+        const AssetImage('assets/medication.png'),
+        size: 75,
+        color: Theme.of(context).primaryColor,
+      ),
     ];
 
-    List screens = [FollowUp.id, Labs.id, Radiology.id];
+    List screens = [FollowUp.id, LabApointments.id, Radiology.id, Medication.id];
     var deviceSize = MediaQuery.of(context).size;
 
     return Padding(
@@ -351,9 +358,7 @@ class _PastReadingsState extends State<PastReadings> {
                                         .where((FollowUpReadingsModel x) =>
                                             x.sub_category == e)
                                         .toList()
-                                        .getRange(0, 7)
-                                        .reversed
-                                        .toList()
+                                        .getRange(0, 7).toList().reversed.toList()
                                     : snapshot.data
                                         .where((FollowUpReadingsModel x) =>
                                             x.sub_category == e)
@@ -386,7 +391,7 @@ class _PastReadingsState extends State<PastReadings> {
                                         .where((FollowUpReadingsModel x) =>
                                             x.sub_category == e)
                                         .toList()
-                                        .getRange(0, 7)
+                                        .getRange(0, 7).toList()
                                         .reversed
                                         .toList()
                                     : snapshot.data

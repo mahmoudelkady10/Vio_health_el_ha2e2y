@@ -32,7 +32,8 @@ class RadiologyApi extends BaseApiManagement {
     }
   }
 
-  static Future<int> createRadRequest(BuildContext context, String results, int appId, String name) async {
+  static Future<int> createRadRequest(BuildContext context, String results, int appId, String name, DateTime date) async {
+    String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     http.Response response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/techclinic/mob_create_rad'),
       headers: {"Content-Type": "application/json"},
@@ -44,7 +45,8 @@ class RadiologyApi extends BaseApiManagement {
           Provider.of<UserModel>(context, listen: false).token,
           'scan_type': name,
           'image': results,
-          'app_id': appId
+          'app_id': appId,
+          'date': formattedDate
         },
       ),
     );
