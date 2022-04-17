@@ -19,8 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-import 'package:pinch_zoom/pinch_zoom.dart';
-import 'package:flutter_typeahead/flutter_typeahead.dart';
+
+
 
 import 'lab_screen.dart';
 
@@ -38,7 +38,6 @@ class _MedicationState extends State<Medication> {
   @override
   Widget build(BuildContext context) {
     int? userId = Provider.of<UserModel>(context).partnerId;
-    DateTime? selectedDate;
     return Scaffold(
       appBar: AppBar(
         title: const Center(

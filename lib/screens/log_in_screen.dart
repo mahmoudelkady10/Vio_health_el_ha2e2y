@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:loader_overlay/loader_overlay.dart';
 import 'package:medic_app/network/login_api.dart';
+import 'package:medic_app/network/medication_api.dart';
 import 'package:medic_app/screens/home_screen.dart';
 import 'package:medic_app/screens/registration_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
@@ -9,6 +10,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+import 'dart:io';
 
 class LoginScreen extends StatefulWidget {
   static const String id = 'login_screen';
@@ -133,8 +137,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     );
                   } else {
+                    var meds = await MedicationApi.getMedicineList(context);
+                    File file;
+                    Directory? directory = Platform.isAndroid
+                        ? await getExternalStorageDirectory()
+                        : await getApplicationSupportDirectory();
+                    if (await File("${directory!.path}/medicine.json").exists()){
+                      file = File("${directory.path}/medicine.json");
+
+                    } else {
+                      file = await File("${directory.path}/medicine.json").create();
+                    }
+                    await file.writeAsString(jsonEncode(meds));
                     SharedPreferences prefs =
                         await SharedPreferences.getInstance();
+                    prefs.setString("med_last_update", DateTime.now().toString());
                     prefs.setBool("isLoggedIn", true);
                     prefs.setString('token',
                         Provider.of<UserModel>(context, listen: false).token);

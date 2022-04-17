@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:medic_app/model/packages_model.dart';
 import 'package:medic_app/model/specialties_model.dart';
@@ -31,6 +34,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'model/time_slots_model.dart';
 import 'model/user_model.dart';
 import 'network/login_api.dart';
+import 'network/medication_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -116,6 +120,29 @@ class WelcomeScreen extends StatelessWidget {
             await Future.delayed(const Duration(seconds: 2));
             Navigator.pushReplacementNamed(context, WelcomeScreen2.id);
           } else {
+            if(prefs.getString("med_latest_update") != null){
+              var today = DateTime.now();
+              var lastUpdate = prefs.getString("med_last_update");
+              var diff = today.difference(DateTime.parse(lastUpdate!)).inDays;
+              if (diff >= 7) {
+                var meds = await MedicationApi.getMedicineList(context);
+                Directory? directory = Platform.isAndroid
+                    ? await getExternalStorageDirectory()
+                    : await getApplicationSupportDirectory();
+                File file;
+                if (await File("${directory!.path}/medicine.json").exists()){
+                  file = File("${directory.path}/medicine.json");
+
+                } else {
+                  file = await File("${directory.path}/medicine.json").create();
+                }
+                await file.writeAsString(jsonEncode(meds));
+              }
+            } else {
+              SharedPreferences prefs =
+              await SharedPreferences.getInstance();
+              prefs.setString("med_last_update", DateTime.now().toString());
+            }
             Navigator.pushReplacementNamed(context, MyHomePage.id);
           }
         }

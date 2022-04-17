@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:medic_app/network/medication_api.dart';
@@ -5,6 +8,9 @@ import 'package:medic_app/screens/medication_screen.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
 import 'package:loader_overlay/loader_overlay.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:path_provider/path_provider.dart';
+// import 'package:flutter_typeahead/cupertino_flutter_typeahead.dart';
 
 class AddMedication extends StatefulWidget {
   const AddMedication({Key? key, required this.appId}) : super(key: key);
@@ -21,6 +27,30 @@ class _AddMedicationState extends State<AddMedication> {
   TextEditingController amount = TextEditingController();
   TextEditingController dose = TextEditingController();
   TextEditingController duration = TextEditingController();
+  List<String> medicineList = [];
+
+  Future<void> getData() async{
+    Directory? directory = Platform.isAndroid
+        ? await getExternalStorageDirectory()
+        : await getApplicationSupportDirectory();
+    File file;
+    file = File("${directory!.path}/medicine.json");
+    final String response = await file.readAsString();
+    final data = await json.decode(response);
+    List<String> temp = [];
+    for (var index in data){
+      temp.add(index["name"].toString().toLowerCase());
+    }
+    setState(() {
+      medicineList = temp;
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    getData();
+  }
 
   void _clear() {
     setState(() {
@@ -48,7 +78,7 @@ class _AddMedicationState extends State<AddMedication> {
       body: LoaderOverlay(
         child: Padding(
           padding: const EdgeInsets.all(35.0),
-          child: Column(
+          child: ListView(
             children: [
               SizedBox(
                 width: 200,
@@ -63,19 +93,27 @@ class _AddMedicationState extends State<AddMedication> {
                       const SizedBox(
                         height: 5,
                       ),
-                      Text('Add drugs one by one',
+                      Text('Add prescription info below',
                           style:
                               TextStyle(color: Theme.of(context).primaryColor)),
                     ],
                   ),
                 ),
               ),
-              TextField(
-                controller: name,
-                style: Theme.of(context).textTheme.subtitle1,
-                decoration: const InputDecoration(
-                  hintText: 'Name',
-                ),
+              const Text('Start Typing medication name...', style: TextStyle(color: Colors.black26),),
+              Autocomplete<String>(
+                optionsBuilder: (TextEditingValue textEditingValue) {
+                  if (textEditingValue.text == '') {
+                    print(medicineList);
+                    return const Iterable<String>.empty();
+                  }
+                  return medicineList.where((String option) {
+                    return option.contains(textEditingValue.text.toLowerCase());
+                  });
+                },
+                onSelected: (String selection) {
+                    name.text = selection;
+                },
               ),
               const SizedBox(
                 height: 5,
