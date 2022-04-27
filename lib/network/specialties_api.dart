@@ -18,7 +18,7 @@ class SpecialtiesApi extends BaseApiManagement {
       }),
     );
     print(response.body);
-    int responseStatus = json.decode(response.body)['result']['status'];
+    dynamic responseStatus = json.decode(response.body)['result']['status'];
     List<SpecialtiesModel> specialtiesList = [];
     if (responseStatus == 200) {
       for (var index in json.decode(response.body)['result']['data']) {

@@ -38,3 +38,17 @@ class MedicationList extends ChangeNotifier {
 
   List<MedicationModel> get medication => _medicationList;
 }
+
+class MedicineList {
+  dynamic name;
+
+  MedicineList({this.name});
+
+  factory MedicineList.fromJson(Map<String, dynamic> json) {
+    return MedicineList(
+      name: json['name'],
+    );
+  }
+
+
+}

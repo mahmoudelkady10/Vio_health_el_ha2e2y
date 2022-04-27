@@ -77,8 +77,11 @@ dev_dependencies:
   flutter_webview_plugin: ^0.4.0
   jitsi_meet: ^4.0.0
   syncfusion_flutter_pdf: ^19.4.43-beta
-
+  syncfusion_flutter_charts: ^19.4.53
+  # zoom_pinch_overlay:
+  pinch_zoom: ^1.0.0
   intl: ^0.17.0
+  flutter_typeahead: ^3.2.4
 
 
 # For information on the generic Dart part of this file, see the

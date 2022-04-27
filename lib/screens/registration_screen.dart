@@ -21,6 +21,7 @@ class Registration extends StatefulWidget {
   static TextEditingController userNameController = TextEditingController();
   static TextEditingController bloodGroupController = TextEditingController();
   static TextEditingController weightController = TextEditingController();
+  static TextEditingController phoneNumberController = TextEditingController();
   static String? _gender = 'male';
   static DateTime? dateOfBirth;
 
@@ -63,7 +64,10 @@ class _RegistrationState extends State<Registration> {
   @override
   Widget build(BuildContext context) {
     var deviceSize = MediaQuery.of(context).size;
-    Icon blood = const Icon(Icons.bloodtype, color: Colors.grey,);
+    Icon blood = const Icon(
+      Icons.bloodtype,
+      color: Colors.grey,
+    );
     return Scaffold(
       backgroundColor: Colors.white,
       body: Padding(
@@ -134,6 +138,17 @@ class _RegistrationState extends State<Registration> {
                 }
                 return null;
               },
+            ),
+            ValidatedTextField(
+              fieldController: Registration.phoneNumberController,
+              hintText: 'Phone Number',
+              labelText: 'Phone Number',
+              fieldValidator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'This field is required';
+                }
+              },
+              fieldIcon: Icons.assignment_ind_outlined,
             ),
             ValidatedTextField(
               fieldController: Registration.weightController,
@@ -266,6 +281,7 @@ class _RegistrationState extends State<Registration> {
                         Registration.passwordController.text,
                         Registration._gender,
                         Registration.dateOfBirth!,
+                        Registration.phoneNumberController.text,
                         Registration.weightController.text,
                         Registration.bloodGroupController.text);
                     int statusCode =

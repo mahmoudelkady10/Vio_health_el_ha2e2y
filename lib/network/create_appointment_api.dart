@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class CreateAppointmentApi extends BaseApiManagement {
   static Future<int> createAppointment(
-      BuildContext context, DateTime date, int doctorId, int partnerId, int typeId, int timeId) async {
+      BuildContext context, DateTime date, int doctorId, int partnerId, int typeId, int timeId, dynamic doctorName, int clinicId) async {
     String formattedDate = DateFormat('yyyy-MM-dd').format(date);
     String dayName = DateFormat('EEEE').format(date);
 
@@ -19,11 +19,13 @@ class CreateAppointmentApi extends BaseApiManagement {
       'doctor': doctorId,
       'day': dayName,
       'time': timeId,
-      "token": Provider.of<UserModel>(context, listen: false).token
+      "token": Provider.of<UserModel>(context, listen: false).token,
+      'doctor_name': doctorName,
+      'clinic_id': clinicId
 
     };
     var response = await http.post(
-      Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_create_appointment'),
+      Uri.parse('${BaseApiManagement.baseUrl}/techclinic/mob_create_appointment'),
       headers: {"Content-Type": "application/json"},
       body: jsonEncode(body),
     );

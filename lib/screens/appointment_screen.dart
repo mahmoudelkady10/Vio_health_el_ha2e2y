@@ -39,7 +39,7 @@ class Appointment extends StatelessWidget {
                 return ListView.builder(
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
-                      if (snapshot.data[index].state == 'draft') {
+                      if (snapshot.data[index].state == 'draft' && snapshot.data[index].doctor != 'External Doctor') {
                         return AppointmentCard(
                           appId: snapshot.data[index].id,
                           requestState: snapshot.data[index].state,
@@ -73,7 +73,7 @@ class Appointment extends StatelessWidget {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          if (snapshot.data[index].state == 'confirm') {
+                          if (snapshot.data[index].state == 'confirm' && snapshot.data[index].doctor != 'External Doctor') {
                             return AppointmentCard(
                               requestState: snapshot.data[index].state,
                               service: snapshot.data[index].type,
@@ -108,7 +108,7 @@ class Appointment extends StatelessWidget {
                     return ListView.builder(
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
-                          if (snapshot.data[index].state == 'done') {
+                          if (snapshot.data[index].state == 'done' && snapshot.data[index].doctor != 'External Doctor') {
                             return AppointmentCard(
                               requestState: snapshot.data[index].state,
                               service: snapshot.data[index].type,

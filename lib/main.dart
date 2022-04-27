@@ -1,5 +1,7 @@
 import 'dart:async';
-
+import 'package:path_provider/path_provider.dart';
+import 'dart:convert';
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:medic_app/model/packages_model.dart';
 import 'package:medic_app/model/specialties_model.dart';
@@ -7,7 +9,7 @@ import 'package:medic_app/screens/booking_screen.dart';
 import 'package:medic_app/screens/doctors_screen.dart';
 import 'package:medic_app/screens/follow_up_screen.dart';
 import 'package:medic_app/screens/health_monitor_screen.dart';
-import 'package:medic_app/screens/healthmonitor_history_screen.dart';
+import 'package:medic_app/screens/lab_screen.dart';
 import 'package:medic_app/screens/manage_profile_screen.dart';
 import 'package:medic_app/screens/medication_screen.dart';
 import 'package:medic_app/screens/contact_screen.dart';
@@ -16,8 +18,10 @@ import 'package:medic_app/screens/gallery_screen.dart';
 import 'package:medic_app/screens/home_screen.dart';
 import 'package:medic_app/screens/log_in_screen.dart';
 import 'package:medic_app/screens/packages_screen.dart';
+import 'package:medic_app/screens/radiology_screen.dart';
 import 'package:medic_app/screens/registration_screen.dart';
 import 'package:medic_app/screens/speciality_screen.dart';
+import 'package:medic_app/screens/doctors_search_screen.dart';
 import 'package:medic_app/screens/appointment_screen.dart';
 import 'package:medic_app/screens/almanara_screen.dart';
 import 'package:medic_app/screens/testimonials_screen.dart';
@@ -25,13 +29,12 @@ import 'package:medic_app/screens/reach_us_screen.dart';
 import 'package:medic_app/screens/video_call_screen.dart';
 import 'package:medic_app/screens/wallet_screen.dart';
 import 'package:medic_app/widgets/rounded_button.dart';
-import 'package:medic_app/screens/add_medication_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import 'model/time_slots_model.dart';
 import 'model/user_model.dart';
 import 'network/login_api.dart';
+import 'network/medication_api.dart';
 
 void main() {
   runApp(const MyApp());
@@ -79,9 +82,14 @@ class MyApp extends StatelessWidget {
             ManageProfile.id: (context) => const ManageProfile(),
             WalletScreen.id: (context) => const WalletScreen(),
             VideoAppointment.id: (context) => const VideoAppointment(),
-            HealthMonitor.id: (context) => const HealthMonitor(),
-            HealthMonitorHistory.id: (context) => const HealthMonitorHistory(),
             PackagesScreen.id: (context) => const PackagesScreen(),
+            DoctorSearch.id: (context) => const DoctorSearch(),
+            HmDashBoard.id: (context) => const HmDashBoard(),
+            HealthMonitor.id: (context) => const HealthMonitor(),
+            Radiology.id: (context) => const Radiology(),
+            LabApointments.id: (context) => const LabApointments(),
+
+
           }),
     );
   }
@@ -112,6 +120,29 @@ class WelcomeScreen extends StatelessWidget {
             await Future.delayed(const Duration(seconds: 2));
             Navigator.pushReplacementNamed(context, WelcomeScreen2.id);
           } else {
+            if(prefs.getString("med_latest_update") != null){
+              var today = DateTime.now();
+              var lastUpdate = prefs.getString("med_last_update");
+              var diff = today.difference(DateTime.parse(lastUpdate!)).inDays;
+              if (diff >= 7) {
+                var meds = await MedicationApi.getMedicineList(context);
+                Directory? directory = Platform.isAndroid
+                    ? await getExternalStorageDirectory()
+                    : await getApplicationSupportDirectory();
+                File file;
+                if (await File("${directory!.path}/medicine.json").exists()){
+                  file = File("${directory.path}/medicine.json");
+
+                } else {
+                  file = await File("${directory.path}/medicine.json").create();
+                }
+                await file.writeAsString(jsonEncode(meds));
+              }
+            } else {
+              SharedPreferences prefs =
+              await SharedPreferences.getInstance();
+              prefs.setString("med_last_update", DateTime.now().toString());
+            }
             Navigator.pushReplacementNamed(context, MyHomePage.id);
           }
         }
@@ -170,47 +201,40 @@ class WelcomeScreen2 extends StatelessWidget {
       body: Center(
         child: Column(
           children: [
-            SizedBox(height: deviceSize.height * 0.20),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: const [
-                Padding(
-                  padding: EdgeInsets.only(left: 25.0),
+            CustomPaint(
+              painter: ShapesPainter(),
+              child: SizedBox(
+                height: 280,
+                width:  800,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 130),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: const [
+                      Text('WELCOME TO ',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB22234))),
+                      Text('Techno Clinic',
+                          textAlign: TextAlign.start,
+                          style: TextStyle(
+                              fontSize: 40,
+                              fontWeight: FontWeight.bold,
+                              color: Color(0xFFB22234))),
+                    ],
+                  ),
                 ),
-                Text('WELCOME TO ',
-                    textAlign: TextAlign.end,
-                    style: TextStyle(
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                        color: Color(0xFFB22234))),
-              ],
+              ),
             ),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Padding(
-                  padding: EdgeInsets.only(left: 25.0),
-                ),
-                Text('Techno Clinic.',
-                    textAlign: TextAlign.end,
-                    style: TextStyle(
-                        fontSize: 45,
-                        fontWeight: FontWeight.bold,
-                        color: Theme.of(context).primaryColor)),
-              ],
-            ),
-            SizedBox(
-              height: deviceSize.height * 0.07,
-              width: deviceSize.width * 0.5,
-            ),
+            const SizedBox(height:30),
             Image.asset(
               'assets/techno clinic.png',
               width: 200,
               height: 200,
             ),
-            const SizedBox(
-              height: 50,
-            ),
+            const SizedBox(height:30),
             Row(
               mainAxisSize: MainAxisSize.min,
               mainAxisAlignment: MainAxisAlignment.center,
@@ -249,6 +273,25 @@ class WelcomeScreen2 extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+const double _kCurveHeight = 35;
+
+class ShapesPainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    final p = Path();
+    p.lineTo(0, size.height - _kCurveHeight);
+    p.relativeQuadraticBezierTo(size.width / 2, 2 * _kCurveHeight, size.width, 0);
+    p.lineTo(size.width, 0);
+    p.close();
+
+    canvas.drawPath(p, Paint()..color = const Color(0xFF002768));
+  }
+
+  @override
+  bool shouldRepaint(CustomPainter oldDelegate) {
+    return true;
   }
 }
 //'https://images.onhealth.com/images/slideshow/right-doctor-finder-s1-doctors.jpg'

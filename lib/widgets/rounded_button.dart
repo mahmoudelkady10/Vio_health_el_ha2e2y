@@ -29,7 +29,7 @@ class RoundedButton extends StatelessWidget {
             BorderSide(width: 2, color: Theme.of(context).primaryColor)),
         child: MaterialButton(
           onPressed: buttonFunction,
-          minWidth: 200.0,
+          minWidth: 90.0,
           height: 48.0,
           highlightColor: Theme.of(context).primaryColor,
           child: Text(

@@ -59,8 +59,6 @@ class _AlManara extends State<AlManara> {
                 mainAxisSpacing: 30,
                 children: [
                   optioncard(
-                      deviceSize, icons[0], options[0], AboutUs.id, context),
-                  optioncard(
                       deviceSize, icons[1], options[1], ContactUs.id, context),
                 ],
               ),

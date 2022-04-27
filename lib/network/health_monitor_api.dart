@@ -34,9 +34,16 @@ class HmApi extends BaseApiManagement {
 
         hmDataList.add(HmModel.fromJson(index));
       }
-      return hmDataList;
+      return hmDataList.reversed.toList();
     } else {
       throw Exception('Errrr Failed to get appointments');
     }
   }
 }
+
+
+// if (json.decode(response.body)['result']['data']['user_type'] == 'employee') {
+//   e7def 3ala employee model
+// } else if (json.decode(response.body)['result']['data']['user_type'] == 'customer'){
+//   e7def 3ala user model
+// }

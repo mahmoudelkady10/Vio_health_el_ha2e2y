@@ -47,7 +47,7 @@ class MedicationApi extends BaseApiManagement {
           'amount': amount,
           'dose': dose,
           'duration': duration,
-          'image': image
+          'image': image?? false
         },
       ),
     );
@@ -57,5 +57,28 @@ class MedicationApi extends BaseApiManagement {
       throw Exception('Error Failed post prescription');
     }
     return responseStatus;
+  }
+
+  static Future<dynamic> getMedicineList(
+      BuildContext context) async {
+    var response = await http.post(
+      Uri.parse('${BaseApiManagement.baseUrl}/techclinic/get_medicine'),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "token": Provider.of<UserModel>(context, listen: false).token
+      }),
+    );
+    print(response.body);
+    int responseStatus = json.decode(response.body)['result']['status'];
+    List<MedicineList> medicationList = [];
+    if (responseStatus == 200) {
+      for (var index in json.decode(response.body)['result']['data']) {
+        medicationList.add(MedicineList.fromJson(index));
+      }
+      print(medicationList);
+      return json.decode(response.body)['result']['data'];
+    } else {
+      return [];
+    }
   }
 }

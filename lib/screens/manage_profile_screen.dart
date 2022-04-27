@@ -128,6 +128,10 @@ class _ManageProfileState extends State<ManageProfile> {
                             Container(
                               width: 130,
                               height: 130,
+                              child: Container(
+                                alignment: Alignment.topRight,
+                                child: const Icon(Icons.add_a_photo_outlined, size: 35,),
+                              ),
                               decoration: BoxDecoration(
                                 borderRadius: BorderRadius.circular(8),
                                 shape: BoxShape.rectangle,
@@ -189,61 +193,6 @@ class _ManageProfileState extends State<ManageProfile> {
                         return null;
                       },
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 25.0, vertical: 8.0),
-                      child: Card(
-                        semanticContainer: false,
-                        elevation: 10,
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(10)),
-                        child: DropdownButtonFormField(
-                          validator: (value) => value == null
-                              ? 'Please provide Blood Group'
-                              : null,
-                          onChanged: (val) {
-                            bloodGroupController.text =
-                                val.toString().toLowerCase();
-                          },
-                          decoration: kTextFieldDecoration,
-                          hint: Text(bloodGroupController.text),
-                          items: const [
-                            DropdownMenuItem(
-                              child: Text("A+"),
-                              value: "A+",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("B+"),
-                              value: "B+",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("O+"),
-                              value: "O+",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("AB+"),
-                              value: "AB+",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("A-"),
-                              value: "A-",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("B-"),
-                              value: "B-",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("O-"),
-                              value: "O-",
-                            ),
-                            DropdownMenuItem(
-                              child: Text("AB-"),
-                              value: "AB-",
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
                     ValidatedTextField(
                       fieldController: weightController,
                       labelText: 'Weight(Kg)',
@@ -255,28 +204,6 @@ class _ManageProfileState extends State<ManageProfile> {
                         return null;
                       },
                     ),
-                    GenderPickerWithImage(
-                      showOtherGender: false,
-                      verticalAlignedText: false,
-                      selectedGender: _gender.toString() == 'male'
-                          ? Gender.Male
-                          : Gender.Female,
-                      selectedGenderTextStyle: const TextStyle(
-                          color: Color(0xFF8b32a8),
-                          fontWeight: FontWeight.bold),
-                      unSelectedGenderTextStyle: const TextStyle(
-                          color: Colors.black54, fontWeight: FontWeight.normal),
-                      onChanged: (Gender? gender) {
-                        _gender = gender;
-                      },
-                      equallyAligned: true,
-                      animationDuration: const Duration(milliseconds: 300),
-                      isCircular: true,
-                      // default : true,
-                      opacityOfGradient: 0.4,
-                      padding: const EdgeInsets.all(3),
-                      size: 50, //default : 40
-                    ),
                     RoundedButton(
                       buttonFunction: () async {
                         // Validate returns true if the form is valid, or false otherwise.
@@ -284,8 +211,6 @@ class _ManageProfileState extends State<ManageProfile> {
                           setState(() {
                             showSpinner = true;
                           });
-                          String gender =
-                              _gender == Gender.Male ? 'male' : 'female';
                           var response = await EditProfileApi.editProfile(
                               context,
                               userData.partnerId!,

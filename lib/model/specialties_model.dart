@@ -2,9 +2,9 @@ import 'package:flutter/cupertino.dart';
 
 class SpecialtiesModel {
   int? id;
-  String? name;
-  String? imageUrl;
-  String? description;
+  dynamic name;
+  dynamic imageUrl;
+  dynamic description;
   dynamic extras;
 
   SpecialtiesModel({

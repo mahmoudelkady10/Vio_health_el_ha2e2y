@@ -26,143 +26,156 @@ class _WalletScreenState extends State<WalletScreen> {
     var topupController = TextEditingController();
     var deviseSize = MediaQuery.of(context).size;
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Wallet'),
-        backgroundColor: Theme.of(context).primaryColor,
-      ),
       body: Center(
         child: SizedBox(
-          width: deviseSize.width * 0.8,
-          height: deviseSize.height * 0.4,
-          child: Stack(
-            children: [
-              Card(
-                elevation: 8.0,
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10.0)),
-                semanticContainer: false,
-                child: Stack(
-                  fit: StackFit.expand,
+          width: deviseSize.width * 0.9,
+          height: deviseSize.height * 0.3,
+          child: Card(
+            elevation: 8.0,
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(15.0)),
+            semanticContainer: false,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(15.0),
+                gradient: const LinearGradient(
+                  colors: [
+                    Color(0xFF6b6187),
+                    Color(0xFF43307a),
+                    Color(0xFF270a7a),
+                  ],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                ),
+              ),
+              child: Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
                     Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
+                        const Text(
+                          'Available Balance',
+                          style:
+                          TextStyle(color: Color(0xFFCBCFD1), fontSize: 15),
+                        ),
+                        Text(
+                          '${user.balance} EGP',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 20),
+                        ),
+                        const SizedBox(
+                          height: 25,
+                        ),
+                        const Text(
+                          'ON HOLD',
+                          style:
+                          TextStyle(color: Color(0xFFCBCFD1), fontSize: 12),
+                        ),
+                        Text(
+                          '${user.onHold} EGP',
+                          style: const TextStyle(
+                              color: Colors.white, fontSize: 15),
+                        ),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        const Image(
+                          image: AssetImage('assets/techno clinic.png'),
+                          height: 60,
+                          width: 60,
+                        ),
+                        const SizedBox(
+                          height: 45,
+                        ),
                         Padding(
-                          padding: const EdgeInsets.all(8.0),
+                          padding: const EdgeInsets.only(left: 35.0, top: 15.0),
                           child: Container(
-                            alignment: Alignment.topLeft,
-                            child: const Text('Balance: ',
-                                style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Color(0xFFB22234)),
-                                textAlign: TextAlign.left),
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text(
-                            'EGP',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13,
-                              color: Colors.grey,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(15.0),
+                              gradient: const LinearGradient(
+                                colors: [
+                                  Color(0xFFab5b5b),
+                                  Color(0xFFa83b3b),
+                                  Color(0xFFa60505),
+                                ],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                              ),
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          subtitle: Text(user.balance.toString(),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25,
-                                  color: Color(0xFFB22234)),
-                              textAlign: TextAlign.center),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Container(
-                            alignment: Alignment.topLeft,
-                            child: const Text('On Hold: ',
+                            alignment: Alignment.bottomRight,
+                            child: TextButton(
+                              onPressed: () {
+                                showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: const Text(
+                                          'Add Amount to be added to account',
+                                          textAlign: TextAlign.center,
+                                          style: TextStyle(
+                                              color: Color(0xFF979797),
+                                              fontSize: 13),
+                                        ),
+                                        content: ValidatedTextField(
+                                            labelText: "Amount",
+                                            hintText:
+                                            "Enter top up amount (EGP)",
+                                            fieldController: topupController,
+                                            keyboardType: TextInputType.number),
+                                        actions: [
+                                          TextButton(
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                              child: Text('Cancel', style: TextStyle(color: Theme.of(context).primaryColor),)),
+                                          TextButton(
+                                              onPressed: () async {
+                                                var url = await WalletApi.topUp(
+                                                    context,
+                                                    user.uid,
+                                                    topupController.text,
+                                                    user.token);
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                        builder: (context) {
+                                                          return PaymentScreen(
+                                                            url_: url.toString(),
+                                                          );
+                                                        }));
+                                              },
+                                              child: Text('Top up', style: TextStyle(color: Theme.of(context).primaryColor),)),
+                                        ],
+                                      );
+                                    });
+                              },
+                              child: const Text(
+                                'TOP UP',
                                 style: TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 18,
-                                    color: Color(0xFFB22234)),
-                                textAlign: TextAlign.left),
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text(
-                            'EGP',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 13,
-                              color: Colors.grey,
+                                  color: Colors.white,
+                                  fontSize: 18,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              style: ButtonStyle(
+                                  alignment: Alignment.center,
+                                  fixedSize: MaterialStateProperty.all(
+                                      Size(100, deviseSize.height * 0.056))),
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          subtitle: Text(user.onHold.toString(),
-                              style: const TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 25,
-                                  color: Color(0xFFB22234)),
-                              textAlign: TextAlign.center),
-                        ),
+                        )
                       ],
                     ),
                   ],
                 ),
               ),
-              Container(
-                alignment: Alignment.bottomCenter,
-                child: TextButton(
-                  onPressed: () {
-                    showDialog(
-                        context: context,
-                        builder: (context) {
-                          return AlertDialog(
-                            title: const Icon(
-                              Icons.monetization_on,
-                              size: 40,
-                            ),
-                            content: ValidatedTextField(
-                                fieldIcon: Icons.attach_money,
-                                labelText: "Amount",
-                                hintText: "Enter top up amount",
-                                fieldController: topupController,
-                                keyboardType: TextInputType.number),
-                            actions: [
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Cancel')),
-                              TextButton(
-                                  onPressed: () async{
-                                    var url = await WalletApi.topUp(context, user.uid,
-                                        topupController.text, user.token);
-                                    Navigator.push(context,
-                                        MaterialPageRoute(builder: (context) {
-                                      return PaymentScreen(
-                                        url_: url.toString(),
-                                      );
-                                    }));
-                                  },
-                                  child: const Text('Top up')),
-                            ],
-                          );
-                        });
-                  },
-                  child: const Text(
-                    'TOP UP',
-                    style: TextStyle(color: Colors.white, fontSize: 18),
-                  ),
-                  style: ButtonStyle(
-                      backgroundColor: MaterialStateProperty.all(const Color(0xFFB22234)),
-                      side: MaterialStateProperty.all(
-                          BorderSide(style: BorderStyle.solid, color:Theme.of(context).primaryColor )),
-                      alignment: Alignment.bottomCenter,
-                      fixedSize: MaterialStateProperty.all(Size(
-                          deviseSize.width * 0.78, deviseSize.height * 0.056))),
-                ),
-              )
-            ],
+            ),
           ),
         ),
       ),
@@ -198,10 +211,10 @@ class PaymentScreen extends StatelessWidget {
             builder: (_) => AlertDialog(
               title: const Center(
                   child: Icon(
-                Icons.warning,
-                color: Colors.red,
-                size: 50,
-              )),
+                    Icons.warning,
+                    color: Colors.red,
+                    size: 50,
+                  )),
               content: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,

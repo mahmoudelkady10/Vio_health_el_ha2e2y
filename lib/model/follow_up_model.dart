@@ -9,9 +9,9 @@ class FollowUpModel {
 
   factory FollowUpModel.fromJson(Map<String, dynamic> json) {
     return FollowUpModel(
-      name: json['name'],
-      image: json['image'],
-      categoryId: json['id']
+        name: json['name'],
+        image: json['image'],
+        categoryId: json['id']
 
     );
   }
@@ -31,13 +31,18 @@ class FollowUpList extends ChangeNotifier {
 class FollowUpSubCategoriesModel {
   dynamic name;
   dynamic subCategoryId;
+  dynamic type;
+  dynamic operator;
 
-  FollowUpSubCategoriesModel({this.name, this.subCategoryId});
+  FollowUpSubCategoriesModel({this.name, this.subCategoryId, this.type, this.operator});
 
   factory FollowUpSubCategoriesModel.fromJson(Map<String, dynamic> json) {
     return FollowUpSubCategoriesModel(
-      name: json['name'],
-      subCategoryId: json['id']
+        name: json['name'],
+        subCategoryId: json['id'],
+        type: json['type'],
+        operator: json['operator']
+
     );
   }
 }
@@ -56,17 +61,19 @@ class FollowUpSubCategoriesList extends ChangeNotifier {
 class FollowUpReadingsModel {
   dynamic category;
   dynamic sub_category;
+  dynamic type;
   dynamic readings;
   dynamic date;
 
-  FollowUpReadingsModel({this.category,this.sub_category,this.readings,this.date});
+  FollowUpReadingsModel({this.category,this.sub_category,this.readings,this.date, this.type});
 
   factory FollowUpReadingsModel.fromJson(Map<String, dynamic> json) {
     return FollowUpReadingsModel(
-      category: json['category'],
-      sub_category: json['sub_category'],
-      readings: json['readings'],
-      date: json['date'],
+        category: json['category'],
+        sub_category: json['sub_category'],
+        readings: json['readings'],
+        date: json['date'],
+        type: json['type']
     );
   }
 }

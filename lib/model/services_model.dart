@@ -8,6 +8,7 @@ class ServicesModel {
   dynamic specialtyId;
   dynamic doctorId;
   double? price;
+  String? serviceClass;
 
   ServicesModel({
     this.id,
@@ -15,15 +16,17 @@ class ServicesModel {
     this.specialtyId,
     this.doctorId,
     this.price,
+    this.serviceClass,
   });
 
   factory ServicesModel.fromJson(Map<String, dynamic> json) {
     return ServicesModel(
-      id: json['id'],
-      name: json['name'],
-      specialtyId: json['specialty_id'],
-      doctorId: json['doctor_id'],
-      price: json['price'],
+        id: json['id'],
+        name: json['name'],
+        specialtyId: json['specialty_id'],
+        doctorId: json['doctor_id'],
+        price: json['price'],
+        serviceClass: json['service_class']
     );
   }
 }

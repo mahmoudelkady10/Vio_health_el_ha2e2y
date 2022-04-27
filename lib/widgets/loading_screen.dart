@@ -6,8 +6,10 @@ class LoadingScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  GlowingProgressIndicator(
-      child: const Icon(Icons.file_upload, size: 50,),
+    return  Center(
+      child: JumpingText(
+        'Loading...'
+      ),
     );
   }
 }

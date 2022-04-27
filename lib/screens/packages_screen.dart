@@ -62,10 +62,10 @@ class _PackagesScreenState extends State<PackagesScreen> {
                           children: [
                             Padding(
                               padding:
-                                  const EdgeInsets.only(right: 8.0, left: 8.0),
+                              const EdgeInsets.only(right: 8.0, left: 8.0),
                               child: Row(
                                 mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
+                                MainAxisAlignment.spaceBetween,
                                 mainAxisSize: MainAxisSize.max,
                                 children: [
                                   Text(
@@ -77,15 +77,15 @@ class _PackagesScreenState extends State<PackagesScreen> {
                                   Text('Package',
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme.of(context).primaryColor)),
                                   Text("Price",
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme.of(context).primaryColor)),
                                   Text('Status',
                                       style: TextStyle(
                                           color:
-                                              Theme.of(context).primaryColor)),
+                                          Theme.of(context).primaryColor)),
                                 ],
                               ),
                             ),
@@ -108,10 +108,10 @@ class _PackagesScreenState extends State<PackagesScreen> {
                     onTap: () {
                       Navigator.push(context,
                           MaterialPageRoute(builder: (context) {
-                        return PackageContent(
-                          packageId: snapshot.data[index].id,
-                        );
-                      }));
+                            return PackageContent(
+                              packageId: snapshot.data[index].id,
+                            );
+                          }));
                     },
                   );
                 });
@@ -228,8 +228,8 @@ class _PackageContentState extends State<PackageContent> {
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
                       if (snapshot.data[index].startDate
-                              .toString()
-                              .split('-')[1] ==
+                          .toString()
+                          .split('-')[1] ==
                           DateFormat('yyyy-MM-dd')
                               .format(updatedDate)
                               .toString()
@@ -243,7 +243,7 @@ class _PackageContentState extends State<PackageContent> {
                                 borderRadius: BorderRadius.circular(10)),
                             child: Row(
                               mainAxisAlignment:
-                                  MainAxisAlignment.spaceEvenly,
+                              MainAxisAlignment.spaceEvenly,
                               children: [
                                 Text(snapshot.data[index].specialty
                                     .toString()),
@@ -255,39 +255,39 @@ class _PackageContentState extends State<PackageContent> {
                                   width: 90,
                                   child: RoundedButton(
                                     buttonColor:
-                                        Theme.of(context).primaryColor,
+                                    Theme.of(context).primaryColor,
                                     buttonText: 'Book',
                                     buttonFunction: () async {
                                       var specialties =
-                                          await SpecialtiesApi.getSpecialties(
-                                              context);
+                                      await SpecialtiesApi.getSpecialties(
+                                          context);
                                       var packageSpecialty = specialties
                                           .where((SpecialtiesModel x) =>
-                                              x.name ==
-                                              snapshot.data[index].specialty)
+                                      x.name ==
+                                          snapshot.data[index].specialty)
                                           .toList();
                                       //TODO filter with service class instead
                                       var services =
-                                          await ServicesApi.getServices(
-                                              context);
+                                      await ServicesApi.getServices(
+                                          context);
                                       var packageService = services
                                           .where((ServicesModel x) =>
-                                              x.name ==
-                                              snapshot.data[index].service)
+                                      x.name ==
+                                          snapshot.data[index].service)
                                           .toList();
                                       print(packageService);
                                       Navigator.push(context,
                                           MaterialPageRoute(
                                               builder: (context) {
-                                        return BookingD(
-                                          type: packageService.first.id!,
-                                          specialtyId:
-                                              packageSpecialty.first.id!,
-                                          doctorId:
-                                              packageService[0].doctorId,
-                                          date: DateFormat('yyyy-MM-dd').parse(snapshot.data[index].startDate),
-                                        );
-                                      }));
+                                                return BookingD(
+                                                  type: packageService.first.id!,
+                                                  specialtyId:
+                                                  packageSpecialty.first.id!,
+                                                  doctorId:
+                                                  packageService[0].doctorId,
+                                                  date: DateFormat('yyyy-MM-dd').parse(snapshot.data[index].startDate),
+                                                );
+                                              }));
                                     },
                                   ),
                                 )
@@ -333,153 +333,164 @@ class BuyPackage extends StatelessWidget {
             } else if (snapshot.connectionState == ConnectionState.done &&
                 snapshot.data != null) {
               return LoaderOverlay(
-                child: ListView.builder(
+                child:GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                        maxCrossAxisExtent: 200,
+                        childAspectRatio: 1,
+                        mainAxisSpacing: 1,
+                        crossAxisSpacing: 3),
                     itemCount: snapshot.data.length,
                     itemBuilder: (context, index) {
-                      return GestureDetector(
-                        child: SizedBox(
-                          width: deviceSize.width,
-                          height: 80,
-                          child: Card(
-                            elevation: 2,
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(10)),
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Padding(
-                                  padding: const EdgeInsets.only(
-                                      right: 8.0, left: 8.0),
-                                  child: Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      Text(
-                                        'Package Code',
-                                        style: TextStyle(
-                                            color:
-                                                Theme.of(context).primaryColor),
-                                      ),
-                                      // const Text('     '),
-                                      Text('Category',
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                      Text("Price",
-                                          style: TextStyle(
-                                              color: Theme.of(context)
-                                                  .primaryColor)),
-                                    ],
-                                  ),
-                                ),
-                                const SizedBox(
-                                  height: 10,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                      return Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: GestureDetector(
+                          child: SizedBox(
+                            width: 150,
+                            height: 150,
+                            child: Card(
+                              elevation: 2,
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.5),
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                                  crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Text(snapshot.data[index].name.toString()),
-                                    Text(snapshot.data[index].mainCategory
-                                        .toString()),
-                                    Text(snapshot.data[index].price.toString()),
+                                    Text(snapshot.data[index].name.toString(), style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold, color: Color(0xFF707070)),),
+                                    const Divider(thickness: 1, color: Color(0xFF707070),),
+                                    const SizedBox(height: 10,),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const Text(
+                                          'Category: ',
+                                          style: TextStyle(
+                                              color:
+                                              Color(0xFF979797)),
+                                        ),
+                                        // const Text('     '),
+                                        Text(snapshot.data[index].mainCategory
+                                            .toString(),
+                                            style: const TextStyle(
+                                                color: Color(0xFF979797))),
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                      MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        const Text('Price:', style: TextStyle(
+                                            color: Color(0xFF979797))),
+                                        Text(snapshot.data[index].price.toString(), style: const TextStyle(
+                                            color: Color(0xFF979797))),
+                                      ],
+                                    ),
+                                    SizedBox(height: 15,),
+                                    InkWell(
+                                      child: Text('Purchase', style: TextStyle(color: Theme.of(context).primaryColor, decoration: TextDecoration.underline),),
+                                      onTap: () async{
+                                        var balance =
+                                            Provider.of<UserModel>(context, listen: false)
+                                                .balance;
+                                        if (balance < snapshot.data[index].price) {
+                                          ScaffoldMessenger.of(context).showSnackBar(
+                                            const SnackBar(
+                                              backgroundColor: Colors.red,
+                                              content: Text("Top Up wallet"),
+                                            ),
+                                          );
+                                        } else {
+                                          await showDialog(
+                                            context: context,
+                                            builder: (_) => AlertDialog(
+                                              title: const Center(
+                                                  child: Icon(
+                                                    Icons.monetization_on,
+                                                    color: Colors.green,
+                                                    size: 40,
+                                                  )),
+                                              content: Row(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.center,
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                                children: const [
+                                                  Text(
+                                                    'Buy Package using wallet?',
+                                                    style: TextStyle(fontSize: 15),
+                                                  ),
+                                                ],
+                                              ),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () async{
+                                                    var temp = [snapshot.data[index].id];
+                                                    Navigator.pop(context);
+                                                    context.loaderOverlay.show(
+                                                        widget: const LoadingScreen());
+                                                    var status = await ServiceRequestApi.serviceRequest(
+                                                        context,
+                                                        DateTime.now(),
+                                                        false,
+                                                        temp,
+                                                        6,
+                                                        snapshot.data[index].mainCategory);
+                                                    context.loaderOverlay.hide();
+                                                    if (status != 200) {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        const SnackBar(
+                                                          backgroundColor: Colors.red,
+                                                          content: Text("Request Failed"),
+                                                        ),
+                                                      );
+                                                    } else {
+                                                      ScaffoldMessenger.of(context).showSnackBar(
+                                                        const SnackBar(
+                                                          backgroundColor: Colors.green,
+                                                          content: Text("Request Successful"),
+                                                        ),
+                                                      );
+                                                      Navigator.pushReplacementNamed(
+                                                          context, MyHomePage.id);
+                                                    }
+                                                  },
+                                                  child: Text('Buy Package',
+                                                      style: TextStyle(
+                                                          color: Theme.of(context)
+                                                              .primaryColor,
+                                                          decoration: TextDecoration
+                                                              .underline)),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () async {
+                                                    Navigator.pop(context);
+                                                  },
+                                                  child: Text('Cancel',
+                                                      style: TextStyle(
+                                                          color: Theme.of(context)
+                                                              .primaryColor,
+                                                          decoration: TextDecoration
+                                                              .underline)),
+                                                )
+                                              ],
+                                            ),
+                                          );
+
+                                        }
+                                      },
+                                    )
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
+                          onTap: () async {
+
+
+                          },
                         ),
-                        onTap: () async {
-
-                          var balance =
-                              Provider.of<UserModel>(context, listen: false)
-                                  .balance;
-                          if (balance < snapshot.data[index].price) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text("Top Up wallet"),
-                              ),
-                            );
-                          } else {
-                            await showDialog(
-                              context: context,
-                              builder: (_) => AlertDialog(
-                                title: const Center(
-                                    child: Icon(
-                                      Icons.monetization_on,
-                                      color: Colors.green,
-                                      size: 40,
-                                    )),
-                                content: Row(
-                                  mainAxisAlignment:
-                                  MainAxisAlignment.center,
-                                  crossAxisAlignment:
-                                  CrossAxisAlignment.center,
-                                  children: const [
-                                    Text(
-                                      'Buy Package using wallet?',
-                                      style: TextStyle(fontSize: 15),
-                                    ),
-                                  ],
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () async{
-                                      var temp = [snapshot.data[index].id];
-                                      Navigator.pop(context);
-                                      context.loaderOverlay.show(
-                                          widget: const LoadingScreen());
-                                      var status = await ServiceRequestApi.serviceRequest(
-                                          context,
-                                          DateTime.now(),
-                                          false,
-                                          temp,
-                                          6,
-                                          snapshot.data[index].mainCategory);
-                                      context.loaderOverlay.hide();
-                                      if (status != 200) {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.red,
-                                            content: Text("Request Failed"),
-                                          ),
-                                        );
-                                      } else {
-                                        ScaffoldMessenger.of(context).showSnackBar(
-                                          const SnackBar(
-                                            backgroundColor: Colors.green,
-                                            content: Text("Request Successful"),
-                                          ),
-                                        );
-                                        Navigator.pushReplacementNamed(
-                                            context, MyHomePage.id);
-                                      }
-                                    },
-                                    child: Text('Buy Package',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                            decoration: TextDecoration
-                                                .underline)),
-                                  ),
-                                  TextButton(
-                                    onPressed: () async {
-                                      Navigator.pop(context);
-                                    },
-                                    child: Text('Cancel',
-                                        style: TextStyle(
-                                            color: Theme.of(context)
-                                                .primaryColor,
-                                            decoration: TextDecoration
-                                                .underline)),
-                                  )
-                                ],
-                              ),
-                            );
-
-                          }
-                        },
                       );
                     }),
               );
@@ -492,14 +503,3 @@ class BuyPackage extends StatelessWidget {
     );
   }
 }
-// RoundedButton(
-// buttonColor: updatedDate == dates[index]
-// ? Colors.blueGrey
-//     : Theme.of(context).primaryColor,
-// buttonText:
-// DateFormat.MMMM().format(dates[index]),
-// buttonFunction: () {
-// setState(() {
-// updatedDate = dates[index];
-// });
-// }),
