@@ -26,7 +26,7 @@ class ContactUs extends StatelessWidget {
                 Card(
                   child: ListTile(
                     leading: const Icon(Icons.email),
-                    title: const Text('info@technotown.technology', style: TextStyle(color: Color(0xFFB22234))),
+                    title: Text('hello@vio.health', style: TextStyle(color: Theme.of(context).primaryColor)),
                     onTap: () async {
                       await _launchURL1();
                     },

@@ -40,9 +40,10 @@ class _WalletScreenState extends State<WalletScreen> {
                 borderRadius: BorderRadius.circular(15.0),
                 gradient: const LinearGradient(
                   colors: [
+                    Color(0xFFA095C1),
                     Color(0xFF6b6187),
-                    Color(0xFF43307a),
-                    Color(0xFF270a7a),
+                    Color(0xFF593793),
+                    Color(0xFF593793),
                   ],
                   begin: Alignment.centerLeft,
                   end: Alignment.centerRight,
@@ -87,7 +88,7 @@ class _WalletScreenState extends State<WalletScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: [
                         const Image(
-                          image: AssetImage('assets/techno clinic.png'),
+                          image: AssetImage('assets/walleticon.png'),
                           height: 60,
                           width: 60,
                         ),
@@ -101,9 +102,9 @@ class _WalletScreenState extends State<WalletScreen> {
                               borderRadius: BorderRadius.circular(15.0),
                               gradient: const LinearGradient(
                                 colors: [
-                                  Color(0xFFab5b5b),
-                                  Color(0xFFa83b3b),
-                                  Color(0xFFa60505),
+                                  Color(0xFFcf4aff),
+                                  Color(0xFF9c13cf),
+                                  Color(0xFF9d00d6),
                                 ],
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,

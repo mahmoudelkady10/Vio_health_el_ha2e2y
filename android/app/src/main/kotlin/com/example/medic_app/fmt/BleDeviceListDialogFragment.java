@@ -7,8 +7,8 @@ import com.linktop.MonitorDataTransmissionManager;
 import com.linktop.whealthService.OnBLEService;
 
 import com.example.medic_app.adapter.DataBindingAdapter;
-import technotown.technology.technoclinic.BR;
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.BR;
+import technotown.technology.viohealth.R;
 import com.example.medic_app.widget.CustomRecyclerView;
 
 /**

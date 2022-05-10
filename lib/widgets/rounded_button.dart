@@ -24,7 +24,7 @@ class RoundedButton extends StatelessWidget {
             ? Theme.of(context).primaryColor
             : buttonColor,
         shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20.0),
+            borderRadius: BorderRadius.circular(5.0),
             side:
             BorderSide(width: 2, color: Theme.of(context).primaryColor)),
         child: MaterialButton(

@@ -33,7 +33,7 @@ import com.example.medic_app.fmt.MonitorInfoFragment;
 import com.example.medic_app.fmt.SPO2Fragment;
 import com.example.medic_app.health.App;
 import com.example.medic_app.health.HcService;
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.R;
 import com.example.medic_app.utils.AlertDialogBuilder;
 import com.example.medic_app.widget.CustomViewPager;
 import com.example.medic_app.bean.Bt;

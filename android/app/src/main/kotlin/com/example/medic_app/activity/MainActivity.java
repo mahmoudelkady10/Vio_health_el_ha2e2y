@@ -7,8 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.example.medic_app.health.App;
-import technotown.technology.technoclinic.R;
-import technotown.technology.technoclinic.databinding.ActivityMainBinding;
+import technotown.technology.viohealth.R;
+import technotown.technology.viohealth.databinding.ActivityMainBinding;
 import com.example.medic_app.utils.ActivityHelper;
 import lib.linktop.sev.CssServerApi;
 

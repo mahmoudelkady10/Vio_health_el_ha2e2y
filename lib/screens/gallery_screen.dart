@@ -214,6 +214,8 @@ class _PickImageState extends State<PickImage> {
   static Uint8List? _image;
   static dynamic img64;
   final _picker = ImagePicker();
+  final cropper = ImageCropper();
+
   final myController = TextEditingController();
   static dynamic _imagefile;
   static DateTime date = DateTime.now();
@@ -241,7 +243,7 @@ class _PickImageState extends State<PickImage> {
   }
 
   Future<void> _cropImage() async {
-    File? cropped = await ImageCropper.cropImage(
+    File? cropped = await cropper.cropImage(
       sourcePath: _imagefile.path.toString(),
     );
     setState(() {

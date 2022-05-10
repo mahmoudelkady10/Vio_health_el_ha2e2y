@@ -1150,6 +1150,8 @@ class LabImage extends StatefulWidget {
 class _LabImageState extends State<LabImage> {
   dynamic image;
   final picker = ImagePicker();
+  final cropper = ImageCropper();
+
   int ctImage = 0;
   static dynamic img64;
   final myController = TextEditingController();
@@ -1178,7 +1180,7 @@ class _LabImageState extends State<LabImage> {
   }
 
   void _cropImage() async {
-    File? cropped = await ImageCropper.cropImage(
+    File? cropped = await cropper.cropImage(
       sourcePath: image.path.toString(),
     );
     setState(() {

@@ -7,8 +7,8 @@ import androidx.annotation.NonNull;
 import android.view.View;
 
 import com.example.medic_app.adapter.vh.BindingViewHolder;
-import technotown.technology.technoclinic.BR;
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.BR;
+import technotown.technology.viohealth.R;
 import com.example.medic_app.utils.UToast;
 import lib.linktop.common.CssSubscriber;
 import lib.linktop.obj.Device;
@@ -30,7 +30,7 @@ public class BindDevListAdapter extends DataBindingAdapter<Device> {
     @Override
     public void onBindViewHolder(@NonNull BindingViewHolder holder, @SuppressLint("RecyclerView") final int position) {
         super.onBindViewHolder(holder, position);
-        holder.binding.setVariable(technotown.technology.technoclinic.BR.id, id);
+        holder.binding.setVariable(technotown.technology.viohealth.BR.id, id);
         holder.binding.setVariable(BR.clickGetDevActiveInfo, (View.OnClickListener) v -> {
             final String devId = getItem(position).getDevId();
             CssServerApi.getDevActiveInfo(devId)

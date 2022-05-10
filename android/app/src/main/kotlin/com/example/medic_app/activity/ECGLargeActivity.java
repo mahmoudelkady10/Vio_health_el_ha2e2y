@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.medic_app.bean.ECG;
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.R;
 import com.example.medic_app.widget.WaveView;
 import com.example.medic_app.widget.wave.ECGDrawWave;
 import rx.Observable;

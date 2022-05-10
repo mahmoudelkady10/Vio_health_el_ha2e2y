@@ -7,7 +7,7 @@ import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.R;
 import rx.Observable;
 import rx.Subscriber;
 import rx.Subscription;

@@ -57,7 +57,7 @@ class MyApp extends StatelessWidget {
           title: 'My Clinic',
           debugShowCheckedModeBanner: false,
           theme: ThemeData(
-            primaryColor: const Color(0xFF002768),
+            primaryColor: const Color(0xFF593793),
           ),
           initialRoute: WelcomeScreen.id,
           routes: {
@@ -73,7 +73,7 @@ class MyApp extends StatelessWidget {
             Testimonials.id: (context) => const Testimonials(),
             AlManara.id: (context) => const AlManara(),
             MyHomePage.id: (context) =>
-                const MyHomePage(title: 'Techno Clinic'),
+                const MyHomePage(title: 'Vio Health'),
             WelcomeScreen2.id: (context) => const WelcomeScreen2(),
             WelcomeScreen.id: (context) => const WelcomeScreen(),
             LoginScreen.id: (context) => const LoginScreen(),
@@ -163,23 +163,10 @@ class WelcomeScreen extends StatelessWidget {
           children: [
             SizedBox(height: deviceSize.height * 0.35),
             Image.asset(
-              'assets/techno clinic.png',
+              'assets/viologo.png',
               width: 300,
               height: 200,
             ),
-            SizedBox(height: deviceSize.height * 0.15),
-            const Text(
-              'Powered By',
-              style: TextStyle(
-                fontWeight: FontWeight.w700,
-                fontSize: 18.0,
-              ),
-            ),
-            Image.asset(
-              'assets/TTlogo.png',
-              width: 80,
-              height: 80,
-            )
           ],
         ),
       ),
@@ -200,37 +187,17 @@ class WelcomeScreen2 extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Center(
         child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            CustomPaint(
-              painter: ShapesPainter(),
-              child: SizedBox(
-                height: 280,
-                width:  800,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 130),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: const [
-                      Text('WELCOME TO ',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFB22234))),
-                      Text('Techno Clinic',
-                          textAlign: TextAlign.start,
-                          style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFFB22234))),
-                    ],
-                  ),
-                ),
-              ),
-            ),
+            Text('Vio Health',
+                textAlign: TextAlign.start,
+                style: TextStyle(
+                    fontSize: 40,
+                    fontWeight: FontWeight.bold,
+                    color: Theme.of(context).primaryColor)),
             const SizedBox(height:30),
             Image.asset(
-              'assets/techno clinic.png',
+              'assets/viologo.png',
               width: 200,
               height: 200,
             ),
@@ -286,7 +253,7 @@ class ShapesPainter extends CustomPainter {
     p.lineTo(size.width, 0);
     p.close();
 
-    canvas.drawPath(p, Paint()..color = const Color(0xFF002768));
+    canvas.drawPath(p, Paint()..color = const Color(0xFF593793));
   }
 
   @override

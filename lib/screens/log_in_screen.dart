@@ -43,7 +43,7 @@ class _LoginScreenState extends State<LoginScreen> {
             SizedBox(height: deviceSize.height * 0.1),
             Center(
                 child: Image.asset(
-              'assets/techno clinic.png',
+              'assets/viologo.png',
               width: 250,
               height: 200,
             )),

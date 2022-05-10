@@ -42,7 +42,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "technotown.technology.technoclinic"
+        applicationId "technotown.technology.viohealth"
         minSdkVersion 23
         targetSdkVersion 31
         versionCode flutterVersionCode.toInteger()

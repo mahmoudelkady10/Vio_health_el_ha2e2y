@@ -21,7 +21,7 @@ import androidx.annotation.Nullable;
 
 import com.linktop.constant.UserDataType;
 
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.R;
 
 /**
  * Created by ccl on 2017/5/2.

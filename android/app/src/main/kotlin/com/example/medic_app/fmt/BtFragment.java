@@ -24,8 +24,8 @@ import com.example.medic_app.health.App;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import technotown.technology.technoclinic.R;
-import technotown.technology.technoclinic.databinding.FragmentBtBinding;
+import technotown.technology.viohealth.R;
+import technotown.technology.viohealth.databinding.FragmentBtBinding;
 
 import lib.linktop.obj.DataFile;
 import lib.linktop.sev.HmLoadDataTool;

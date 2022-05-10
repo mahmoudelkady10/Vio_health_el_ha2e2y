@@ -3,7 +3,7 @@ package com.example.medic_app.bean;
 import androidx.databinding.BaseObservable;
 import androidx.databinding.Bindable;
 
-import technotown.technology.technoclinic.BR;
+import technotown.technology.viohealth.BR;
 import lib.linktop.obj.LoadBgBean;
 
 /**

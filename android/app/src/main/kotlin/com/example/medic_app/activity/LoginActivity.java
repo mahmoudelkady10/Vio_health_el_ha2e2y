@@ -7,8 +7,8 @@ import androidx.annotation.Nullable;
 
 import com.example.medic_app.bean.AccInfo;
 import com.example.medic_app.health.App;
-import technotown.technology.technoclinic.R;
-import technotown.technology.technoclinic.databinding.ActivityLoginBinding;
+import technotown.technology.viohealth.R;
+import technotown.technology.viohealth.databinding.ActivityLoginBinding;
 import com.example.medic_app.utils.ActivityHelper;
 import lib.linktop.common.CssSubscriber;
 import lib.linktop.sev.CssServerApi;

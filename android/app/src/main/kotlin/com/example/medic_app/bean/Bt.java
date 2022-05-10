@@ -5,7 +5,7 @@ import androidx.databinding.Bindable;
 import android.util.Log;
 
 import lib.linktop.obj.LoadBtBean;
-import technotown.technology.technoclinic.BR;
+import technotown.technology.viohealth.BR;
 
 /**
  * Created by ccl on 2017/2/23.

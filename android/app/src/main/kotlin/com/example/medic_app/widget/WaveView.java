@@ -6,7 +6,7 @@ import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 
-import technotown.technology.technoclinic.R;
+import technotown.technology.viohealth.R;
 import com.example.medic_app.widget.wave.DrawWave;
 
 /**

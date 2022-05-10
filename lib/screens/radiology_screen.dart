@@ -847,6 +847,7 @@ class RadiologyImage extends StatefulWidget {
 class _RadiologyImageState extends State<RadiologyImage> {
   dynamic image;
   final picker = ImagePicker();
+  final cropper = ImageCropper();
   int ctImage = 0;
   static dynamic img64;
   TextEditingController myController = TextEditingController();
@@ -906,7 +907,7 @@ class _RadiologyImageState extends State<RadiologyImage> {
   }
 
   void _cropImage() async {
-    File? cropped = await ImageCropper.cropImage(
+    File? cropped = await cropper.cropImage(
       sourcePath: image.path.toString(),
     );
     setState(() {

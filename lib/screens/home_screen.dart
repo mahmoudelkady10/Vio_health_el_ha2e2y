@@ -72,7 +72,7 @@ class _MyHomePageState extends State<MyHomePage> {
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
         title: const Image(
-          image: AssetImage('assets/techno clinic.png'),
+          image: AssetImage('assets/viologo.png'),
           width: 80,
           height: 40,
         ),
@@ -394,40 +394,6 @@ class _DashBoardState extends State<DashBoard> {
                   ),
                 ),
               ),
-              SizedBox(
-                height: 200,
-                width: 900,
-                child: FutureBuilder(
-                    future: AdsApi.getAds(context),
-                    builder: (BuildContext context, AsyncSnapshot snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(
-                          child: CircularProgressIndicator(),
-                        );
-                      } else if (snapshot.connectionState ==
-                          ConnectionState.done &&
-                          snapshot.data != null) {
-                        return ListView.builder(
-                            scrollDirection: Axis.horizontal,
-                            shrinkWrap: true,
-                            itemCount: snapshot.data.length,
-                            itemBuilder: (context, index) {
-                              return Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 5,vertical: 5),
-                                child: Card(
-                                  elevation: 10,
-                                  child: Image.network(
-                                      snapshot.data[index].image.toString(), height: 150,width: 350),
-                                ),
-                              );
-                            });
-                      } else {
-                        return const Center(
-                          child: Text('No posts found'),
-                        );
-                      }
-                    }),
-              ),
             ],
           ),
           Expanded(
@@ -439,7 +405,7 @@ class _DashBoardState extends State<DashBoard> {
                 crossAxisSpacing: 15,
                 mainAxisSpacing: 13,
                 children: [
-                  optioncard(deviceSize, icons[0], options[0], DoctorSearch.id,
+                  optioncard(deviceSize, icons[0], options[0], Availability.id,
                       context),
                   optioncard(deviceSize, icons[1], options[1], Appointment.id,
                       context),
@@ -449,8 +415,8 @@ class _DashBoardState extends State<DashBoard> {
                       PastAppointments.id, context),
                   optioncard(deviceSize, icons[4], options[4], HmDashBoard.id,
                       context),
-                  // optioncard(deviceSize, icons[5], options[5],
-                  //     PackagesScreen.id, context),
+                  optioncard(deviceSize, icons[5], options[5],
+                       PackagesScreen.id, context),
                 ],
               ),
             ),
@@ -491,10 +457,8 @@ class _DashBoardState extends State<DashBoard> {
         onTap: () async {
           if (option == '\nDoctors') {
             var specialties = await SpecialtiesApi.getSpecialties(context);
-            var cities = await CityApi.getCity(context);
-            var govs = await GovernorateApi.getGovernorate(context);
             Navigator.push(context, MaterialPageRoute(builder: (context) {
-              return DoctorSearch(city: cities, governorate: govs, specialty: specialties,);
+              return Availability();
             }));
           } else if (option == '\nHealth Monitor') {
             const CHANNEL = 'com.example.viohealth/channels';

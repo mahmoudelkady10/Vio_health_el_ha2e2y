@@ -19,8 +19,8 @@ import 'package:provider/provider.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:loader_overlay/loader_overlay.dart';
-
-
+import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
+import 'package:intl/intl.dart';
 
 import 'lab_screen.dart';
 
@@ -34,10 +34,12 @@ class Medication extends StatefulWidget {
 
 class _MedicationState extends State<Medication> {
   final myController = TextEditingController();
+  DateTime _selectedDateTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
     int? userId = Provider.of<UserModel>(context).partnerId;
+    final String formattedDate = DateFormat.yMd().format(_selectedDateTime);
     return Scaffold(
       appBar: AppBar(
         title: const Center(
@@ -160,8 +162,8 @@ class _MedicationState extends State<Medication> {
                   size: 50,
                 )),
                 content: SizedBox(
-                  width: 200,
-                  height: 120,
+                  width: 210,
+                  height: 180,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -170,12 +172,27 @@ class _MedicationState extends State<Medication> {
                           style:
                               TextStyle(color: Theme.of(context).primaryColor)),
                       Center(
-                        child: TextField(
-                          controller: myController,
-                          style: Theme.of(context).textTheme.subtitle1,
-                          decoration: const InputDecoration(
-                            hintText: '         Write the doctor name',
-                          ),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: myController,
+                              style: Theme.of(context).textTheme.subtitle1,
+                              decoration: const InputDecoration(
+                                hintText: '         Write the doctor name',
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text("Select Your Medication Date", style: TextStyle(color: Theme.of(context).primaryColor),),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            CupertinoDateTextBox(
+                                initialValue: _selectedDateTime,
+                                onDateChange: onBirthdayChange,
+                                hintText: DateFormat.yMd().format(_selectedDateTime)),
+                          ],
                         ),
                       ),
                     ],
@@ -205,15 +222,15 @@ class _MedicationState extends State<Medication> {
                           buttonFunction: () async {
                             context.loaderOverlay.show(widget: const LoadingScreen());
                             var time = await TimesApi.getTimeSlots(
-                                context, DateTime.now(), 19, 1);
+                                context, _selectedDateTime, 142, 1);
                             var status =
                                 await CreateAppointmentApi.createAppointment(
                               context,
-                              DateTime.now(),
-                              19,
+                              _selectedDateTime,
+                              142,
                               Provider.of<UserModel>(context, listen: false)
                                   .partnerId,
-                              3,
+                              1052,
                               time.first.id!.toInt(),
                                   myController.text,
                                   1
@@ -262,6 +279,12 @@ class _MedicationState extends State<Medication> {
       ),
     );
   }
+  void onBirthdayChange(DateTime birthday) {
+    setState(() {
+      _selectedDateTime = birthday;
+    });
+  }
+
 }
 
 class MedicationImage extends StatefulWidget {
@@ -278,6 +301,8 @@ class _MedicationImageState extends State<MedicationImage> {
   final picker = ImagePicker();
   int ctImage = 0;
   static dynamic img64;
+  final cropper = ImageCropper();
+
 
   void _pickImageCamera() async {
     final pickedImage = await picker.pickImage(
@@ -302,7 +327,7 @@ class _MedicationImageState extends State<MedicationImage> {
   }
 
   void _cropImage() async {
-    File? cropped = await ImageCropper.cropImage(
+    File? cropped = await cropper.cropImage(
       sourcePath: image.path.toString(),
     );
     setState(() {
