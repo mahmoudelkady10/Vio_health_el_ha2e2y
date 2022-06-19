@@ -21,6 +21,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:expandable/expandable.dart';
 import 'package:intl/intl.dart';
 import 'lab_screen.dart';
+import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
+import 'package:intl/intl.dart';
 
 class Radiology extends StatefulWidget {
   const Radiology({Key? key}) : super(key: key);
@@ -32,6 +34,7 @@ class Radiology extends StatefulWidget {
 
 class _RadiologyState extends State<Radiology> {
   final myController = TextEditingController();
+  DateTime _selectedDateTime = DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -172,8 +175,8 @@ class _RadiologyState extends State<Radiology> {
                           size: 50,
                         )),
                     content: SizedBox(
-                      width: 200,
-                      height: 120,
+                      width: 210,
+                      height: 180,
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.center,
@@ -184,15 +187,30 @@ class _RadiologyState extends State<Radiology> {
                                   .of(context)
                                   .primaryColor)),
                           Center(
-                            child: TextField(
-                              controller: myController,
-                              style: Theme
-                                  .of(context)
-                                  .textTheme
-                                  .subtitle1,
-                              decoration: const InputDecoration(
-                                hintText: '         Write the doctor name',
-                              ),
+                            child: Column(
+                              children: [
+                                TextField(
+                                  controller: myController,
+                                  style: Theme
+                                      .of(context)
+                                      .textTheme
+                                      .subtitle1,
+                                  decoration: const InputDecoration(
+                                    hintText: '         Write the doctor name',
+                                  ),
+                                ),
+                                const SizedBox(
+                                  height: 10,
+                                ),
+                                Text("Select Your Radiology Date", style: TextStyle(color: Theme.of(context).primaryColor),),
+                                const SizedBox(
+                                  height: 15,
+                                ),
+                                CupertinoDateTextBox(
+                                    initialValue: _selectedDateTime,
+                                    onDateChange: onBirthdayChange,
+                                    hintText: DateFormat.yMd().format(_selectedDateTime)),
+                              ],
                             ),
                           ),
                         ],
@@ -227,16 +245,16 @@ class _RadiologyState extends State<Radiology> {
                                 context.loaderOverlay.show(
                                     widget: const LoadingScreen());
                                 var time = await TimesApi.getTimeSlots(
-                                    context, DateTime.now(), 19, 1);
+                                    context, _selectedDateTime, 175, 1);
                                 var status =
                                 await CreateAppointmentApi.createAppointment(
                                     context,
-                                    DateTime.now(),
-                                    19,
+                                    _selectedDateTime,
+                                    175,
                                     Provider
                                         .of<UserModel>(context, listen: false)
                                         .partnerId,
-                                    3,
+                                    982,
                                     time.first.id!.toInt(),
                                     myController.text,
                                     1
@@ -288,6 +306,11 @@ class _RadiologyState extends State<Radiology> {
             .primaryColor,
       ),
     );
+  }
+  void onBirthdayChange(DateTime birthday) {
+    setState(() {
+      _selectedDateTime = birthday;
+    });
   }
 }
 

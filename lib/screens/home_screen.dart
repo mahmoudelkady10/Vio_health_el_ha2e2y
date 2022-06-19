@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:medic_app/network/ads_api.dart';
 import 'package:medic_app/network/city_api.dart';
+import 'package:medic_app/network/delete_api.dart';
 import 'package:medic_app/network/governorate_api.dart';
 import 'package:medic_app/network/login_api.dart';
 import 'package:medic_app/network/specialties_api.dart';
@@ -169,12 +170,57 @@ class _MyHomePageState extends State<MyHomePage> {
                           'Profile',
                           style: TextStyle(color: Color(0xFF979797), fontSize: 18),
                         ),
-                        SizedBox(width: 50.0,),
+                        SizedBox(width: 65),
                         Icon(Icons.keyboard_arrow_right, color: Color(0xFF979797), size: 50,)
                       ],
                     ),
                     onTap: () {
                       Navigator.pushNamed(context, ManageProfile.id);
+                    },
+                  ),
+                ),
+              ],
+            ),
+            Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                SizedBox(
+                  width: 250,
+                  height: 70,
+                  child: InkWell(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: const [
+                        Icon(
+                          Icons.clear,
+                          color: Color(0xFF979797),
+                          size: 35,
+                        ),
+                        SizedBox(width: 5.0,),
+                        Text(
+                          'Delete Account',
+                          style: TextStyle(color: Color(0xFF979797), fontSize: 18),
+                        ),
+                        SizedBox(width: 15,),
+                        Icon(Icons.keyboard_arrow_right, color: Color(0xFF979797), size: 50,)
+                      ],
+                    ),
+                    onTap: () async{
+                      imageCache?.clear();
+                      SharedPreferences prefs =
+                      await SharedPreferences.getInstance();
+                      await prefs.clear();
+                      await Future.delayed(const Duration(seconds: 2));
+                      var delete = await DeleteApi.deleteAcc(context);
+                      Navigator.of(context).pushAndRemoveUntil(
+                        // the new route
+                        MaterialPageRoute(
+                          builder: (BuildContext context) =>
+                          const LoginScreen(),
+                        ),
+                            (Route route) => false,
+                      );
                     },
                   ),
                 ),
@@ -201,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           'Log Out',
                           style: TextStyle(color: Color(0xFF979797), fontSize: 18),
                         ),
-                        SizedBox(width: 50.0,),
+                        SizedBox(width: 55.0,),
                         Icon(Icons.keyboard_arrow_right, color: Color(0xFF979797), size: 50,)
                       ],
                     ),
@@ -228,7 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ),
               ],
-            )
+            ),
           ],
         ),
       ),

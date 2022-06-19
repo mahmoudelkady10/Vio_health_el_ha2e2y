@@ -204,64 +204,69 @@ class _ManageProfileState extends State<ManageProfile> {
                         return null;
                       },
                     ),
-                    RoundedButton(
-                      buttonFunction: () async {
-                        // Validate returns true if the form is valid, or false otherwise.
-                        if (_formKey.currentState!.validate()) {
-                          setState(() {
-                            showSpinner = true;
-                          });
-                          var response = await EditProfileApi.editProfile(
-                              context,
-                              userData.partnerId!,
-                              firstNameController.text,
-                              emailController.text,
-                              bloodGroupController.text,
-                              weightController.text,
-                              gender,
-                              img64Controller.text);
-                          int statusCode =
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        RoundedButton(
+                          buttonFunction: () {
+                            Navigator.pop(context);
+                          },
+                          buttonText: 'Cancel',
+                        ),
+                        RoundedButton(
+                          buttonFunction: () async {
+                            // Validate returns true if the form is valid, or false otherwise.
+                            if (_formKey.currentState!.validate()) {
+                              setState(() {
+                                showSpinner = true;
+                              });
+                              var response = await EditProfileApi.editProfile(
+                                  context,
+                                  userData.partnerId!,
+                                  firstNameController.text,
+                                  emailController.text,
+                                  bloodGroupController.text,
+                                  weightController.text,
+                                  gender,
+                                  img64Controller.text);
+                              int statusCode =
                               json.decode(response.body)['result']['status'];
-                          print(response.body);
-                          if (statusCode == 200) {
-                            imageCache?.clear();
-                            SharedPreferences prefs =
+                              print(response.body);
+                              if (statusCode == 200) {
+                                imageCache?.clear();
+                                SharedPreferences prefs =
                                 await SharedPreferences.getInstance();
-                            String? token = prefs.getString('token');
-                            int status = await LoginApi.getUserInfo(
-                                context, token!);
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.green,
-                                content: Text("Profile Updated"),
-                              ),
-                            );
-                            Navigator.pushReplacementNamed(
-                                context, MyHomePage.id);
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                backgroundColor: Colors.red,
-                                content: Text("Profile Update Failed!"),
-                              ),
-                            );
-                            Navigator.pushReplacementNamed(
-                                context, MyHomePage.id);
-                          }
+                                String? token = prefs.getString('token');
+                                int status = await LoginApi.getUserInfo(
+                                    context, token!);
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.green,
+                                    content: Text("Profile Updated"),
+                                  ),
+                                );
+                                Navigator.pushReplacementNamed(
+                                    context, MyHomePage.id);
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    backgroundColor: Colors.red,
+                                    content: Text("Profile Update Failed!"),
+                                  ),
+                                );
+                                Navigator.pushReplacementNamed(
+                                    context, MyHomePage.id);
+                              }
 
-                          setState(() {
-                            showSpinner = false;
-                          });
-                        }
-                      },
-                      buttonText: 'Save',
+                              setState(() {
+                                showSpinner = false;
+                              });
+                            }
+                          },
+                          buttonText: 'Save',
+                        ),
+                      ],
                     ),
-                    RoundedButton(
-                      buttonFunction: () {
-                        Navigator.pop(context);
-                      },
-                      buttonText: 'Cancel',
-                    )
                   ],
                 ),
               )

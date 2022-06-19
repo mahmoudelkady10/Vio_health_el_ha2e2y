@@ -140,9 +140,7 @@ class _WalletScreenState extends State<WalletScreen> {
                                               onPressed: () async {
                                                 var url = await WalletApi.topUp(
                                                     context,
-                                                    user.uid,
-                                                    topupController.text,
-                                                    user.token);
+                                                    topupController.text);
                                                 Navigator.push(context,
                                                     MaterialPageRoute(
                                                         builder: (context) {
@@ -261,7 +259,9 @@ class PaymentScreen extends StatelessWidget {
       enableAppScheme: true,
       withLocalStorage: true,
       appBar: AppBar(
-        title: const Text('Top Up'),
+        title: const Text("Payment Method", style: TextStyle(color: Colors.white)),
+        backgroundColor: Theme.of(context).primaryColor,
+        centerTitle: true,
       ),
       initialChild: Container(
         color: Colors.white,

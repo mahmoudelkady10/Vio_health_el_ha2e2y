@@ -24,10 +24,20 @@ import 'package:expandable/expandable.dart';
 import 'package:convert/convert.dart';
 import 'package:intl/intl.dart';
 import 'medication_screen.dart';
+import 'package:cupertino_date_textbox/cupertino_date_textbox.dart';
+import 'package:intl/intl.dart';
 
-class LabApointments extends StatelessWidget {
+class LabApointments extends StatefulWidget {
   static const id = 'lab_screen';
   const LabApointments({Key? key}) : super(key: key);
+
+  @override
+  State<LabApointments> createState() => _LabApointmentsState();
+}
+
+class _LabApointmentsState extends State<LabApointments> {
+  DateTime _selectedDateTime = DateTime.now();
+
   @override
   Widget build(BuildContext context) {
     TextEditingController? myController = TextEditingController();
@@ -154,8 +164,8 @@ class LabApointments extends StatelessWidget {
                       size: 50,
                     )),
                 content: SizedBox(
-                  width: 200,
-                  height: 120,
+                  width: 210,
+                  height: 180,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -164,12 +174,27 @@ class LabApointments extends StatelessWidget {
                           style:
                           TextStyle(color: Theme.of(context).primaryColor)),
                       Center(
-                        child: TextField(
-                          controller: myController,
-                          style: Theme.of(context).textTheme.subtitle1,
-                          decoration: const InputDecoration(
-                            hintText: '         Write the doctor name',
-                          ),
+                        child: Column(
+                          children: [
+                            TextField(
+                              controller: myController,
+                              style: Theme.of(context).textTheme.subtitle1,
+                              decoration: const InputDecoration(
+                                hintText: '         Write the doctor name',
+                              ),
+                            ),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            Text("Select Your Lab Date", style: TextStyle(color: Theme.of(context).primaryColor),),
+                            const SizedBox(
+                              height: 15,
+                            ),
+                            CupertinoDateTextBox(
+                                initialValue: _selectedDateTime,
+                                onDateChange: onBirthdayChange,
+                                hintText: DateFormat.yMd().format(_selectedDateTime)),
+                          ],
                         ),
                       ),
                     ],
@@ -199,15 +224,15 @@ class LabApointments extends StatelessWidget {
                           buttonFunction: () async {
                             context.loaderOverlay.show(widget: const LoadingScreen());
                             var time = await TimesApi.getTimeSlots(
-                                context, DateTime.now(), 19, 1);
+                                context, _selectedDateTime, 175, 1);
                             var status =
                             await CreateAppointmentApi.createAppointment(
                                 context,
-                                DateTime.now(),
-                                19,
+                                _selectedDateTime,
+                                175,
                                 Provider.of<UserModel>(context, listen: false)
                                     .partnerId,
-                                3,
+                                982,
                                 time.first.id!.toInt(),
                                 myController.text,
                                 1
@@ -255,6 +280,11 @@ class LabApointments extends StatelessWidget {
         backgroundColor: Theme.of(context).primaryColor,
       ),
     );
+  }
+  void onBirthdayChange(DateTime birthday) {
+    setState(() {
+      _selectedDateTime = birthday;
+    });
   }
 }
 

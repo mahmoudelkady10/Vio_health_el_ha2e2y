@@ -8,10 +8,11 @@ import 'package:provider/provider.dart';
 
 class WalletApi extends BaseApiManagement {
    static Future<dynamic> topUp(
-      BuildContext context, int? uid, String? amount, String? token) async {
+      BuildContext context, String? amount) async {
     var jsonBody = {
-      'amount': amount,
-      'token': Provider.of<UserModel>(context, listen: false).token,
+      "uid" : Provider.of<UserModel>(context, listen: false).uid,
+      "amount" : amount,
+      "token" : Provider.of<UserModel>(context, listen: false).token
     };
     var response = await http.post(
       Uri.parse('${BaseApiManagement.baseUrl}/vio/mob_payment'),
@@ -27,7 +28,6 @@ class WalletApi extends BaseApiManagement {
       return url;
     }
   }
-
 }
 
 
