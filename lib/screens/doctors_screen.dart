@@ -473,7 +473,6 @@ class _BookingTState extends State<BookingT> {
                     ),
                     ListView.builder(
                         shrinkWrap: true,
-                        scrollDirection: Axis.vertical,
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
                           return Stack(

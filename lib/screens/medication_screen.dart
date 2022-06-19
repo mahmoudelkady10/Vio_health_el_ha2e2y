@@ -222,15 +222,15 @@ class _MedicationState extends State<Medication> {
                           buttonFunction: () async {
                             context.loaderOverlay.show(widget: const LoadingScreen());
                             var time = await TimesApi.getTimeSlots(
-                                context, _selectedDateTime, 142, 1);
+                                context, _selectedDateTime, 175, 1);
                             var status =
                                 await CreateAppointmentApi.createAppointment(
                               context,
                               _selectedDateTime,
-                              142,
+                              175,
                               Provider.of<UserModel>(context, listen: false)
                                   .partnerId,
-                              1052,
+                              982,
                               time.first.id!.toInt(),
                                   myController.text,
                                   1

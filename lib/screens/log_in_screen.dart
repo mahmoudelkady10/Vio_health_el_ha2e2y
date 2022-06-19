@@ -81,7 +81,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 35.0),
                   child: InkWell(
                     onTap: () async {
-                      String url = 'https://techno.clinic/web/reset_password?';
+                      String url = 'https://vio.health/web/reset_password?';
                       await launch(url);
                     },
                     child: Text(
