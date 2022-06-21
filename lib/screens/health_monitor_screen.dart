@@ -14,6 +14,7 @@ import 'package:medic_app/model/health_monitor_model.dart';
 import 'package:medic_app/model/user_model.dart';
 import 'package:medic_app/model/wave_data.dart';
 import 'package:medic_app/network/health_monitor_api.dart';
+import 'package:medic_app/permission/base_permission.dart';
 import 'package:medic_app/screens/home_screen.dart';
 import 'package:medic_app/widgets/graph_drawer.dart';
 import 'package:medic_app/widgets/loading_screen.dart';
@@ -39,7 +40,7 @@ class _HmDashBoardState extends State<HmDashBoard> {
   static const CHANNEL = 'com.example.viohealth/channels';
   static const platform = MethodChannel(CHANNEL);
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
   final GlobalKey globalKey = GlobalKey();
 
   static dynamic bodyTemp = '';
@@ -243,7 +244,7 @@ class _HmDashBoardState extends State<HmDashBoard> {
     renderView.prepareInitialFrame();
 
     final RenderObjectToWidgetElement<RenderBox> rootElement =
-    RenderObjectToWidgetAdapter<RenderBox>(
+        RenderObjectToWidgetAdapter<RenderBox>(
       container: repaintBoundary,
       child: widget,
     ).attachToRenderTree(buildOwner);
@@ -264,7 +265,7 @@ class _HmDashBoardState extends State<HmDashBoard> {
     final ui.Image image = await repaintBoundary.toImage(
         pixelRatio: imageSize.width / logicalSize.width);
     final ByteData? byteData =
-    await image.toByteData(format: ui.ImageByteFormat.png);
+        await image.toByteData(format: ui.ImageByteFormat.png);
 
     return byteData!.buffer.asUint8List();
   }
@@ -352,7 +353,8 @@ class _HmDashBoardState extends State<HmDashBoard> {
                     textColor: Theme.of(context).primaryColor,
                     buttonColor: const Color(0xFFCBCFD1),
                     buttonFunction: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (BuildContext context) {
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) {
                         return const HmInstructions();
                       }));
                     },
@@ -466,7 +468,7 @@ class _HmDashBoardState extends State<HmDashBoard> {
                                           .map(int.parse)
                                           .toList();
                                       WaveformData waveData =
-                                      WaveformData.fromJson(jsonEncode({
+                                          WaveformData.fromJson(jsonEncode({
                                         "version": 2,
                                         "channels": 1,
                                         "sample_rate": 250,
@@ -484,52 +486,52 @@ class _HmDashBoardState extends State<HmDashBoard> {
                                     }
                                     var dateTimeBg = dateBg.toString() != 'null'
                                         ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                        .parse(dateBg)
-                                        .toLocal()
+                                            .parse(dateBg)
+                                            .toLocal()
                                         : null;
                                     var dateTimeBp = dateBp.toString() != 'null'
                                         ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                        .parse(dateBp)
-                                        .toLocal()
+                                            .parse(dateBp)
+                                            .toLocal()
                                         : null;
                                     var dateTimeBt = dateBt.toString() != 'null'
                                         ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                        .parse(dateBt)
-                                        .toLocal()
+                                            .parse(dateBt)
+                                            .toLocal()
                                         : null;
                                     var dateTimeEcg =
-                                    dateEcg.toString() != 'null'
-                                        ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                        .parse(dateEcg)
-                                        .toLocal()
-                                        : null;
+                                        dateEcg.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                                .parse(dateEcg)
+                                                .toLocal()
+                                            : null;
                                     var dateTimeSpo2 =
-                                    dateSpo2.toString() != 'null'
-                                        ? DateFormat('yyyy-MM-dd HH:mm:ss')
-                                        .parse(dateSpo2)
-                                        .toLocal()
-                                        : null;
+                                        dateSpo2.toString() != 'null'
+                                            ? DateFormat('yyyy-MM-dd HH:mm:ss')
+                                                .parse(dateSpo2)
+                                                .toLocal()
+                                            : null;
                                     var data = {
                                       'token': Provider.of<UserModel>(context,
-                                          listen: false)
+                                              listen: false)
                                           .token
                                           .toString(),
                                       'blood_glucose': {
                                         'bg_measure': bgMeasure,
                                         'date_bg':
-                                        dateTimeBg.toString().split('.')[0]
+                                            dateTimeBg.toString().split('.')[0]
                                       },
                                       'blood_pressure': {
                                         'systolic_pressure': systolicPressure,
                                         'diastolic_pressure': diastolicPressure,
                                         'heart_rate_bp': heartRateBp,
                                         'date_bp':
-                                        dateTimeBp.toString().split('.')[0]
+                                            dateTimeBp.toString().split('.')[0]
                                       },
                                       'body_temperature': {
                                         'body_temp': bodyTemp,
                                         'date_bt':
-                                        dateTimeBt.toString().split('.')[0]
+                                            dateTimeBt.toString().split('.')[0]
                                       },
                                       'ecg': {
                                         'rrmax': rrMax,
@@ -558,11 +560,11 @@ class _HmDashBoardState extends State<HmDashBoard> {
                                     context.loaderOverlay
                                         .show(widget: const LoadingScreen());
                                     var response =
-                                    await HmApi.postReadings(data);
+                                        await HmApi.postReadings(data);
                                     context.loaderOverlay.hide();
                                     int status =
-                                    json.decode(response.body)['result']
-                                    ['status'];
+                                        json.decode(response.body)['result']
+                                            ['status'];
                                     if (status == 200) {
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
@@ -600,15 +602,15 @@ class _HmDashBoardState extends State<HmDashBoard> {
                                     builder: (_) => AlertDialog(
                                       title: const Center(
                                           child: Icon(
-                                            Icons.warning,
-                                            color: Colors.red,
-                                            size: 40,
-                                          )),
+                                        Icons.warning,
+                                        color: Colors.red,
+                                        size: 40,
+                                      )),
                                       content: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.center,
+                                            MainAxisAlignment.center,
                                         crossAxisAlignment:
-                                        CrossAxisAlignment.center,
+                                            CrossAxisAlignment.center,
                                         children: const [
                                           Text(
                                             'Taking new reading will replace\ncurrently visible reading.\nIf you haven not saved and\nwould like to, then click\nupload button.',
@@ -666,19 +668,58 @@ class _HmDashBoardState extends State<HmDashBoard> {
                       children: [
                         const Text(
                           'Launch Health Monitor\n',
-                          style: TextStyle(
-                              fontSize: 20,
-                              color: Color(0xFF707070)
-                          ),),
+                          style:
+                              TextStyle(fontSize: 20, color: Color(0xFF707070)),
+                        ),
                         const SizedBox(
                           height: 15,
                         ),
                         Center(
                           child: GestureDetector(
-                            child: const Image(image: AssetImage('assets/powericon.png'), width: 300, height: 300,),
+                            child: const Image(
+                              image: AssetImage('assets/powericon.png'),
+                              width: 300,
+                              height: 300,
+                            ),
                             onTap: () async {
-                              await openHealthMonitor(context);
-                              assignReadings();
+                              bool x = await PermissionHandler.requestStorage();
+                              if (x == true) {
+                                await openHealthMonitor(context);
+                                assignReadings();
+                              } else {
+                                showDialog(
+                                  context: context,
+                                  builder: (_) => AlertDialog(
+                                    title: const Center(
+                                      child:
+                                          Text('Permission is denied'),
+                                    ),
+                                    content: Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: const [
+                                        Text(
+                                            'please allow the permission\nto enable this feature'),
+                                      ],
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () {
+                                          Navigator.pop(context);
+                                        },
+                                        child: Text('ok',
+                                            style: TextStyle(
+                                                color: Theme.of(context)
+                                                    .primaryColor,
+                                                decoration:
+                                                    TextDecoration.underline)),
+                                      )
+                                    ],
+                                  ),
+                                );
+                              }
                             },
                           ),
                         )
@@ -709,6 +750,7 @@ class _HmInstructionsState extends State<HmInstructions> {
     'ECG',
     'SPO2'
   ];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -822,8 +864,6 @@ class _HmInstructionsState extends State<HmInstructions> {
   }
 }
 
-
-
 class HealthMonitor extends StatefulWidget {
   const HealthMonitor({Key? key}) : super(key: key);
   static const id = 'health_monitor_screen';
@@ -836,7 +876,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
   static const CHANNEL = 'com.example.viohealth/channels';
   static const platform = MethodChannel(CHANNEL);
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
-  GlobalKey<RefreshIndicatorState>();
+      GlobalKey<RefreshIndicatorState>();
   final GlobalKey globalKey = GlobalKey();
 
   static dynamic bodyTemp = '';
@@ -1040,7 +1080,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
     renderView.prepareInitialFrame();
 
     final RenderObjectToWidgetElement<RenderBox> rootElement =
-    RenderObjectToWidgetAdapter<RenderBox>(
+        RenderObjectToWidgetAdapter<RenderBox>(
       container: repaintBoundary,
       child: widget,
     ).attachToRenderTree(buildOwner);
@@ -1061,7 +1101,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
     final ui.Image image = await repaintBoundary.toImage(
         pixelRatio: imageSize.width / logicalSize.width);
     final ByteData? byteData =
-    await image.toByteData(format: ui.ImageByteFormat.png);
+        await image.toByteData(format: ui.ImageByteFormat.png);
 
     return byteData!.buffer.asUint8List();
   }
@@ -1153,10 +1193,10 @@ class _HealthMonitorState extends State<HealthMonitor> {
                       children: [
                         Visibility(
                           visible: snapshot.data
-                              .where((HmModel x) =>
-                          x.category == 'blood_glucose')
-                              .toList()
-                              .length >=
+                                  .where((HmModel x) =>
+                                      x.category == 'blood_glucose')
+                                  .toList()
+                                  .length >=
                               3,
                           child: Container(
                             height: 250,
@@ -1165,7 +1205,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                             child: DrawGraph(
                                 data: snapshot.data
                                     .where((HmModel x) =>
-                                x.category == 'blood_glucose')
+                                        x.category == 'blood_glucose')
                                     .toList()
                                     .reversed
                                     .toList()),
@@ -1181,13 +1221,13 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                   return Card(
                                     child: Column(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.start,
+                                          MainAxisAlignment.start,
                                       children: [
                                         Padding(
                                           padding: const EdgeInsets.all(8.0),
                                           child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                                MainAxisAlignment.spaceBetween,
                                             children: [
                                               Column(
                                                 children: [
@@ -1195,16 +1235,16 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                     'Blood Glucose',
                                                     style: TextStyle(
                                                         color:
-                                                        Color(0xFF707070)),
+                                                            Color(0xFF707070)),
                                                   ),
                                                   Text(
                                                       '${snapshot.data[index].bgMeasure} mg/dL',
                                                       style: const TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontSize: 18,
                                                           fontWeight:
-                                                          FontWeight.bold))
+                                                              FontWeight.bold))
                                                 ],
                                               ),
                                               ImageIcon(
@@ -1221,7 +1261,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           padding: const EdgeInsets.all(8.0),
                                           child: Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                                MainAxisAlignment.end,
                                             children: [
                                               const Icon(
                                                 Icons.calendar_today_rounded,
@@ -1230,14 +1270,14 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               ),
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(7.0),
+                                                    const EdgeInsets.all(7.0),
                                                 child: Text(
                                                     dateFormatter.format(
                                                         DateTime.parse(snapshot
                                                             .data[index].date)),
                                                     style: const TextStyle(
                                                         color:
-                                                        Color(0xFF707070))),
+                                                            Color(0xFF707070))),
                                               ),
                                               const Icon(
                                                 Icons.access_time,
@@ -1246,14 +1286,14 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               ),
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(7.0),
+                                                    const EdgeInsets.all(7.0),
                                                 child: Text(
                                                     timeFormatter.format(
                                                         DateTime.parse(snapshot
                                                             .data[index].date)),
                                                     style: const TextStyle(
                                                         color:
-                                                        Color(0xFF707070))),
+                                                            Color(0xFF707070))),
                                               ),
                                             ],
                                           ),
@@ -1287,10 +1327,10 @@ class _HealthMonitorState extends State<HealthMonitor> {
                       children: [
                         Visibility(
                           visible: snapshot.data
-                              .where((HmModel x) =>
-                          x.category == 'blood_pressure')
-                              .toList()
-                              .length >=
+                                  .where((HmModel x) =>
+                                      x.category == 'blood_pressure')
+                                  .toList()
+                                  .length >=
                               3,
                           child: Container(
                             height: 250,
@@ -1299,7 +1339,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                             child: DrawGraph2(
                                 data: snapshot.data
                                     .where((HmModel x) =>
-                                x.category == 'blood_pressure')
+                                        x.category == 'blood_pressure')
                                     .toList()
                                     .reversed
                                     .toList()),
@@ -1337,15 +1377,15 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                             padding: const EdgeInsets.all(12.0),
                                             child: Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                                  MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.all(8.0),
+                                                      const EdgeInsets.all(8.0),
                                                   child: Column(
                                                     mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
                                                       const Text('Systolic',
                                                           style: TextStyle(
@@ -1354,8 +1394,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                               fontSize: 13)),
                                                       Padding(
                                                         padding:
-                                                        const EdgeInsets
-                                                            .all(7.0),
+                                                            const EdgeInsets
+                                                                .all(7.0),
                                                         child: Text(
                                                             snapshot.data[index]
                                                                 .systolicPressure,
@@ -1363,8 +1403,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                 color: Color(
                                                                     0xFF707070),
                                                                 fontWeight:
-                                                                FontWeight
-                                                                    .bold,
+                                                                    FontWeight
+                                                                        .bold,
                                                                 fontSize: 18)),
                                                       ),
                                                       const Text('mmHg',
@@ -1377,8 +1417,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.only(
-                                                      bottom: 13.0),
+                                                      const EdgeInsets.only(
+                                                          bottom: 13.0),
                                                   child: Container(
                                                     alignment: Alignment.center,
                                                     height: 120,
@@ -1393,23 +1433,23 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                     .primaryColor),
                                                             right: BorderSide(
                                                                 color: Theme.of(
-                                                                    context)
+                                                                        context)
                                                                     .primaryColor),
                                                             top: BorderSide(
                                                                 color: Theme.of(
-                                                                    context)
+                                                                        context)
                                                                     .primaryColor))),
                                                     child: Column(
                                                       mainAxisSize:
-                                                      MainAxisSize.min,
+                                                          MainAxisSize.min,
                                                       children: [
                                                         Icon(
                                                           CupertinoIcons
                                                               .heart_circle,
                                                           size: 40,
                                                           color:
-                                                          Theme.of(context)
-                                                              .primaryColor,
+                                                              Theme.of(context)
+                                                                  .primaryColor,
                                                         ),
                                                         const Text('Heart rate',
                                                             style: TextStyle(
@@ -1418,8 +1458,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                 fontSize: 16)),
                                                         Padding(
                                                           padding:
-                                                          const EdgeInsets
-                                                              .all(6.0),
+                                                              const EdgeInsets
+                                                                  .all(6.0),
                                                           child: Text(
                                                               snapshot
                                                                   .data[index]
@@ -1428,10 +1468,10 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                   color: Color(
                                                                       0xFF707070),
                                                                   fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
+                                                                      FontWeight
+                                                                          .bold,
                                                                   fontSize:
-                                                                  18)),
+                                                                      18)),
                                                         ),
                                                         const Text('BPM',
                                                             style: TextStyle(
@@ -1444,11 +1484,11 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.all(8.0),
+                                                      const EdgeInsets.all(8.0),
                                                   child: Column(
                                                     mainAxisAlignment:
-                                                    MainAxisAlignment
-                                                        .spaceBetween,
+                                                        MainAxisAlignment
+                                                            .spaceBetween,
                                                     children: [
                                                       const Text('Diastolic',
                                                           style: TextStyle(
@@ -1457,8 +1497,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                               fontSize: 13)),
                                                       Padding(
                                                         padding:
-                                                        const EdgeInsets
-                                                            .all(7.0),
+                                                            const EdgeInsets
+                                                                .all(7.0),
                                                         child: Text(
                                                             snapshot.data[index]
                                                                 .diastolicPressure,
@@ -1466,8 +1506,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                 color: Color(
                                                                     0xFF707070),
                                                                 fontWeight:
-                                                                FontWeight
-                                                                    .bold,
+                                                                    FontWeight
+                                                                        .bold,
                                                                 fontSize: 18)),
                                                       ),
                                                       const Text('mmHg',
@@ -1483,7 +1523,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                           ),
                                           Row(
                                             mainAxisAlignment:
-                                            MainAxisAlignment.end,
+                                                MainAxisAlignment.end,
                                             children: [
                                               const Icon(
                                                 Icons.calendar_today_rounded,
@@ -1492,14 +1532,14 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               ),
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(7.0),
+                                                    const EdgeInsets.all(7.0),
                                                 child: Text(
                                                     dateFormatter.format(
                                                         DateTime.parse(snapshot
                                                             .data[index].date)),
                                                     style: const TextStyle(
                                                         color:
-                                                        Color(0xFF707070))),
+                                                            Color(0xFF707070))),
                                               ),
                                               const Icon(
                                                 Icons.access_time,
@@ -1508,14 +1548,14 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               ),
                                               Padding(
                                                 padding:
-                                                const EdgeInsets.all(7.0),
+                                                    const EdgeInsets.all(7.0),
                                                 child: Text(
                                                     timeFormatter.format(
                                                         DateTime.parse(snapshot
                                                             .data[index].date)),
                                                     style: const TextStyle(
                                                         color:
-                                                        Color(0xFF707070))),
+                                                            Color(0xFF707070))),
                                               ),
                                             ],
                                           ),
@@ -1549,10 +1589,10 @@ class _HealthMonitorState extends State<HealthMonitor> {
                       children: [
                         Visibility(
                           visible: snapshot.data
-                              .where((HmModel x) =>
-                          x.category == 'body_temperature')
-                              .toList()
-                              .length >=
+                                  .where((HmModel x) =>
+                                      x.category == 'body_temperature')
+                                  .toList()
+                                  .length >=
                               3,
                           child: Container(
                             height: 250,
@@ -1561,7 +1601,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                             child: DrawGraph(
                                 data: snapshot.data
                                     .where((HmModel x) =>
-                                x.category == 'body_temperature')
+                                        x.category == 'body_temperature')
                                     .toList()
                                     .reversed
                                     .toList()),
@@ -1580,14 +1620,14 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                     child: Card(
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.only(
                                                 bottom: 40.0, left: 15.0),
                                             child: Column(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.start,
+                                                  MainAxisAlignment.start,
                                               children: [
                                                 const Text(
                                                   'Body Temperature',
@@ -1600,9 +1640,9 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                     textAlign: TextAlign.left,
                                                     style: TextStyle(
                                                         color:
-                                                        Color(0xFF707070),
+                                                            Color(0xFF707070),
                                                         fontWeight:
-                                                        FontWeight.bold,
+                                                            FontWeight.bold,
                                                         fontSize: 18))
                                               ],
                                             ),
@@ -1612,11 +1652,11 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 left: 8.0),
                                             child: Column(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.end,
+                                                  MainAxisAlignment.end,
                                               children: [
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.only(
+                                                      const EdgeInsets.only(
                                                     left: 25.0,
                                                   ),
                                                   child: Icon(
@@ -1631,29 +1671,29 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.only(
-                                                      top: 8.0),
+                                                      const EdgeInsets.only(
+                                                          top: 8.0),
                                                   child: Row(
                                                     mainAxisAlignment:
-                                                    MainAxisAlignment.start,
+                                                        MainAxisAlignment.start,
                                                     children: [
                                                       const Icon(
                                                         Icons
                                                             .calendar_today_rounded,
                                                         size: 20,
                                                         color:
-                                                        Color(0xFFCBCFD1),
+                                                            Color(0xFFCBCFD1),
                                                       ),
                                                       Padding(
                                                         padding:
-                                                        const EdgeInsets
-                                                            .all(7.0),
+                                                            const EdgeInsets
+                                                                .all(7.0),
                                                         child: Text(
                                                             dateFormatter.format(
                                                                 DateTime.parse(
                                                                     snapshot
                                                                         .data[
-                                                                    index]
+                                                                            index]
                                                                         .date)),
                                                             style: const TextStyle(
                                                                 color: Color(
@@ -1663,18 +1703,18 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                         Icons.access_time,
                                                         size: 20,
                                                         color:
-                                                        Color(0xFFCBCFD1),
+                                                            Color(0xFFCBCFD1),
                                                       ),
                                                       Padding(
                                                         padding:
-                                                        const EdgeInsets
-                                                            .all(7.0),
+                                                            const EdgeInsets
+                                                                .all(7.0),
                                                         child: Text(
                                                             timeFormatter.format(
                                                                 DateTime.parse(
                                                                     snapshot
                                                                         .data[
-                                                                    index]
+                                                                            index]
                                                                         .date)),
                                                             style: const TextStyle(
                                                                 color: Color(
@@ -1716,7 +1756,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                         itemCount: snapshot.data.length,
                         itemBuilder: (context, index) {
                           if (snapshot.data[index].category.toString() ==
-                              'ecg' &&
+                                  'ecg' &&
                               snapshot.data[index].rrMax != null) {
                             return Padding(
                               padding: const EdgeInsets.symmetric(
@@ -1729,7 +1769,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                       padding: const EdgeInsets.all(10.0),
                                       child: Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
+                                            MainAxisAlignment.spaceEvenly,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
@@ -1739,18 +1779,18 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               color: const Color(0xFFEDEBEB),
                                               child: Column(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                                    MainAxisAlignment.center,
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   const Text('R-R',
                                                       style: TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontSize: 14)),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(
-                                                        3.0),
+                                                        const EdgeInsets.all(
+                                                            3.0),
                                                     child: Text(
                                                         'Max: ${snapshot.data[index].rrMax}',
                                                         style: const TextStyle(
@@ -1762,7 +1802,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                       'Min: ${snapshot.data[index].rrMin}',
                                                       style: const TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontSize: 11))
                                                 ],
                                               ),
@@ -1779,19 +1819,19 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                   border: Border(
                                                       bottom: BorderSide(
                                                           color: Theme.of(
-                                                              context)
+                                                                  context)
                                                               .primaryColor),
                                                       left: BorderSide(
                                                           color: Theme.of(
-                                                              context)
+                                                                  context)
                                                               .primaryColor),
                                                       right: BorderSide(
                                                           color:
-                                                          Theme.of(context)
-                                                              .primaryColor),
+                                                              Theme.of(context)
+                                                                  .primaryColor),
                                                       top: BorderSide(
                                                           color: Theme.of(
-                                                              context)
+                                                                  context)
                                                               .primaryColor))),
                                               child: Column(
                                                 mainAxisSize: MainAxisSize.min,
@@ -1806,12 +1846,12 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                   const Text('Respiratory Rate',
                                                       style: TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontSize: 8)),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(
-                                                        3.0),
+                                                        const EdgeInsets.all(
+                                                            3.0),
                                                     child: Text(
                                                         snapshot.data[index]
                                                             .respiratoryRate,
@@ -1819,7 +1859,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                             color: Color(
                                                                 0xFF707070),
                                                             fontWeight:
-                                                            FontWeight.bold,
+                                                                FontWeight.bold,
                                                             fontSize: 18)),
                                                   ),
                                                 ],
@@ -1834,19 +1874,19 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               color: const Color(0xFFEDEBEB),
                                               child: Column(
                                                 mainAxisAlignment:
-                                                MainAxisAlignment.center,
+                                                    MainAxisAlignment.center,
                                                 mainAxisSize: MainAxisSize.min,
                                                 children: [
                                                   Text(
                                                       'Duration: ${snapshot.data[index].durationEcg}',
                                                       style: const TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontSize: 11)),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(
-                                                        3.0),
+                                                        const EdgeInsets.all(
+                                                            3.0),
                                                     child: Text(
                                                         'Mood: ${snapshot.data[index].mood}',
                                                         style: const TextStyle(
@@ -1858,12 +1898,12 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                       'HRV: ${snapshot.data[index].hrv}',
                                                       style: const TextStyle(
                                                           color:
-                                                          Color(0xFF707070),
+                                                              Color(0xFF707070),
                                                           fontSize: 11)),
                                                   Padding(
                                                     padding:
-                                                    const EdgeInsets.all(
-                                                        3.0),
+                                                        const EdgeInsets.all(
+                                                            3.0),
                                                     child: Text(
                                                         'Heart Rate: ${snapshot.data[index].heartRate}',
                                                         style: const TextStyle(
@@ -1880,7 +1920,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                     ),
                                     Row(
                                       mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                                          MainAxisAlignment.spaceEvenly,
                                       children: [
                                         SizedBox(
                                           height: 60,
@@ -1891,10 +1931,10 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                               Navigator.push(context,
                                                   MaterialPageRoute(
                                                       builder: (context) {
-                                                        return EcgReport(
-                                                            img: snapshot
-                                                                .data[index].ecgWave);
-                                                      }));
+                                                return EcgReport(
+                                                    img: snapshot
+                                                        .data[index].ecgWave);
+                                              }));
                                             },
                                           ),
                                         ),
@@ -1955,9 +1995,9 @@ class _HealthMonitorState extends State<HealthMonitor> {
                       children: [
                         Visibility(
                           visible: snapshot.data
-                              .where((HmModel x) => x.category == 'spo2')
-                              .toList()
-                              .length >=
+                                  .where((HmModel x) => x.category == 'spo2')
+                                  .toList()
+                                  .length >=
                               3,
                           child: Container(
                             height: 250,
@@ -1982,13 +2022,13 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                     child: Card(
                                       child: Column(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.start,
+                                            MainAxisAlignment.start,
                                         children: [
                                           Padding(
                                             padding: const EdgeInsets.all(8.0),
                                             child: Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
+                                                  MainAxisAlignment.spaceEvenly,
                                               children: [
                                                 Column(
                                                   children: [
@@ -2003,8 +2043,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                 0xFF707070),
                                                             fontSize: 18,
                                                             fontWeight:
-                                                            FontWeight
-                                                                .bold)),
+                                                                FontWeight
+                                                                    .bold)),
                                                   ],
                                                 ),
                                                 Column(
@@ -2020,8 +2060,8 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                                 0xFF707070),
                                                             fontSize: 18,
                                                             fontWeight:
-                                                            FontWeight
-                                                                .bold))
+                                                                FontWeight
+                                                                    .bold))
                                                   ],
                                                 ),
                                                 Icon(
@@ -2037,7 +2077,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                             padding: const EdgeInsets.all(8.0),
                                             child: Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment.end,
+                                                  MainAxisAlignment.end,
                                               children: [
                                                 const Icon(
                                                   Icons.calendar_today_rounded,
@@ -2046,7 +2086,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.all(7.0),
+                                                      const EdgeInsets.all(7.0),
                                                   child: Text(
                                                       dateFormatter.format(
                                                           DateTime.parse(
@@ -2064,7 +2104,7 @@ class _HealthMonitorState extends State<HealthMonitor> {
                                                 ),
                                                 Padding(
                                                   padding:
-                                                  const EdgeInsets.all(7.0),
+                                                      const EdgeInsets.all(7.0),
                                                   child: Text(
                                                       timeFormatter.format(
                                                           DateTime.parse(
@@ -2386,7 +2426,7 @@ class EcgReport extends StatelessWidget {
 
   Future<void> _capturePng() async {
     RenderRepaintBoundary? boundary =
-    globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary?;
+        globalKey.currentContext!.findRenderObject() as RenderRepaintBoundary?;
     ui.Image image = await boundary!.toImage();
     ByteData? byteData = await image.toByteData(format: ui.ImageByteFormat.png);
     Uint8List pngBytes = byteData!.buffer.asUint8List();
